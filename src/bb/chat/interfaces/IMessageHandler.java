@@ -8,27 +8,78 @@ import bb.chat.gui.BasicChatPanel;
 @SuppressWarnings("javadoc")
 public interface IMessageHandler
 {
-	// get the help for all Commands and passes them down
 
-	void helpAll(IChatActor sender);
+	public static final IChatActor	SERVER	= new IChatActor(){
 
-	// TODO:Re-work the help
-	void help(String s, IChatActor sender);
+												@Override
+												public void setActorName(String s)
+												{
 
-	void help(String[] s, IChatActor sender);
+												}
 
-	void help(ICommand ic, IChatActor sender);
+												@Override
+												public String getActorName()
+												{
+
+													return "SERVER";
+												}
+
+												@Override
+												public void disconnect()
+												{
+
+													// TODO Auto-generated
+													// method stub
+
+												}
+											};
+
+	public static final IChatActor	ALL		= new IChatActor(){
+
+												@Override
+												public void setActorName(String s)
+												{
+
+												}
+
+												@Override
+												public String getActorName()
+												{
+
+													return "ALL";
+												}
+
+												@Override
+												public void disconnect()
+												{
+
+													// TODO Auto-generated
+													// method stub
+
+												}
+											};
+
+	public IChatActor getUserByName(String s);
+
+	void setEmpfaenger(IChatActor ica);
+
+	public String getHelpFromCommand(ICommand a);
+
+	public String getHelpFromCommandName(String s);
+
+	public String[] getHelpForAllCommands();
 
 	// processes form Messages coming form somewhere else
 	void recieveMessage(String s, IChatActor ica);
 
 	// messages entered by the user should land here
-	void Message(String s, IChatActor sender);
+	void Message(String s);
 
 	// messages landing here will be send away
-	void sendMessage(String text, String Empf, IChatActor Send);
+	void sendMessage(String text, IChatActor Send);
 
-	void sendMessageAll(String text, IChatActor Send);
+	// sends the command s with para as parameter to empf
+	void sendCommand(ICommand d, IChatActor empf, String para);
 
 	// adds a Command
 	void addCommand(Class<? extends ICommand> c);

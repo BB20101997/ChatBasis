@@ -23,7 +23,6 @@ public class Disconnect extends ICommand
 	public boolean runCommandServer(String d, IMessageHandler a, IChatActor sender)
 	{
 
-		a.disconnect(sender);
 		return true;
 	}
 
@@ -31,8 +30,24 @@ public class Disconnect extends ICommand
 	public boolean runCommandClient(String d, IMessageHandler a)
 	{
 
-		a.sendMessageAll("/disconnect", a.getActor());
-		return false;
+		a.setEmpfaenger(IMessageHandler.SERVER);
+		a.sendMessage("/disconnect", a.getActor());
+		return true;
+	}
+
+	@Override
+	public boolean runCommandRecievedFromServer(String d, IMessageHandler a)
+	{
+
+		return true;
+	}
+
+	@Override
+	public boolean runCommandRecievedFromClient(String d, IMessageHandler a, IChatActor sender)
+	{
+
+		a.disconnect(sender);
+		return true;
 	}
 
 	@Override

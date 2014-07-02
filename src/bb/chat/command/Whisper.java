@@ -25,7 +25,8 @@ public class Whisper extends ICommand
 		if(str.length > 2)
 		{
 			System.out.println(str[1] + " : " + str[2]);
-			a.sendMessage(str[2], str[1], client);
+			a.setEmpfaenger(a.getUserByName(str[1]));
+			a.sendMessage(str[2], client);
 			return true;
 		}
 		return false;
@@ -42,8 +43,9 @@ public class Whisper extends ICommand
 	public boolean runCommandClient(String d, IMessageHandler a)
 	{
 
-		if(!(d.split(" ", 3).length > 2)) { return false; }
-		a.sendMessageAll(d, a.getActor());
+		if((d.split(" ", 3).length <= 2)) { return false; }
+		a.setEmpfaenger(IMessageHandler.SERVER);
+		a.sendMessage(d, a.getActor());
 		return true;
 	}
 

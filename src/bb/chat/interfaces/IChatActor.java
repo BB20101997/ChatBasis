@@ -16,4 +16,6 @@ public interface IChatActor
 	 *            sets the Actors name to s;
 	 */
 	public void setActorName(String s);
+
+	public void disconnect();
 }

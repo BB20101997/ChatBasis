@@ -95,7 +95,7 @@ public class BasicChatPanel extends JPanel implements ActionListener
 			lastSend = ChatSendBar.getText();
 			for(IMessageHandler MH : MHList)
 			{
-				MH.Message(lastSend, MH.getActor());
+				MH.Message(lastSend);
 			}
 			ChatSendBar.setText("");
 			setSize(getSize());

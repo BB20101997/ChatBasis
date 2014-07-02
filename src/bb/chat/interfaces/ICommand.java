@@ -6,6 +6,24 @@ package bb.chat.interfaces;
 public abstract class ICommand
 {
 
+	public boolean backgroundCommand()
+	{
+
+		return false;
+	}
+
+	public int parameterCount()
+	{
+
+		return 0;
+	}
+
+	public String[] getAlias()
+	{
+
+		return new String[ ]{};
+	}
+
 	/**
 	 * @return Name of the Command
 	 */
@@ -74,20 +92,14 @@ public abstract class ICommand
 	 * @return Returns an Array of the Lines to Display when the help Command is
 	 *         been executed
 	 */
-	public abstract String[] helpCommand();
+	public String[] helpCommand()
+	{
+
+		return new String[ ]{ "Please add a Help Message \n or set the Command to a backGround Command" };
+	}
 
 	/**
 	 * Should the command be Debugmode only
 	 */
 	public boolean	DebugOnly	= false;
-	/**
-	 * If the Command should only be executed Client-Side if true the Server
-	 * will ignore this command when it is installed
-	 */
-	public boolean	ClientOnly	= false;
-	/**
-	 * If the Command should only be executed Server-Side if true the Client
-	 * will ignore this command when it is installed
-	 */
-	public boolean	ServerOnly	= false;
 }

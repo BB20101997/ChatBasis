@@ -21,6 +21,8 @@ public class IOHandler implements Runnable, IChatActor
 	List<IMessageHandler>	MessegH			= new ArrayList<IMessageHandler>();
 	BufferedReader			InStream;
 	PrintWriter				OutStream;
+	@SuppressWarnings("unused")
+	private InputStream		InputStream;
 	private String			name;
 	private boolean			continueLoop	= true;
 
@@ -35,6 +37,7 @@ public class IOHandler implements Runnable, IChatActor
 
 		InStream = new BufferedReader(new InputStreamReader(IS));
 		OutStream = new PrintWriter(OS);
+		InputStream = IS;
 	}
 
 	/**
@@ -51,6 +54,7 @@ public class IOHandler implements Runnable, IChatActor
 		addMessageHandler(imh);
 		InStream = new BufferedReader(new InputStreamReader(IS));
 		OutStream = new PrintWriter(OS);
+		InputStream = IS;
 	}
 
 	/**
@@ -82,6 +86,7 @@ public class IOHandler implements Runnable, IChatActor
 
 		System.out.println("Starting IOHandler");
 		String text;
+		main:
 		while(continueLoop)
 		{
 			try
@@ -93,6 +98,11 @@ public class IOHandler implements Runnable, IChatActor
 					{
 						IMH.recieveMessage(text, this);
 					}
+
+					if(!continueLoop)
+					{
+						break main;
+					}
 				}
 			}
 			catch(IOException e)
@@ -102,7 +112,8 @@ public class IOHandler implements Runnable, IChatActor
 			}
 			catch(NullPointerException e)
 			{
-				continueLoop = false;
+				e.printStackTrace();
+				// continueLoop = false;
 			}
 
 		}
@@ -113,19 +124,22 @@ public class IOHandler implements Runnable, IChatActor
 	/**
 	 * Stops the IOHandler
 	 */
-	public void end()
+	private void end()
 	{
+
+		// getOut().write("/disconnect");
 
 		continueLoop = false;
 		try
 		{
 			InStream.close();
-			OutStream.close();
 		}
 		catch(IOException e)
 		{
 			e.printStackTrace();
 		}
+
+		OutStream.close();
 	}
 
 	@Override
@@ -155,8 +169,9 @@ public class IOHandler implements Runnable, IChatActor
 	protected void finalize() throws Throwable
 	{
 
-		super.finalize();
 		end();
+		super.finalize();
+
 	}
 
 	/**
@@ -166,6 +181,14 @@ public class IOHandler implements Runnable, IChatActor
 	{
 
 		return continueLoop;
+	}
+
+	@Override
+	public void disconnect()
+	{
+
+		end();
+
 	}
 
 }
