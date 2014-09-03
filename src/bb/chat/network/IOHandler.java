@@ -1,194 +1,220 @@
 package bb.chat.network;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
 import bb.chat.interfaces.IChatActor;
 import bb.chat.interfaces.IMessageHandler;
+import bb.chat.interfaces.IPacket;
+import bb.chat.network.packet.DataOut;
+import bb.chat.network.packet.Handshake.HandshakePacket;
+
+import java.io.*;
 
 /**
  * @author BB20101997
  */
-public class IOHandler implements Runnable, IChatActor
-{
+public class IOHandler implements Runnable, IChatActor {
 
-	List<IMessageHandler>	MessegH			= new ArrayList<IMessageHandler>();
-	BufferedReader			InStream;
-	PrintWriter				OutStream;
-	@SuppressWarnings("unused")
-	private InputStream		InputStream;
-	private String			name;
-	private boolean			continueLoop	= true;
+    private final IMessageHandler IMH;
+    private final DataInputStream dis;
+    private final DataOutputStream dos;
+    protected boolean handshakeReceived = false;
+    private String name;
+    private boolean continueLoop = true;
+    private Thread thread;
+    protected NetworkState status = NetworkState.UNKNOWN;
 
-	/**
-	 * @param IS
-	 *            the InputStream to be used
-	 * @param OS
-	 *            the OutputStream to be used
-	 */
-	public IOHandler(InputStream IS, OutputStream OS)
-	{
 
-		InStream = new BufferedReader(new InputStreamReader(IS));
-		OutStream = new PrintWriter(OS);
-		InputStream = IS;
-	}
+    /**
+     * @param IS  the InputStream to be used
+     * @param OS  the OutputStream to be used
+     * @param imh an IMessageHandler to be linked to
+     * @throws java.io.IOException in case of a IOException creating the In- and OutputStreams
+     *                             or on side of teh Server if the handshake is not performed in 15 minutes after
+     *                             initialising the IOHandlers constructor
+     */
 
-	/**
-	 * @param IS
-	 *            the InputStream to be used
-	 * @param OS
-	 *            the OutputStream to be used
-	 * @param imh
-	 *            an IMessageHandler to be linked to
-	 */
-	public IOHandler(InputStream IS, OutputStream OS, IMessageHandler imh)
-	{
+    public IOHandler(final InputStream IS, OutputStream OS, IMessageHandler imh) throws IOException {
+        IMH = imh;
+        System.out.println("Creating Streams");
+        dis = new DataInputStream(IS);
+        dos = new DataOutputStream(OS);
+        status = NetworkState.HANDSHAKE;
+        if (imh.getSide() == Side.CLIENT) {
+            startHandshake();
+        } else {
+            sendPackage(imh.getPacketRegistrie().getSyncPacket());
+        }
+    }
 
-		addMessageHandler(imh);
-		InStream = new BufferedReader(new InputStreamReader(IS));
-		OutStream = new PrintWriter(OS);
-		InputStream = IS;
-	}
+    private class handshakeRunnable implements Runnable{
+        public handshakeRunnable(){
 
-	/**
-	 * @param IMH
-	 *            adds the IMessageHandler
-	 */
-	public void addMessageHandler(IMessageHandler IMH)
-	{
+        }
+        @Override
+        public void run(){
+            Object obj = new Object();
+            for (int i = 0; !handshakeReceived || i > 900000; i++) {
+                try {
+                    obj.wait(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(!handshakeReceived){
+                end();
+                status = NetworkState.SHUTDOWN;
+            }
+            else{
+                status = NetworkState.POST_HANDSHAKE;
+            }
+        }
+    }
 
-		MessegH.add(IMH);
-	}
+    private void startHandshake() {
+        sendPackage(new HandshakePacket());
+    }
 
-	/**
-	 * @param IMH
-	 *            removes the IMessageHandler
-	 */
-	public void removeMessageHandler(IMessageHandler IMH)
-	{
+    public void start() {
+        if (thread == null) {
+            thread = new Thread(this);
+        }
+        if (thread.getState() == Thread.State.NEW) {
+            thread.start();
+        }
+    }
 
-		if(MessegH.contains(IMH))
-		{
-			MessegH.remove(IMH);
-		}
-	}
+    public void stop() {
 
-	@Override
-	public void run()
-	{
+        end();
+        thread.interrupt();
 
-		System.out.println("Starting IOHandler");
-		String text;
-		main:
-		while(continueLoop)
-		{
-			try
-			{
-				while(((text = InStream.readLine()) != null) && continueLoop)
-				{
-					System.out.println("Recieved Message : " + text);
-					for(IMessageHandler IMH : MessegH)
-					{
-						IMH.recieveMessage(text, this);
-					}
+    }
 
-					if(!continueLoop)
-					{
-						break main;
-					}
-				}
-			}
-			catch(IOException e)
-			{
-				e.printStackTrace();
-				continueLoop = false;
-			}
-			catch(NullPointerException e)
-			{
-				e.printStackTrace();
-				// continueLoop = false;
-			}
 
-		}
-		System.out.println("Stopping IOHandler");
-		end();
-	}
+    @Override
+    public void run() {
 
-	/**
-	 * Stops the IOHandler
-	 */
-	private void end()
-	{
+        System.out.println("Starting IOHandler");
 
-		// getOut().write("/disconnect");
 
-		continueLoop = false;
-		try
-		{
-			InStream.close();
-		}
-		catch(IOException e)
-		{
-			e.printStackTrace();
-		}
+        if(IMH.getSide() == Side.SERVER){
+            Thread t = new Thread(new handshakeRunnable());
+            t.start();
+        }
 
-		OutStream.close();
-	}
+        int id;
+        int length;
 
-	@Override
-	public String getActorName()
-	{
+        while (continueLoop) {
+            try {
 
-		return name;
-	}
+                id = dis.readInt();
+                length = dis.readInt();
+                byte[] by = new byte[length];
+                dis.readFully(by);
+                IMH.getPacketRegistrie().getNewPacketOfID(id);
 
-	@Override
-	public void setActorName(String s)
-	{
+            } catch (IOException e) {
+                e.printStackTrace();
+                continueLoop = false;
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                continueLoop = false;
+            }
 
-		name = s;
-	}
+        }
 
-	/**
-	 * @return the OutputStream as a PrintWriter
-	 */
-	public PrintWriter getOut()
-	{
+        System.out.println("Stopping IOHandler");
 
-		return OutStream;
-	}
+        IMH.disconnect(this);
 
-	@Override
-	protected void finalize() throws Throwable
-	{
+        status = NetworkState.SHUTDOWN;
 
-		end();
-		super.finalize();
+        try {
+            dis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-	}
+        try {
+            dos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-	/**
-	 * @return if the end() method was called or the run method ended
-	 */
-	public boolean hasNotStopped()
-	{
+    }
 
-		return continueLoop;
-	}
+    private void end() {
+        if (continueLoop) {
+            continueLoop = false;
+            Thread.currentThread().interrupt();
+        }
+    }
 
-	@Override
-	public void disconnect()
-	{
+    @Override
+    public String getActorName() {
 
-		end();
+        return name;
+    }
 
-	}
+    @Override
+    public void setActorName(String s) {
+        name = s;
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean sendPackage(IPacket p) {
+
+        if (IMH.getPacketRegistrie().containsPacket(p.getClass())) {
+
+            int id = IMH.getPacketRegistrie().getID(p.getClass());
+
+            DataOut dataOut = DataOut.newInstance();
+
+            try {
+                p.writeToData(dataOut);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            byte[] b = dataOut.getBytes();
+
+
+            try {
+                dos.writeInt(id);
+                dos.writeInt(b.length);
+                dos.write(b);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+
+            return true;
+
+        }
+
+        return false;
+    }
+
+    @Override
+    public void finalize() throws Throwable {
+        if (hasNotStopped())
+            stop();
+        super.finalize();
+
+    }
+
+    /**
+     * @return if the end() method was called or the run method ended
+     */
+    public boolean hasNotStopped() {
+        return continueLoop;
+    }
+
+    @Override
+    public void disconnect() {
+        end();
+    }
 
 }

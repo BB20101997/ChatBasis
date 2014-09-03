@@ -1,79 +1,77 @@
 package bb.chat.gui;
 
-import java.awt.BorderLayout;
+import bb.chat.interfaces.IBasicChatPanel;
+import bb.chat.interfaces.IMessageHandler;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-
-import bb.chat.interfaces.IMessageHandler;
-
 /**
  * @author BB20101997
  */
-public class BasicChatPanel extends JPanel implements ActionListener
+public class BasicChatPanel extends JPanel implements ActionListener, IBasicChatPanel
 {
-
-	private static final long		serialVersionUID			= 1L;
-
 	/**
 	 * the Command send by the Send button
 	 */
-	public static final String		SENDEVENT					= "BUTTON_SEND";
+	public static final String SEND_EVENT = "BUTTON_SEND";
 	/**
-	 * the Command send when hitting Enter in the Text Field ,sould be treated
-	 * like SENDEVENT
+	 * the Command send when hitting Enter in the Text Field ,should be treated
+	 * like SEND_EVENT
 	 */
-	public static final String		ENTEREVENT					= "CSB_ENTER";
+	public static final String ENTER_EVENT = "CSB_ENTER";
 
 	/**
 	 * if the Standard ActionListener Should be used
 	 */
-	public boolean					useStandartActionListener	= true;
+    private boolean useStandardActionListener = true;
 	/**
 	 * The Button to send the Text of the ChatSendBar
 	 */
-	public JButton					Send						= new JButton("Send");
-	/**
-	 * Latest Send Message
-	 */
-	public String					lastSend					= null;
-	/**
+    private final JButton					Send						= new JButton("Send");
+    /**
 	 * The ChatLog --Obvious--
 	 */
-	public JTextArea				ChatLog						= new JTextArea();
+    private final JTextArea				ChatLog						= new JTextArea();
 	/**
 	 * The Field to enter a Message
 	 */
-	public JTextField				ChatSendBar					= new JTextField();
-	private JScrollPane				ChatLogScroll				= new JScrollPane(ChatLog);
-	private Box						boxBar						= Box.createHorizontalBox();
-	private List<IMessageHandler>	MHList						= new ArrayList<IMessageHandler>();
+	public final JTextField				ChatSendBar					= new JTextField();
+    private final List<IMessageHandler>	MHList						= new ArrayList<IMessageHandler>();
 
 	/**
-	 * The constructer to set up the JPanel
+	 * The constructor to set up the JPanel
 	 */
 	public BasicChatPanel()
 	{
 
 		super();
-		Send.addActionListener(this);
-		ChatSendBar.addActionListener(this);
+        Send.setActionCommand(SEND_EVENT);
+        ChatSendBar.setActionCommand(ENTER_EVENT);
+        addActionListener(this);
 		ChatLog.setEditable(false);
 		setLayout(new BorderLayout());
-		add(BorderLayout.CENTER, ChatLogScroll);
-		boxBar.add(ChatSendBar);
+        JScrollPane chatLogScroll = new JScrollPane(ChatLog);
+        add(BorderLayout.CENTER, chatLogScroll);
+        Box boxBar = Box.createHorizontalBox();
+        boxBar.add(ChatSendBar);
 		boxBar.add(Send);
 		add(BorderLayout.SOUTH, boxBar);
 		invalidate();
+        setUseStandardActionListener(true);
 	}
+
+    /**
+    * can be used to disable the default processing of input
+    * */
+
+     public void setUseStandardActionListener(boolean b){
+        useStandardActionListener = b;
+    }
 
 	/**
 	 * @param a
@@ -90,9 +88,12 @@ public class BasicChatPanel extends JPanel implements ActionListener
 	public void actionPerformed(ActionEvent arg0)
 	{
 
-		if(useStandartActionListener)
+		if(useStandardActionListener)
 		{
-			lastSend = ChatSendBar.getText();
+			/*
+	  Latest Send Message
+	 */
+            String lastSend = ChatSendBar.getText();
 			for(IMessageHandler MH : MHList)
 			{
 				MH.Message(lastSend);
@@ -109,6 +110,7 @@ public class BasicChatPanel extends JPanel implements ActionListener
 	 * @param M
 	 *            added to the MessageHandler List
 	 */
+	@Override
 	public void addMessageHandler(IMessageHandler M)
 	{
 
@@ -118,6 +120,7 @@ public class BasicChatPanel extends JPanel implements ActionListener
 	/**
 	 * Clears the ChatLog
 	 */
+	@Override
 	public void WipeLog()
 	{
 
@@ -128,6 +131,7 @@ public class BasicChatPanel extends JPanel implements ActionListener
 	 * @param s
 	 *            prints to the ChatLog
 	 */
+	@Override
 	public void print(String s)
 	{
 
@@ -138,6 +142,7 @@ public class BasicChatPanel extends JPanel implements ActionListener
 	 * @param s
 	 *            prints to the ChatLog and adds a NewLine at the end
 	 */
+	@Override
 	public void println(String s)
 	{
 

@@ -1,4 +1,4 @@
 ChatBasis
 =========
 
-The base of the Chat Clinet and Server
+The base of the Chat Client and Server

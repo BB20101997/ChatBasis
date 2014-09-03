@@ -1,111 +1,110 @@
 package bb.chat.interfaces;
 
-import bb.chat.gui.BasicChatPanel;
+
+import bb.chat.network.Side;
 
 /**
  * @author BB20101997
  */
 @SuppressWarnings("javadoc")
-public interface IMessageHandler
-{
+public interface IMessageHandler {
 
-	public static final IChatActor	SERVER	= new IChatActor(){
+    IChatActor SERVER = new IChatActor() {
 
-												@Override
-												public void setActorName(String s)
-												{
+        @Override
+        public void setActorName(String s) {
 
-												}
+        }
 
-												@Override
-												public String getActorName()
-												{
+        @Override
+        public String getActorName() {
 
-													return "SERVER";
-												}
+            return "SERVER";
+        }
 
-												@Override
-												public void disconnect()
-												{
+        @Override
+        public void disconnect() {
 
-													// TODO Auto-generated
-													// method stub
+            // TODO Auto-generated
+            // method stub
 
-												}
-											};
+        }
+    };
 
-	public static final IChatActor	ALL		= new IChatActor(){
+    IChatActor ALL = new IChatActor() {
 
-												@Override
-												public void setActorName(String s)
-												{
+        @Override
+        public void setActorName(String s) {
 
-												}
+        }
 
-												@Override
-												public String getActorName()
-												{
+        @Override
+        public String getActorName() {
 
-													return "ALL";
-												}
+            return "ALL";
+        }
 
-												@Override
-												public void disconnect()
-												{
+        @Override
+        public void disconnect() {
 
-													// TODO Auto-generated
-													// method stub
+            // TODO Auto-generated
+            // method stub
 
-												}
-											};
+        }
+    };
 
-	public IChatActor getUserByName(String s);
+    IChatActor getUserByName(String s);
 
-	void setEmpfaenger(IChatActor ica);
+    void setEmpfaenger(IChatActor ica);
 
-	public String getHelpFromCommand(ICommand a);
+    Side getSide();
 
-	public String getHelpFromCommandName(String s);
+    IPacketRegistrie getPacketRegistrie();
 
-	public String[] getHelpForAllCommands();
+	IPacketDistributor getPacketDistributor();
 
-	// processes form Messages coming form somewhere else
-	void recieveMessage(String s, IChatActor ica);
+    String getHelpFromCommand(ICommand a);
 
-	// messages entered by the user should land here
-	void Message(String s);
+    String getHelpFromCommandName(String s);
 
-	// messages landing here will be send away
-	void sendMessage(String text, IChatActor Send);
+    String[] getHelpForAllCommands();
 
-	// sends the command s with para as parameter to empf
-	void sendCommand(ICommand d, IChatActor empf, String para);
+    // messages entered by the user should land here
+    void Message(String s);
 
-	// adds a Command
-	void addCommand(Class<? extends ICommand> c);
+   void receivePackage(IPacket p,IChatActor sender);
 
-	/**
-	 * @param text
-	 *            the text entered
-	 * @return the command instance matching the text
-	 */
-	ICommand getCommand(String text);
+    void sendPackage(IPacket p);
 
-	// adds a BasicChatPanel to the Output´s
-	void addBasicChatPanel(BasicChatPanel BCP);
+    // adds a Command
+    void addCommand(Class<? extends ICommand> c);
 
-	// print to all local outputs
-	void print(String s);
+    /**
+     * @param text the text entered
+     * @return the command instance matching the text
+     */
+    ICommand getCommand(String text);
 
-	// println to all local outputs
-	void println(String s);
+    // adds a BasicChatPanel to the Outputï¿½s
+    void addBasicChatPanel(IBasicChatPanel BCP);
 
-	// disconnect the connection to a
-	void disconnect(IChatActor a);
+    // print to all local outputs
+    void print(String s);
 
-	// connects to the host at the port port
-	void connect(String host, int port);
+    // println to all local outputs
+    void println(String s);
 
-	// gets the local ChatActor
-	IChatActor getActor();
+    // disconnect the connection to a
+    void disconnect(IChatActor a);
+
+    void shutdown();
+
+    // connects to the host at the port port
+    void connect(String host, int port);
+
+    // gets the local ChatActor
+    IChatActor getActor();
+
+    //Will whip the chat log
+    public void wipe();
 }

@@ -3,50 +3,62 @@ package bb.chat.command;
 import bb.chat.interfaces.IChatActor;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IMessageHandler;
+import bb.chat.network.Side;
+import bb.chat.network.packet.Chatting.ChatPacket;
+import bb.chat.network.packet.Command.DisconnectPacket;
 
 /**
  * @author BB20101997
  */
-public class Disconnect extends ICommand
+public class Disconnect implements ICommand
 {
 
-	private static String[]	helpMessage	= new String[ ]{ "Disconnects the client from the Server,only executed Client Side" };
+	private static final String[]	helpMessage	= new String[ ]{ "Disconnects the client from the Server,only executed Client Side"};
 
-	@Override
+    @Override
+    public int maxParameterCount() {
+        return 0;
+    }
+
+    @Override
+    public int minParameterCount() {
+        return 0;
+    }
+
+    @Override
+    public String[] getAlias() {
+        return new String[0];
+    }
+
+    @Override
 	public String getName()
 	{
 
 		return "disconnect";
 	}
 
-	@Override
-	public boolean runCommandServer(String d, IMessageHandler a, IChatActor sender)
-	{
+    @Override
+    public boolean runCommand(String commandLine, IMessageHandler imh) {
+        if(imh.getSide()== Side.CLIENT){
+            imh.setEmpfaenger(IMessageHandler.SERVER);
+            imh.sendPackage(new DisconnectPacket());
+            imh.disconnect(imh.getActor());
+            imh.wipe();
+            imh.println("Successfully disconnected!");
+            return true;
+        }
+        else{
+            return true;
+        }
+    }
 
-		return true;
-	}
-
-	@Override
-	public boolean runCommandClient(String d, IMessageHandler a)
-	{
-
-		a.setEmpfaenger(IMessageHandler.SERVER);
-		a.sendMessage("/disconnect", a.getActor());
-		return true;
-	}
-
-	@Override
-	public boolean runCommandRecievedFromServer(String d, IMessageHandler a)
-	{
-
-		return true;
-	}
-
-	@Override
-	public boolean runCommandRecievedFromClient(String d, IMessageHandler a, IChatActor sender)
+	public boolean runCommandReceivedFromClient(String d, IMessageHandler a, IChatActor sender)
 	{
 
 		a.disconnect(sender);
+        a.setEmpfaenger(IMessageHandler.ALL);
+        a.println(a.getActor().getActorName() + " : " + sender.getActorName() + " disconnected!");
+        a.sendPackage(new ChatPacket(sender.getActorName() +" disconnected!",a.getActor().getActorName()));
 		return true;
 	}
 
@@ -56,5 +68,10 @@ public class Disconnect extends ICommand
 
 		return helpMessage;
 	}
+
+    @Override
+    public boolean debugModeOnly() {
+        return false;
+    }
 
 }
