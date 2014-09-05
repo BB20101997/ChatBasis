@@ -9,53 +9,103 @@ import bb.chat.network.Side;
 @SuppressWarnings("javadoc")
 public interface IMessageHandler {
 
-    IChatActor SERVER = new IChatActor() {
+	IIOHandler ALL = new IIOHandler() {
+		@Override
+		public void start() {
 
-        @Override
-        public void setActorName(String s) {
+		}
 
-        }
+		@Override
+		public void stop() {
 
-        @Override
-        public String getActorName() {
+		}
 
-            return "SERVER";
-        }
+		@Override
+		public boolean isDummy() {
+			return true;
+		}
 
-        @Override
-        public void disconnect() {
+		@Override
+		public String getActorName() {
+			return null;
+		}
 
-            // TODO Auto-generated
-            // method stub
+		@Override
+		public void setActorName(String name) {
 
-        }
-    };
+		}
 
-    IChatActor ALL = new IChatActor() {
+		@Override
+		public boolean sendPacket(IPacket p) {
+			return false;
+		}
 
-        @Override
-        public void setActorName(String s) {
+		@Override
+		public boolean isAlive() {
+			return false;
+		}
 
-        }
+		@Override
+		public void receivedHandshake() {
 
-        @Override
-        public String getActorName() {
+		}
 
-            return "ALL";
-        }
+		@Override
+		public void run() {
 
-        @Override
-        public void disconnect() {
+		}
+	};
 
-            // TODO Auto-generated
-            // method stub
+	IIOHandler SERVER = new IIOHandler() {
+		@Override
+		public void start() {
 
-        }
-    };
+		}
 
-    IChatActor getUserByName(String s);
+		@Override
+		public void stop() {
 
-    void setEmpfaenger(IChatActor ica);
+		}
+
+		@Override
+		public boolean isDummy() {
+			return true;
+		}
+
+		@Override
+		public String getActorName() {
+			return "SERVER";
+		}
+
+		@Override
+		public void setActorName(String name) {
+
+		}
+
+		@Override
+		public boolean sendPacket(IPacket p) {
+			return false;
+		}
+
+		@Override
+		public boolean isAlive() {
+			return false;
+		}
+
+		@Override
+		public void receivedHandshake() {
+
+		}
+
+		@Override
+		public void run() {
+
+		}
+	};
+
+    IIOHandler getUserByName(String s);
+
+    void setEmpfaenger(IIOHandler ica);
 
     Side getSide();
 
@@ -72,7 +122,7 @@ public interface IMessageHandler {
     // messages entered by the user should land here
     void Message(String s);
 
-   void receivePackage(IPacket p,IChatActor sender);
+   void receivePackage(IPacket p,IIOHandler sender);
 
     void sendPackage(IPacket p);
 
@@ -95,7 +145,7 @@ public interface IMessageHandler {
     void println(String s);
 
     // disconnect the connection to a
-    void disconnect(IChatActor a);
+    void disconnect(IIOHandler a);
 
     void shutdown();
 
@@ -103,8 +153,9 @@ public interface IMessageHandler {
     void connect(String host, int port);
 
     // gets the local ChatActor
-    IChatActor getActor();
+    IIOHandler getActor();
 
     //Will whip the chat log
     public void wipe();
+
 }

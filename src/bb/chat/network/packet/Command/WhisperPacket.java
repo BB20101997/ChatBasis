@@ -11,9 +11,46 @@ import java.io.IOException;
  */
 public class WhisperPacket extends IPacket {
 
-    public String message;
-    public String sender;
-    public String receiver;
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+
+		this.message = message;
+		hasData();
+	}
+
+	public String getSender() {
+		return sender;
+	}
+
+	public void setSender(String sender) {
+		this.sender = sender;
+		hasData();
+	}
+
+	public String getReceiver() {
+		return receiver;
+
+	}
+
+	public void setReceiver(String receiver) {
+		this.receiver = receiver;
+		hasData();
+	}
+
+	protected void hasData(){
+		boolean b;
+		b = !"".equals(message);
+		b &= !"".equals(sender);
+		b &= !"".equals(receiver);
+		state = b ? PacketState.DATA: PacketState.EMPTY;
+	}
+
+	protected String message;
+    protected String sender;
+    protected String receiver;
 
     public WhisperPacket(){}
 
@@ -30,5 +67,6 @@ public class WhisperPacket extends IPacket {
         message = dataIn.readUTF();
         sender = dataIn.readUTF();
         receiver = dataIn.readUTF();
+		hasData();
     }
 }

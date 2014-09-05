@@ -19,11 +19,12 @@ public class ChatPacket extends IPacket {
         this.Sender = Sender;
     }
 
-    public IPacket newInstance(){
-        return new ChatPacket("","");
-    }
+    public ChatPacket(){
+		message = "";
+		Sender = "";
+	}
 
-    @Override
+	@Override
     public void writeToData(DataOut dataOut) throws IOException{
         dataOut.writeUTF(message);
         dataOut.writeUTF(Sender);

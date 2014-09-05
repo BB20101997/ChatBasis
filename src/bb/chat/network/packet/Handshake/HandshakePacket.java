@@ -21,5 +21,6 @@ public class HandshakePacket extends IPacket {
     @Override
     public void readFromData(DataIn dataIn) throws IOException {
         Version = dataIn.readUTF();
+		state = PacketState.DATA;
     }
 }

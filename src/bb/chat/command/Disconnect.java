@@ -1,6 +1,6 @@
 package bb.chat.command;
 
-import bb.chat.interfaces.IChatActor;
+import bb.chat.interfaces.IIOHandler;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IMessageHandler;
 import bb.chat.network.Side;
@@ -52,7 +52,8 @@ public class Disconnect implements ICommand
         }
     }
 
-	public boolean runCommandReceivedFromClient(String d, IMessageHandler a, IChatActor sender)
+	@Deprecated
+	public boolean runCommandReceivedFromClient(String d, IMessageHandler a, IIOHandler sender)
 	{
 
 		a.disconnect(sender);

@@ -1,8 +1,10 @@
-package bb.chat.network;
+package bb.chat.network.handler;
 
-import bb.chat.interfaces.IChatActor;
+import bb.chat.interfaces.IIOHandler;
 import bb.chat.interfaces.IMessageHandler;
 import bb.chat.interfaces.IPacket;
+import bb.chat.network.NetworkState;
+import bb.chat.network.Side;
 import bb.chat.network.packet.DataOut;
 import bb.chat.network.packet.Handshake.HandshakePacket;
 
@@ -11,13 +13,13 @@ import java.io.*;
 /**
  * @author BB20101997
  */
-public class IOHandler implements Runnable, IChatActor {
+public class IOHandler implements Runnable,IIOHandler {
 
     private final IMessageHandler IMH;
     private final DataInputStream dis;
     private final DataOutputStream dos;
     protected boolean handshakeReceived = false;
-    private String name;
+    private String name =  "NO-NAME-BUG";
     private boolean continueLoop = true;
     private Thread thread;
     protected NetworkState status = NetworkState.UNKNOWN;
@@ -41,7 +43,7 @@ public class IOHandler implements Runnable, IChatActor {
         if (imh.getSide() == Side.CLIENT) {
             startHandshake();
         } else {
-            sendPackage(imh.getPacketRegistrie().getSyncPacket());
+            sendPacket(imh.getPacketRegistrie().getSyncPacket());
         }
     }
 
@@ -49,28 +51,34 @@ public class IOHandler implements Runnable, IChatActor {
         public handshakeRunnable(){
 
         }
+
+		public final Object obj = new Object();
+
         @Override
         public void run(){
-            Object obj = new Object();
             for (int i = 0; !handshakeReceived || i > 900000; i++) {
                 try {
-                    obj.wait(10);
+					synchronized(obj) {
+						obj.wait(10);
+					}
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
             if(!handshakeReceived){
-                end();
+               	stop();
+				System.out.println("Shutting down : No handshake!");
                 status = NetworkState.SHUTDOWN;
             }
             else{
                 status = NetworkState.POST_HANDSHAKE;
+				System.out.println("Handshake Received!");
             }
         }
     }
 
     private void startHandshake() {
-        sendPackage(new HandshakePacket());
+        sendPacket(new HandshakePacket());
     }
 
     public void start() {
@@ -83,14 +91,17 @@ public class IOHandler implements Runnable, IChatActor {
     }
 
     public void stop() {
-
-        end();
+		continueLoop = false;
         thread.interrupt();
-
     }
 
+	@Override
+	public boolean isDummy() {
+		return false;
+	}
 
-    @Override
+
+	@Override
     public void run() {
 
         System.out.println("Starting IOHandler");
@@ -106,13 +117,16 @@ public class IOHandler implements Runnable, IChatActor {
 
         while (continueLoop) {
             try {
-
-                id = dis.readInt();
-                length = dis.readInt();
-                byte[] by = new byte[length];
-                dis.readFully(by);
-                IMH.getPacketRegistrie().getNewPacketOfID(id);
-
+				id = dis.readInt();
+				length = dis.readInt();
+				byte[] by = new byte[length];
+				dis.readFully(by);
+				System.out.println("IOHandler: PacketReceived : " + IMH.getPacketRegistrie().getPacketClassByID(id) + " on Side : " + IMH.getSide());
+				IMH.getPacketDistributor().distributePacket(id, by, this);
+			} catch (EOFException e){
+				e.printStackTrace();
+				System.out.println("Connection closed! Shutting down!");
+				continueLoop = false;
             } catch (IOException e) {
                 e.printStackTrace();
                 continueLoop = false;
@@ -143,13 +157,6 @@ public class IOHandler implements Runnable, IChatActor {
 
     }
 
-    private void end() {
-        if (continueLoop) {
-            continueLoop = false;
-            Thread.currentThread().interrupt();
-        }
-    }
-
     @Override
     public String getActorName() {
 
@@ -162,7 +169,7 @@ public class IOHandler implements Runnable, IChatActor {
     }
 
     @SuppressWarnings("unchecked")
-    public boolean sendPackage(IPacket p) {
+    public boolean sendPacket(IPacket p) {
 
         if (IMH.getPacketRegistrie().containsPacket(p.getClass())) {
 
@@ -199,7 +206,7 @@ public class IOHandler implements Runnable, IChatActor {
 
     @Override
     public void finalize() throws Throwable {
-        if (hasNotStopped())
+        if (isAlive())
             stop();
         super.finalize();
 
@@ -208,13 +215,13 @@ public class IOHandler implements Runnable, IChatActor {
     /**
      * @return if the end() method was called or the run method ended
      */
-    public boolean hasNotStopped() {
+    public boolean isAlive() {
         return continueLoop;
     }
 
-    @Override
-    public void disconnect() {
-        end();
-    }
+	@Override
+	public void receivedHandshake() {
+		handshakeReceived = true;
+	}
 
 }

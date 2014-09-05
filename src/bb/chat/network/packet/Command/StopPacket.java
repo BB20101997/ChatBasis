@@ -10,6 +10,11 @@ import java.io.IOException;
  * Created by BB20101997 on 30.08.2014.
  */
 public class StopPacket extends IPacket {
+
+	public StopPacket(){
+		state = PacketState.DATA;
+	}
+
     @Override
     public void writeToData(DataOut dataOut) throws IOException {
 

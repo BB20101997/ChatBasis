@@ -1,5 +1,7 @@
 package bb.chat.network.packet;
 
+import bb.chat.interfaces.IIOHandler;
+import bb.chat.interfaces.IMessageHandler;
 import bb.chat.interfaces.IPacket;
 import bb.chat.interfaces.IPacketRegistrie;
 import bb.chat.network.packet.Handshake.HandshakePacket;
@@ -14,13 +16,15 @@ import java.util.List;
  */
 public class PacketRegistrie implements IPacketRegistrie<IPacket>{
 
-    //public static final PacketRegistrie INSTANCE = new PacketRegistrie();
-
     private List<Class<? extends IPacket>> PList = new ArrayList<Class<? extends IPacket>>();
 
-    public PacketRegistrie(){
+	private final IMessageHandler IMH;
+
+    public PacketRegistrie(IMessageHandler iMessageHandler){
         registerPacket(HandshakePacket.class);
         registerPacket(PacketSyncPacket.class);
+
+		IMH = iMessageHandler;
     }
 
     public int registerPacket(Class<? extends IPacket> p){
@@ -65,11 +69,14 @@ public class PacketRegistrie implements IPacketRegistrie<IPacket>{
     }
 
     @Override
-    public void HandlePacket(IPacket p) {
+    public void HandlePacket(IPacket p,IIOHandler sender) {
         if(p instanceof PacketSyncPacket){
           PList = new ArrayList<Class<? extends IPacket>>();
             Collections.addAll(PList, ((PacketSyncPacket) p).getPackageClasses());
         }
+		else if(p instanceof HandshakePacket){
+			sender.receivedHandshake();
+		}
     }
 
     @Override

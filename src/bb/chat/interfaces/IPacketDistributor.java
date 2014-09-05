@@ -15,9 +15,9 @@ public interface IPacketDistributor<PH extends IPacketHandler> {
 	/**
 	 * @param id The id of the Packet the data is from
 	 * @param data the data of the packet to be created and distributed
-	 * @param sender the IChatActor that received/send the Packet
+	 * @param sender the IIOHandler that received/send the Packet
 	 *               (should be the IOHandler that received the packet)
 	 */
-	void distributePacket(int id,byte[] data,IChatActor sender);
+	void distributePacket(int id,byte[] data,IIOHandler sender);
 
 }

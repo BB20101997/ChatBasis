@@ -15,6 +15,7 @@ public class PacketSyncPacket extends IPacket {
 
     public PacketSyncPacket(Class<? extends IPacket>[] cs) {
         classes = cs;
+		state = PacketState.DATA;
     }
 
     public PacketSyncPacket(){}
@@ -47,5 +48,6 @@ public class PacketSyncPacket extends IPacket {
             }
             i--;
         }
+		state = PacketState.DATA;
     }
 }

@@ -1,6 +1,6 @@
 package bb.chat.command;
 
-import bb.chat.interfaces.IChatActor;
+import bb.chat.interfaces.IIOHandler;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IMessageHandler;
 import bb.chat.network.Side;
@@ -49,7 +49,7 @@ public class Rename implements ICommand
             String[] dS = commandLine.split(" ");
             if(dS.length > 2)
             {
-                IChatActor ica = imh.getUserByName(dS[1]);
+                IIOHandler ica = imh.getUserByName(dS[1]);
                 if(ica != null)
                 {
                     imh.getActor().setActorName(dS[2]);
@@ -86,7 +86,7 @@ public class Rename implements ICommand
 		if(dS.length > 2)
 		{
             a.println(dS[1]+" is now known as "+dS[2]);
-			IChatActor ica = a.getUserByName(dS[1]);
+			IIOHandler ica = a.getUserByName(dS[1]);
 			if(ica != null)
 			{
 				ica.setActorName(dS[2]);

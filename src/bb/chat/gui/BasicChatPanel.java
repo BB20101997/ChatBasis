@@ -7,8 +7,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author BB20101997
@@ -41,21 +39,23 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	 * The Field to enter a Message
 	 */
 	public final JTextField				ChatSendBar					= new JTextField();
-    private final List<IMessageHandler>	MHList						= new ArrayList<IMessageHandler>();
+
+	public JScrollPane					chatLogScroll				= new JScrollPane(ChatLog);
+
+	public final IMessageHandler		IMH;
 
 	/**
 	 * The constructor to set up the JPanel
 	 */
-	public BasicChatPanel()
+	public BasicChatPanel(IMessageHandler imh)
 	{
-
 		super();
+		IMH = imh;
         Send.setActionCommand(SEND_EVENT);
         ChatSendBar.setActionCommand(ENTER_EVENT);
         addActionListener(this);
 		ChatLog.setEditable(false);
 		setLayout(new BorderLayout());
-        JScrollPane chatLogScroll = new JScrollPane(ChatLog);
         add(BorderLayout.CENTER, chatLogScroll);
         Box boxBar = Box.createHorizontalBox();
         boxBar.add(ChatSendBar);
@@ -94,27 +94,14 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	  Latest Send Message
 	 */
             String lastSend = ChatSendBar.getText();
-			for(IMessageHandler MH : MHList)
-			{
-				MH.Message(lastSend);
-			}
+			IMH.Message(lastSend);
 			ChatSendBar.setText("");
 			setSize(getSize());
+			chatLogScroll.getVerticalScrollBar().setValue(ChatLog.getRows());
 			invalidate();
 
 		}
 
-	}
-
-	/**
-	 * @param M
-	 *            added to the MessageHandler List
-	 */
-	@Override
-	public void addMessageHandler(IMessageHandler M)
-	{
-
-		MHList.add(M);
 	}
 
 	/**

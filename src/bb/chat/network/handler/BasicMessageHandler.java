@@ -1,6 +1,7 @@
-package bb.chat.network;
+package bb.chat.network.handler;
 
 import bb.chat.interfaces.*;
+import bb.chat.network.Side;
 import bb.chat.network.packet.Chatting.ChatPacket;
 import bb.chat.network.packet.PacketDistributor;
 import bb.chat.network.packet.PacketRegistrie;
@@ -13,16 +14,16 @@ import java.util.List;
 
 public abstract class BasicMessageHandler implements IMessageHandler {
 
-    final List<IChatActor> actors = new ArrayList<IChatActor>();
+    public final List<IIOHandler> actors = new ArrayList<IIOHandler>();
 
     private WorkingThread workingRunnable;
     private Thread workingThread;
 
-    protected IChatActor Target;
+    protected IIOHandler Target;
 
     protected Side side;
 	protected IPacketDistributor PD = new PacketDistributor(this);
-	protected IPacketRegistrie PR = new PacketRegistrie();
+	protected IPacketRegistrie PR = new PacketRegistrie(this);
 
     protected SSLSocket socket;
 
@@ -30,27 +31,25 @@ public abstract class BasicMessageHandler implements IMessageHandler {
 
     private final List<ICommand> commandList = new ArrayList<ICommand>();
 
-    protected IChatActor localActor;
+    protected IIOHandler localActor;
 
     private final List<IBasicChatPanel> BCPList = new ArrayList<IBasicChatPanel>();
 
 
 	@SuppressWarnings("unchecked")
 	public BasicMessageHandler(){
-		PD = new PacketDistributor(this);
-		PR = new PacketRegistrie();
 		PD.registerPacketHandler(PR);
 	}
 
 	@SuppressWarnings("unchecked")
 	public BasicMessageHandler(IPacketRegistrie packetRegistrie){
 		PR = packetRegistrie;
-		PD = new PacketDistributor(this);
 		PD.registerPacketHandler(PR);
 	}
 
-	public BasicMessageHandler(IPacketDistributor packetDistributor){
-		this(new PacketRegistrie(),packetDistributor);
+	public BasicMessageHandler(IPacketDistributor<IPacketRegistrie> packetDistributor){
+		PD = packetDistributor;
+		packetDistributor.registerPacketHandler(PR);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -61,7 +60,7 @@ public abstract class BasicMessageHandler implements IMessageHandler {
 	}
 
     @Override
-    public void disconnect(IChatActor a) {
+    public void disconnect(IIOHandler a) {
 
         try {
             stopWorkingThread();
@@ -74,7 +73,7 @@ public abstract class BasicMessageHandler implements IMessageHandler {
         }
 
         if (IRServer != null) {
-            IRServer.disconnect();
+            IRServer.stop();
             IRServer = null;
         }
 
@@ -110,6 +109,7 @@ public abstract class BasicMessageHandler implements IMessageHandler {
     @Override
     public final void Message(String s) {
 
+		System.out.println("A Message was entered on Side : "+side);
         startWorkingThread();
         workingRunnable.addInput(s);
 
@@ -131,7 +131,7 @@ public abstract class BasicMessageHandler implements IMessageHandler {
 	}
 
 	@Override
-    public final void setEmpfaenger(IChatActor ica) {
+    public final void setEmpfaenger(IIOHandler ica) {
 
         Target = ica;
     }
@@ -161,15 +161,15 @@ public abstract class BasicMessageHandler implements IMessageHandler {
     }
 
     @Override
-    public final IChatActor getActor() {
+    public final IIOHandler getActor() {
 
         return localActor;
     }
 
     @Override
-    public final IChatActor getUserByName(String s) {
+    public final IIOHandler getUserByName(String s) {
 
-        for (IChatActor ica : actors) {
+        for (IIOHandler ica : actors) {
             if (ica.getActorName().equals(s)) {
                 return ica;
             }
