@@ -5,27 +5,26 @@ package bb.chat.interfaces;
  */
 public interface ICommand {
 
-    // -1 for no max
-    int maxParameterCount();
+	boolean initiatePermissionCheck(IUserPermission iup, IMessageHandler imh);
 
-    int minParameterCount();
+	// -1 for no max
+	int maxParameterCount();
 
-    String[] getAlias();
+	int minParameterCount();
 
-    /**
-     * @return Name of the Command
-     */
-    String getName();
+	String[] getAlias();
 
-    /**
-     * Replacing the old runCommand you can get the IChatActor
-     * by calling : imh.getActor();
-     * It should be the same!
-     *
-     * */
-    boolean runCommand(String commandLine,IMessageHandler imh);
+	/**
+	 * @return Name of the Command
+	 */
+	String getName();
 
-    String[] helpCommand();
+	/**
+	 * Replacing the old runCommand you can get the IChatActor by calling : imh.getActor(); It should be the same!
+	 */
+	boolean runCommand(String commandLine, IMessageHandler imh);
 
-   boolean debugModeOnly();
+	String[] helpCommand();
+
+	boolean debugModeOnly();
 }

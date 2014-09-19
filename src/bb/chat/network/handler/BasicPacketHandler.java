@@ -12,23 +12,23 @@ import java.util.List;
  */
 public abstract class BasicPacketHandler<P extends IPacket> implements IPacketHandler<P> {
 
-    public final IMessageHandler IMH;
+	public final IMessageHandler IMH;
 
-    protected final List<Class<? extends P>> CList = new ArrayList<Class<? extends P>>();
+	protected final List<Class<? extends P>> CList = new ArrayList<Class<? extends P>>();
 
-    public BasicPacketHandler(IMessageHandler iMessageHandler){
-        IMH = iMessageHandler;
-    }
+	public BasicPacketHandler(IMessageHandler iMessageHandler) {
+		IMH = iMessageHandler;
+	}
 
-    protected void addAssociatedPacket(Class<? extends P> cp){
-        if(!CList.contains(cp)){
-            CList.add(cp);
-        }
-    }
+	protected void addAssociatedPacket(Class<? extends P> cp) {
+		if(!CList.contains(cp)) {
+			CList.add(cp);
+		}
+	}
 
-    @SuppressWarnings("unchecked")
-    public Class<P>[] getAssociatedPackets(){
-          return CList.toArray(new Class[CList.size()]);
-    }
+	@SuppressWarnings("unchecked")
+	public Class<P>[] getAssociatedPackets() {
+		return CList.toArray(new Class[CList.size()]);
+	}
 
 }

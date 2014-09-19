@@ -11,43 +11,44 @@ import java.io.IOException;
  */
 public class PacketSyncPacket extends IPacket {
 
-    Class<? extends IPacket>[] classes;
+	Class<? extends IPacket>[] classes;
 
-    public PacketSyncPacket(Class<? extends IPacket>[] cs) {
-        classes = cs;
+	public PacketSyncPacket(Class<? extends IPacket>[] cs) {
+		classes = cs;
 		state = PacketState.DATA;
-    }
+	}
 
-    public PacketSyncPacket(){}
+	public PacketSyncPacket() {
+	}
 
-    public Class<? extends IPacket>[] getPackageClasses() {
-        return classes;
-    }
+	public Class<? extends IPacket>[] getPackageClasses() {
+		return classes;
+	}
 
 
-    @Override
-    public void writeToData(DataOut dataOut) throws IOException {
-        dataOut.writeInt(classes.length);
-        for (Class c : classes) {
-            dataOut.writeUTF(c.getName());
-        }
-    }
+	@Override
+	public void writeToData(DataOut dataOut) throws IOException {
+		dataOut.writeInt(classes.length);
+		for(Class c : classes) {
+			dataOut.writeUTF(c.getName());
+		}
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void readFromData(DataIn dataIn) throws IOException {
-        int i = dataIn.readInt();
+	@Override
+	@SuppressWarnings("unchecked")
+	public void readFromData(DataIn dataIn) throws IOException {
+		int i = dataIn.readInt();
 
-        classes = new Class[i];
-        while (i > 0) {
-            try {
-                Class c = Class.forName(dataIn.readUTF());
-                classes[classes.length - i] = c;
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-            i--;
-        }
+		classes = new Class[i];
+		while(i > 0) {
+			try {
+				Class c = Class.forName(dataIn.readUTF());
+				classes[classes.length - i] = c;
+			} catch(ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			i--;
+		}
 		state = PacketState.DATA;
-    }
+	}
 }

@@ -11,28 +11,28 @@ import java.io.IOException;
  */
 public class ChatPacket extends IPacket {
 
-    public String message;
-    public String Sender;
+	public String message;
+	public String Sender;
 
-    public ChatPacket(String message, String Sender){
-        this.message = message;
-        this.Sender = Sender;
-    }
+	public ChatPacket(String message, String Sender) {
+		this.message = message;
+		this.Sender = Sender;
+	}
 
-    public ChatPacket(){
+	public ChatPacket() {
 		message = "";
 		Sender = "";
 	}
 
 	@Override
-    public void writeToData(DataOut dataOut) throws IOException{
-        dataOut.writeUTF(message);
-        dataOut.writeUTF(Sender);
-    }
+	public void writeToData(DataOut dataOut) throws IOException {
+		dataOut.writeUTF(message);
+		dataOut.writeUTF(Sender);
+	}
 
-    @Override
-    public void readFromData(DataIn dataIn) throws IOException{
-        message = dataIn.readUTF();
-        Sender = dataIn.readUTF();
-    }
+	@Override
+	public void readFromData(DataIn dataIn) throws IOException {
+		message = dataIn.readUTF();
+		Sender = dataIn.readUTF();
+	}
 }

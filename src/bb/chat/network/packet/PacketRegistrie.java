@@ -14,74 +14,73 @@ import java.util.List;
 /**
  * Created by BB20101997 on 30.08.2014.
  */
-public class PacketRegistrie implements IPacketRegistrie<IPacket>{
+public class PacketRegistrie implements IPacketRegistrie<IPacket> {
 
-    private List<Class<? extends IPacket>> PList = new ArrayList<Class<? extends IPacket>>();
+	private List<Class<? extends IPacket>> PList = new ArrayList<Class<? extends IPacket>>();
 
 	private final IMessageHandler IMH;
 
-    public PacketRegistrie(IMessageHandler iMessageHandler){
-        registerPacket(HandshakePacket.class);
-        registerPacket(PacketSyncPacket.class);
+	public PacketRegistrie(IMessageHandler iMessageHandler) {
+		registerPacket(HandshakePacket.class);
+		registerPacket(PacketSyncPacket.class);
 
 		IMH = iMessageHandler;
-    }
+	}
 
-    public int registerPacket(Class<? extends IPacket> p){
-        if(!PList.contains(p)){
-            PList.add(p);
-        }
-        return PList.indexOf(p);
-    }
+	public int registerPacket(Class<? extends IPacket> p) {
+		if(!PList.contains(p)) {
+			PList.add(p);
+		}
+		return PList.indexOf(p);
+	}
 
-    public int getID(Class<? extends IPacket> p){
-        return PList.indexOf(p);
-    }
+	public int getID(Class<? extends IPacket> p) {
+		return PList.indexOf(p);
+	}
 
-    public boolean containsPacket(Class<? extends IPacket> p){
-        return PList.contains(p);
-    }
+	public boolean containsPacket(Class<? extends IPacket> p) {
+		return PList.contains(p);
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public PacketSyncPacket getSyncPacket() {
-        Class<? extends IPacket>[] pa = new Class[0];
-        pa = PList.toArray(pa);
-        return new PacketSyncPacket(pa);
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public PacketSyncPacket getSyncPacket() {
+		Class<? extends IPacket>[] pa = new Class[0];
+		pa = PList.toArray(pa);
+		return new PacketSyncPacket(pa);
+	}
 
-    public IPacket getNewPacketOfID(int id) {
-        try {
-            return PList.get(id).newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-            System.err.println("Could not Instantiate "+PList.get(id)+" probably missing default Constructor");
-            throw new RuntimeException("Instantiation Exception while Instantiating "+PList.get(id));
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            System.err.println("Could not Instantiate "+PList.get(id)+" probably missing default Constructor");
-            throw new RuntimeException("IllegalAccess Exception while Instantiating "+PList.get(id));
-        }
-    }
+	public IPacket getNewPacketOfID(int id) {
+		try {
+			return PList.get(id).newInstance();
+		} catch(InstantiationException e) {
+			e.printStackTrace();
+			System.err.println("Could not Instantiate " + PList.get(id) + " probably missing default Constructor");
+			throw new RuntimeException("Instantiation Exception while Instantiating " + PList.get(id));
+		} catch(IllegalAccessException e) {
+			e.printStackTrace();
+			System.err.println("Could not Instantiate " + PList.get(id) + " probably missing default Constructor");
+			throw new RuntimeException("IllegalAccess Exception while Instantiating " + PList.get(id));
+		}
+	}
 
-    public Class<? extends IPacket> getPacketClassByID(int id){
-        return PList.get(id);
-    }
+	public Class<? extends IPacket> getPacketClassByID(int id) {
+		return PList.get(id);
+	}
 
-    @Override
-    public void HandlePacket(IPacket p,IIOHandler sender) {
-        if(p instanceof PacketSyncPacket){
-          PList = new ArrayList<Class<? extends IPacket>>();
-            Collections.addAll(PList, ((PacketSyncPacket) p).getPackageClasses());
-        }
-		else if(p instanceof HandshakePacket){
+	@Override
+	public void HandlePacket(IPacket p, IIOHandler sender) {
+		if(p instanceof PacketSyncPacket) {
+			PList = new ArrayList<Class<? extends IPacket>>();
+			Collections.addAll(PList, ((PacketSyncPacket) p).getPackageClasses());
+		} else if(p instanceof HandshakePacket) {
 			sender.receivedHandshake();
 		}
-    }
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends IPacket>[] getAssociatedPackets() {
-        return new Class[]{PacketSyncPacket.class};
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public Class<? extends IPacket>[] getAssociatedPackets() {
+		return new Class[]{PacketSyncPacket.class};
+	}
 }

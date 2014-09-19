@@ -11,30 +11,30 @@ import java.io.IOException;
  */
 public class RenamePacket extends IPacket {
 
-    public String newName;
-    public String oldName;
+	public String newName;
+	public String oldName;
 
-	public RenamePacket(){
+	public RenamePacket() {
 		newName = "";
 		oldName = "";
 	}
 
-    public RenamePacket(String old, String newN){
-        oldName = old;
-        newName = newN;
+	public RenamePacket(String old, String newN) {
+		oldName = old;
+		newName = newN;
 		state = PacketState.DATA;
-    }
+	}
 
-    @Override
-    public void writeToData(DataOut dataOut) throws IOException {
-        dataOut.writeUTF(newName);
-        dataOut.writeUTF(oldName);
-    }
+	@Override
+	public void writeToData(DataOut dataOut) throws IOException {
+		dataOut.writeUTF(newName);
+		dataOut.writeUTF(oldName);
+	}
 
-    @Override
-    public void readFromData(DataIn dataIn) throws IOException {
-        newName = dataIn.readUTF();
-        oldName = dataIn.readUTF();
+	@Override
+	public void readFromData(DataIn dataIn) throws IOException {
+		newName = dataIn.readUTF();
+		oldName = dataIn.readUTF();
 		state = PacketState.DATA;
-    }
+	}
 }

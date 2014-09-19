@@ -10,30 +10,30 @@ import java.util.List;
  */
 public class Socket {
 
-    public static void enableAnonConnection(SSLServerSocket socket){
-        String[] a = socket.getSupportedCipherSuites();
-        List<String> b = new ArrayList<String>();
-        for(String s:a){
-            if(s.indexOf("_anon_")>0){
-                b.add(s);
-            }
-        }
+	public static void enableAnonConnection(SSLServerSocket socket) {
+		String[] a = socket.getSupportedCipherSuites();
+		List<String> b = new ArrayList<String>();
+		for(String s : a) {
+			if(s.indexOf("_anon_") > 0) {
+				b.add(s);
+			}
+		}
 
-        String [] c = b.toArray(new String[b.size()]);
-        socket.setEnabledCipherSuites(c);
-    }
+		String[] c = b.toArray(new String[b.size()]);
+		socket.setEnabledCipherSuites(c);
+	}
 
-    public static void enableAnonConnection(SSLSocket socket){
-        String[] a = socket.getSupportedCipherSuites();
-        List<String> b = new ArrayList<String>();
-        for(String s:a){
-            if(s.indexOf("_anon_")>0){
-                b.add(s);
-            }
-        }
+	public static void enableAnonConnection(SSLSocket socket) {
+		String[] a = socket.getSupportedCipherSuites();
+		List<String> b = new ArrayList<String>();
+		for(String s : a) {
+			if(s.indexOf("_anon_") > 0) {
+				b.add(s);
+			}
+		}
 
-        String [] c = b.toArray(new String[b.size()]);
-        socket.setEnabledCipherSuites(c);
-    }
+		String[] c = b.toArray(new String[b.size()]);
+		socket.setEnabledCipherSuites(c);
+	}
 
 }

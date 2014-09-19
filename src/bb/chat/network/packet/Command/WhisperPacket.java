@@ -40,33 +40,34 @@ public class WhisperPacket extends IPacket {
 		hasData();
 	}
 
-	protected void hasData(){
+	protected void hasData() {
 		boolean b;
 		b = !"".equals(message);
 		b &= !"".equals(sender);
 		b &= !"".equals(receiver);
-		state = b ? PacketState.DATA: PacketState.EMPTY;
+		state = b ? PacketState.DATA : PacketState.EMPTY;
 	}
 
 	protected String message;
-    protected String sender;
-    protected String receiver;
+	protected String sender;
+	protected String receiver;
 
-    public WhisperPacket(){}
+	public WhisperPacket() {
+	}
 
 
-    @Override
-    public void writeToData(DataOut dataOut) throws IOException {
-        dataOut.writeUTF(message);
-        dataOut.writeUTF(sender);
-        dataOut.writeUTF(receiver);
-    }
+	@Override
+	public void writeToData(DataOut dataOut) throws IOException {
+		dataOut.writeUTF(message);
+		dataOut.writeUTF(sender);
+		dataOut.writeUTF(receiver);
+	}
 
-    @Override
-    public void readFromData(DataIn dataIn) throws IOException {
-        message = dataIn.readUTF();
-        sender = dataIn.readUTF();
-        receiver = dataIn.readUTF();
+	@Override
+	public void readFromData(DataIn dataIn) throws IOException {
+		message = dataIn.readUTF();
+		sender = dataIn.readUTF();
+		receiver = dataIn.readUTF();
 		hasData();
-    }
+	}
 }

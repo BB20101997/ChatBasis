@@ -11,16 +11,16 @@ import java.io.IOException;
  */
 public class DisconnectPacket extends IPacket {
 
-	public DisconnectPacket(){
+	public DisconnectPacket() {
 		state = PacketState.DATA;
 	}
 
-    @Override
-    public void writeToData(DataOut dataOut) throws IOException {
-    }
+	@Override
+	public void writeToData(DataOut dataOut) throws IOException {
+	}
 
-    @Override
-    public void readFromData(DataIn dataIn) throws IOException {
+	@Override
+	public void readFromData(DataIn dataIn) throws IOException {
 
-    }
+	}
 }

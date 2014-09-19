@@ -5,7 +5,8 @@ package bb.chat.interfaces;
  */
 public interface IPacketHandler<P extends IPacket> {
 
-    void HandlePacket(P p,IIOHandler sender);
-    Class<? extends P>[] getAssociatedPackets();
+	void HandlePacket(P p, IIOHandler sender);
+
+	Class<? extends P>[] getAssociatedPackets();
 
 }

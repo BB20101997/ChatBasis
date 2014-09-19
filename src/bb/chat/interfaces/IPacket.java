@@ -1,6 +1,6 @@
 package bb.chat.interfaces;
 
-import bb.chat.network.NetworkState;
+import bb.chat.enums.NetworkState;
 import bb.chat.network.packet.DataIn;
 import bb.chat.network.packet.DataOut;
 
@@ -12,10 +12,10 @@ import java.io.IOException;
 public abstract class IPacket {
 
 
-	public IPacket copy(){
+	public IPacket copy() {
 		try {
 			IPacket p = this.getClass().newInstance();
-			DataOut dataOut= DataOut.newInstance();
+			DataOut dataOut = DataOut.newInstance();
 			writeToData(DataOut.newInstance());
 			p.readFromData(DataIn.newInstance(dataOut.getBytes()));
 			return p;
@@ -37,7 +37,7 @@ public abstract class IPacket {
 
 	/**
 	 * if the Packet contains the necessary data to be processed
-	 * */
+	 */
 	protected PacketState state = PacketState.EMPTY;
 
 	public IPacket() {
@@ -50,18 +50,13 @@ public abstract class IPacket {
 	}
 
 
-
 	public final NetworkState allowedFrom() {
 		return minNetworkState;
 	}
 
 	/**
-	 * You should
-	 *  - use a special constructor to set the data and set the date to DATA
-	 *  or
-	 *  - have getter´s and setter´s to set the data (than set the State to DATA)
-	 *  or
-	 *  - Override the getStatus function!
+	 * You should - use a special constructor to set the data and set the date to DATA or - have getter´s and setter´s
+	 * to set the data (than set the State to DATA) or - Override the getStatus function!
 	 */
 
 	public PacketState getStatus() {
@@ -73,7 +68,7 @@ public abstract class IPacket {
 
 	/**
 	 * Should set the state to DATA
-	 * */
+	 */
 	public abstract void readFromData(DataIn dataIn) throws IOException;
 
 }

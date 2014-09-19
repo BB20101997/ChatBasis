@@ -11,17 +11,17 @@ import java.io.IOException;
  */
 public class StopPacket extends IPacket {
 
-	public StopPacket(){
+	public StopPacket() {
 		state = PacketState.DATA;
 	}
 
-    @Override
-    public void writeToData(DataOut dataOut) throws IOException {
+	@Override
+	public void writeToData(DataOut dataOut) throws IOException {
 
-    }
+	}
 
-    @Override
-    public void readFromData(DataIn dataIn) throws IOException {
+	@Override
+	public void readFromData(DataIn dataIn) throws IOException {
 
-    }
+	}
 }

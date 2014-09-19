@@ -28,6 +28,7 @@ public class PacketDistributor implements IPacketDistributor<IPacketHandler> {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void distributePacket(int id, byte[] data, IIOHandler sender) {
 
 		IPacket p;
@@ -39,7 +40,7 @@ public class PacketDistributor implements IPacketDistributor<IPacketHandler> {
 					try {
 						p = IMH.getPacketRegistrie().getNewPacketOfID(id);
 						p.readFromData(DataIn.newInstance(data.clone()));
-						iph.HandlePacket(p,sender);
+						iph.HandlePacket(p, sender);
 					} catch(IOException e) {
 						e.printStackTrace();
 					}
