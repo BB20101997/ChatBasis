@@ -3,7 +3,6 @@ package bb.chat.command;
 import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IMessageHandler;
-import bb.chat.interfaces.IUserPermission;
 import bb.chat.network.packet.Chatting.ChatPacket;
 
 /**
@@ -11,10 +10,6 @@ import bb.chat.network.packet.Chatting.ChatPacket;
  */
 public class Help implements ICommand {
 
-	@Override
-	public boolean initiatePermissionCheck(IUserPermission iup, IMessageHandler imh) {
-		return false;
-	}
 
 	@Override
 	public int maxParameterCount() {
