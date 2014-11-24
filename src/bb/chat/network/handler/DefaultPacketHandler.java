@@ -6,10 +6,9 @@ import bb.chat.interfaces.IMessageHandler;
 import bb.chat.interfaces.IPacket;
 import bb.chat.interfaces.IPacketRegistrie;
 import bb.chat.network.packet.Chatting.ChatPacket;
-import bb.chat.network.packet.Command.DisconnectPacket;
-import bb.chat.network.packet.Command.RenamePacket;
-import bb.chat.network.packet.Command.StopPacket;
-import bb.chat.network.packet.Command.WhisperPacket;
+import bb.chat.network.packet.Command.*;
+import bb.chat.network.packet.Handshake.LoginPacket;
+import bb.chat.network.packet.Handshake.SignUpPacket;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,15 +22,13 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 	public DefaultPacketHandler(IMessageHandler imh) {
 		super(imh);
 		addAssociatedPacket(ChatPacket.class);
-		imh.getPacketRegistrie().registerPacket(ChatPacket.class);
 		addAssociatedPacket(DisconnectPacket.class);
-		imh.getPacketRegistrie().registerPacket(DisconnectPacket.class);
 		addAssociatedPacket(RenamePacket.class);
-		imh.getPacketRegistrie().registerPacket(RenamePacket.class);
 		addAssociatedPacket(StopPacket.class);
-		imh.getPacketRegistrie().registerPacket(StopPacket.class);
 		addAssociatedPacket(WhisperPacket.class);
-		imh.getPacketRegistrie().registerPacket(WhisperPacket.class);
+		addAssociatedPacket(LoginPacket.class);
+		addAssociatedPacket(SignUpPacket.class);
+		addAssociatedPacket(SavePacket.class);
 	}
 
 	@Override
@@ -46,17 +43,14 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 		try {
 			Method m = getClass().getDeclaredMethod("handlePacket", iPacket.getClass(), IIOHandler.class);
 			m.invoke(this, iPacket, sender);
-		} catch(NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch(InvocationTargetException e) {
-			e.printStackTrace();
-		} catch(IllegalAccessException e) {
+		} catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
 
 	}
 
 
+	@SuppressWarnings("UnusedParameters")
 	private void handlePacket(ChatPacket cp, IIOHandler sender) {
 		if(IMH.getSide() == Side.CLIENT) {
 			IMH.println("[" + cp.Sender + "] " + cp.message);
@@ -67,6 +61,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 		}
 	}
 
+	@SuppressWarnings("UnusedParameters")
 	private void handlePacket(RenamePacket rp, IIOHandler sender) {
 		if(IMH.getSide() == Side.CLIENT) {
 			if(IMH.getActor().getActorName().equals(rp.oldName)) {
@@ -79,6 +74,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 		}
 	}
 
+	@SuppressWarnings("UnusedParameters")
 	private void handlePacket(DisconnectPacket dp, IIOHandler sender) {
 		IMH.disconnect(sender);
 		IMH.setEmpfaenger(IMessageHandler.ALL);
@@ -86,10 +82,30 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 		IMH.println("[" + IMH.getActor().getActorName() + "] " + sender.getActorName() + " disconnected!");
 	}
 
+	@SuppressWarnings("UnusedParameters")
 	private void handlePacket(StopPacket sp, IIOHandler sender) {
 		if(IMH.getSide() == Side.SERVER) {
 			IMH.disconnect(IMessageHandler.ALL);
 			IMH.shutdown();
+		}
+	}
+
+	@SuppressWarnings("UnusedParameters")
+	private void handlePacket(WhisperPacket wp, IIOHandler sender) {
+		if(IMH.getSide() == Side.SERVER && !wp.getReceiver().equals(IMH.getActor().getActorName())) {
+			IMH.setEmpfaenger(IMH.getUserByName(wp.getReceiver()));
+			IMH.sendPackage(wp);
+		} else {
+			if(IMH.getActor().getActorName().equals(wp.getReceiver())) {
+				IMH.println("[" + wp.getSender() + " whispered to you: ] \"" + wp.getMessage() + "\"");
+			}
+		}
+	}
+
+	@SuppressWarnings("UnusedParameters")
+	private void handlePacket(SavePacket sp,IIOHandler sender){
+		if(IMH.getSide() == Side.SERVER){
+			IMH.save();
 		}
 	}
 
