@@ -3,17 +3,12 @@ package bb.chat.command;
 import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IMessageHandler;
-import bb.chat.interfaces.IUserPermission;
 
 /**
  * @author BB20101997
  */
 public class Connect implements ICommand {
 
-	@Override
-	public boolean initiatePermissionCheck(IUserPermission iup, IMessageHandler imh) {
-		return false;
-	}
 
 	@Override
 	public int maxParameterCount() {

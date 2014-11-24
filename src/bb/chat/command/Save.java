@@ -3,12 +3,12 @@ package bb.chat.command;
 import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IMessageHandler;
-import bb.chat.network.packet.Command.StopPacket;
+import bb.chat.network.packet.Command.SavePacket;
 
 /**
- * Created by BB20101997 on 30.08.2014.
+ * Created by BB20101997 on 24.11.2014.
  */
-public class Stop implements ICommand {
+public class Save implements ICommand {
 
 
 	@Override
@@ -28,16 +28,18 @@ public class Stop implements ICommand {
 
 	@Override
 	public String getName() {
-		return "stop";
+		return "save";
 	}
 
 	@Override
 	public boolean runCommand(String commandLine, IMessageHandler imh) {
-		if(imh.getSide() == Side.CLIENT) {
-			imh.sendPackage(new StopPacket());
-		} else {
-			imh.shutdown();
+		if(imh.getSide()== Side.CLIENT){
+			imh.sendPackage(new SavePacket());
 		}
+		else{
+			imh.save();
+		}
+
 		return true;
 	}
 
@@ -50,5 +52,4 @@ public class Stop implements ICommand {
 	public boolean debugModeOnly() {
 		return false;
 	}
-
 }

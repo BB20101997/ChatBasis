@@ -3,7 +3,6 @@ package bb.chat.command;
 import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IMessageHandler;
-import bb.chat.interfaces.IUserPermission;
 import bb.chat.network.packet.Command.DisconnectPacket;
 
 /**
@@ -13,11 +12,6 @@ public class Disconnect implements ICommand {
 
 	private static final String[] helpMessage = new String[]{"Disconnects the client from the Server,only executed Client Side"};
 
-
-	@Override
-	public boolean initiatePermissionCheck(IUserPermission iup, IMessageHandler imh) {
-		return false;
-	}
 
 	@Override
 	public int maxParameterCount() {

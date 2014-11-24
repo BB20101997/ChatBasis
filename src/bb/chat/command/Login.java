@@ -1,18 +1,15 @@
 package bb.chat.command;
 
+import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IMessageHandler;
-import bb.chat.interfaces.IUserPermission;
+import bb.chat.network.packet.Handshake.LoginPacket;
 
 /**
  * Created by BB20101997 on 30.08.2014.
  */
 public class Login implements ICommand {
 
-	@Override
-	public boolean initiatePermissionCheck(IUserPermission iup, IMessageHandler imh) {
-		return false;
-	}
 
 	@Override
 	public int maxParameterCount() {
@@ -35,7 +32,16 @@ public class Login implements ICommand {
 
 	@Override
 	public boolean runCommand(String commandLine, IMessageHandler imh) {
-		//TODO:Implement function
+		if(imh.getSide() == Side.CLIENT) {
+			String[] c = commandLine.split(" ", 3);
+			if(c.length == 3) {
+				LoginPacket p = new LoginPacket();
+				p.setPassword(c[2]);
+				p.setUsername(c[1]);
+				imh.sendPackage(p);
+				return true;
+			}
+		}
 		return false;
 	}
 

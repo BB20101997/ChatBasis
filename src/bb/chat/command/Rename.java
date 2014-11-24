@@ -4,7 +4,6 @@ import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IIOHandler;
 import bb.chat.interfaces.IMessageHandler;
-import bb.chat.interfaces.IUserPermission;
 import bb.chat.network.packet.Command.RenamePacket;
 
 /**
@@ -12,10 +11,6 @@ import bb.chat.network.packet.Command.RenamePacket;
  */
 public class Rename implements ICommand {
 
-	@Override
-	public boolean initiatePermissionCheck(IUserPermission iup, IMessageHandler imh) {
-		return true;
-	}
 
 	@Override
 	public int maxParameterCount() {

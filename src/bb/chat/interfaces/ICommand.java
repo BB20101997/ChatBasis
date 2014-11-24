@@ -5,8 +5,6 @@ package bb.chat.interfaces;
  */
 public interface ICommand {
 
-	boolean initiatePermissionCheck(IUserPermission iup, IMessageHandler imh);
-
 	// -1 for no max
 	int maxParameterCount();
 
