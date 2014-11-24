@@ -55,6 +55,12 @@ public class WhisperPacket extends IPacket {
 	public WhisperPacket() {
 	}
 
+	public WhisperPacket(String sender, String message, String empfaenger) {
+		this.message = message;
+		this.sender = sender;
+		receiver = empfaenger;
+	}
+
 
 	@Override
 	public void writeToData(DataOut dataOut) throws IOException {
