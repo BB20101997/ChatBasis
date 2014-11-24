@@ -12,7 +12,7 @@ public class Socket {
 
 	public static void enableAnonConnection(SSLServerSocket socket) {
 		String[] a = socket.getSupportedCipherSuites();
-		List<String> b = new ArrayList<String>();
+		List<String> b = new ArrayList<>();
 		for(String s : a) {
 			if(s.indexOf("_anon_") > 0) {
 				b.add(s);
@@ -25,7 +25,7 @@ public class Socket {
 
 	public static void enableAnonConnection(SSLSocket socket) {
 		String[] a = socket.getSupportedCipherSuites();
-		List<String> b = new ArrayList<String>();
+		List<String> b = new ArrayList<>();
 		for(String s : a) {
 			if(s.indexOf("_anon_") > 0) {
 				b.add(s);

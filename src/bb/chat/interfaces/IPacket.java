@@ -19,11 +19,7 @@ public abstract class IPacket {
 			writeToData(DataOut.newInstance());
 			p.readFromData(DataIn.newInstance(dataOut.getBytes()));
 			return p;
-		} catch(InstantiationException e) {
-			e.printStackTrace();
-		} catch(IllegalAccessException e) {
-			e.printStackTrace();
-		} catch(IOException e) {
+		} catch(InstantiationException | IllegalAccessException | IOException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -33,6 +29,7 @@ public abstract class IPacket {
 		EMPTY, DATA
 	}
 
+	@SuppressWarnings("CanBeFinal")
 	protected NetworkState minNetworkState = NetworkState.UNKNOWN;
 
 	/**

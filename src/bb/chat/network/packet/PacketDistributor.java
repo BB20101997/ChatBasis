@@ -17,7 +17,7 @@ public class PacketDistributor implements IPacketDistributor<IPacketHandler> {
 		IMH = imh;
 	}
 
-	private final List<IPacketHandler> PHList = new ArrayList<IPacketHandler>();
+	private final List<IPacketHandler> PHList = new ArrayList<>();
 
 	@Override
 	public int registerPacketHandler(IPacketHandler iph) {
