@@ -9,6 +9,8 @@ import bb.chat.interfaces.IUserPermission;
 import bb.chat.network.packet.Command.DisconnectPacket;
 import bb.chat.network.packet.DataOut;
 import bb.chat.network.packet.Handshake.HandshakePacket;
+import bb.chat.network.packet.Handshake.LoginPacket;
+import bb.chat.network.packet.Handshake.SignUpPacket;
 import bb.chat.security.StringUserPermission;
 
 import java.io.*;
@@ -18,19 +20,15 @@ import java.io.*;
  */
 public class IOHandler implements Runnable, IIOHandler {
 
-	private final IMessageHandler IMH;
-	private final DataInputStream dis;
+	private final IMessageHandler  IMH;
+	private final DataInputStream  dis;
 	private final DataOutputStream dos;
 	protected boolean handshakeReceived = false;
 	private final IUserPermission userPermission;
-	private String name = "NO-NAME-BUG";
+	private String  name         = "NO-NAME-BUG";
 	private boolean continueLoop = true;
 	private Thread thread;
 	protected NetworkState status = NetworkState.UNKNOWN;
-	/**
-	 * the higher the security the more the user can do
-	 */
-	protected int securityLevel = 0;
 
 
 	/**
@@ -38,7 +36,6 @@ public class IOHandler implements Runnable, IIOHandler {
 	 * @param OS  the OutputStream to be used
 	 * @param imh an IMessageHandler to be linked to
 	 */
-
 	public IOHandler(final InputStream IS, OutputStream OS, IMessageHandler imh, IUserPermission iup) {
 		IMH = imh;
 		System.out.println("Creating Streams");
@@ -53,7 +50,7 @@ public class IOHandler implements Runnable, IIOHandler {
 		userPermission = iup;
 	}
 
-	public IOHandler(final InputStream IS, OutputStream OS, IMessageHandler imh) throws IOException {
+	public IOHandler(final InputStream IS, OutputStream OS, IMessageHandler imh) {
 		this(IS, OS, imh, new StringUserPermission());
 	}
 
@@ -106,19 +103,10 @@ public class IOHandler implements Runnable, IIOHandler {
 		}
 	}
 
-	public int getSecurityLevel() {
-		return securityLevel;
-	}
-
-	public void setSecurityLevel(int level) {
-		securityLevel = level;
-	}
-
 	@Override
 	public boolean isDummy() {
 		return false;
 	}
-
 
 	@Override
 	public void run() {
@@ -185,6 +173,10 @@ public class IOHandler implements Runnable, IIOHandler {
 	@SuppressWarnings("unchecked")
 	public boolean sendPacket(IPacket p) {
 
+		if(p instanceof LoginPacket &&!(p instanceof SignUpPacket)){
+			status = NetworkState.LOGIN;
+		}
+
 		if(IMH.getPacketRegistrie().containsPacket(p.getClass())) {
 
 			int id = IMH.getPacketRegistrie().getID(p.getClass());
@@ -240,7 +232,7 @@ public class IOHandler implements Runnable, IIOHandler {
 
 	@Override
 	public IUserPermission getUserPermission() {
-		return null;
+		return userPermission;
 	}
 
 }
