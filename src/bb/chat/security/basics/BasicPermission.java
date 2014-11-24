@@ -7,14 +7,14 @@ import bb.chat.interfaces.IPermission;
  */
 public abstract class BasicPermission<T> implements IPermission<T> {
 
-	protected final T perm;
+	public BasicPermission() {
+
+	}
+
+	protected T perm;
 
 	public BasicPermission(T t) {
 		perm = t;
 	}
 
-	@Override
-	public T fullPermission() {
-		return perm;
-	}
 }

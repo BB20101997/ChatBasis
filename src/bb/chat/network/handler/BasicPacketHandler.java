@@ -14,15 +14,19 @@ public abstract class BasicPacketHandler<P extends IPacket> implements IPacketHa
 
 	public final IMessageHandler IMH;
 
-	protected final List<Class<? extends P>> CList = new ArrayList<Class<? extends P>>();
+	protected final List<Class<? extends P>> CList = new ArrayList<>();
 
 	public BasicPacketHandler(IMessageHandler iMessageHandler) {
 		IMH = iMessageHandler;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void addAssociatedPacket(Class<? extends P> cp) {
 		if(!CList.contains(cp)) {
 			CList.add(cp);
+			if(!IMH.getPacketRegistrie().containsPacket(cp)){
+				IMH.getPacketRegistrie().registerPacket(cp);
+			}
 		}
 	}
 

@@ -1,11 +1,13 @@
 package bb.chat.interfaces;
 
+import bb.util.file.database.ISaveAble;
+
 import java.util.List;
 
 /**
  * Created by BB20101997 on 07.09.2014.
  */
-public interface IUserPermission<T, P extends IPermission<T>, G extends IUserPermissionGroup<T, P, G>> {
+public interface IUserPermission<P extends IPermission> extends ISaveAble{
 
 	void addPermission(P perm);
 

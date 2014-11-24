@@ -2,6 +2,7 @@ package bb.chat.interfaces;
 
 
 import bb.chat.enums.Side;
+import bb.util.file.database.FileWriter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * @author BB20101997
  */
 @SuppressWarnings("javadoc")
-public interface IMessageHandler<T, P extends IPermission<T>, G extends IUserPermissionGroup<T, P, G>> {
+public interface IMessageHandler<P extends IPermission, G extends IUserPermissionGroup<P>> {
 
 	IIOHandler ALL = new IIOHandler() {
 		@Override
@@ -100,6 +101,17 @@ public interface IMessageHandler<T, P extends IPermission<T>, G extends IUserPer
 				public List getDeniedPermissions() {
 					return null;
 				}
+
+
+				@Override
+				public void writeToFileWriter(FileWriter fw) {
+
+				}
+
+				@Override
+				public void loadFromFileWriter(FileWriter fw) {
+
+				}
 			};
 		}
 
@@ -111,9 +123,9 @@ public interface IMessageHandler<T, P extends IPermission<T>, G extends IUserPer
 
 	IIOHandler SERVER = new IIOHandler() {
 
-		IUserPermission iup = new IUserPermission() {
+		final IUserPermission iup = new IUserPermission() {
 
-			List<IPermission> permi = new ArrayList<IPermission>();
+			final List<IPermission> permi = new ArrayList<>();
 
 			@Override
 			public void addPermission(IPermission perm) {
@@ -158,6 +170,16 @@ public interface IMessageHandler<T, P extends IPermission<T>, G extends IUserPer
 			@Override
 			public List getDeniedPermissions() {
 				return new ArrayList();
+			}
+
+			@Override
+			public void writeToFileWriter(FileWriter fw) {
+
+			}
+
+			@Override
+			public void loadFromFileWriter(FileWriter fw) {
+
 			}
 		};
 
@@ -220,7 +242,7 @@ public interface IMessageHandler<T, P extends IPermission<T>, G extends IUserPer
 
 	IPacketRegistrie getPacketRegistrie();
 
-	IPermissionRegistrie<T, P, G> getPermissionRegistry();
+	IPermissionRegistrie<P, G> getPermissionRegistry();
 
 	IPacketDistributor getPacketDistributor();
 
@@ -248,7 +270,7 @@ public interface IMessageHandler<T, P extends IPermission<T>, G extends IUserPer
 	ICommand getCommand(String text);
 
 	// adds a BasicChatPanel to the Output�s
-	void addBasicChatPanel(IBasicChatPanel BCP);
+	void setBasicChatPanel(IBasicChatPanel BCP);
 
 	// print to all local outputs
 	void print(String s);
@@ -258,6 +280,9 @@ public interface IMessageHandler<T, P extends IPermission<T>, G extends IUserPer
 
 	// disconnect the connection to a
 	void disconnect(IIOHandler a);
+
+	void save();
+	void load();
 
 	void shutdown();
 

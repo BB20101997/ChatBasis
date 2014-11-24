@@ -1,57 +1,65 @@
 package bb.chat.network.handler;
 
-import bb.chat.interfaces.*;
 import bb.chat.enums.Side;
+import bb.chat.interfaces.*;
 import bb.chat.network.packet.Chatting.ChatPacket;
 import bb.chat.network.packet.DataOut;
 import bb.chat.network.packet.PacketDistributor;
 import bb.chat.network.packet.PacketRegistrie;
+import bb.util.file.database.FileWriter;
 
 import javax.net.ssl.SSLSocket;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class BasicMessageHandler<T,P extends IPermission<T>,G extends IUserPermissionGroup<T,P,G>> implements IMessageHandler<T,P,G> {
+public abstract class BasicMessageHandler<T, P extends IPermission<T>, G extends IUserPermissionGroup<P>> implements IMessageHandler<P, G> {
 
-	public final List<IIOHandler<T,P,G>> actors = new ArrayList<IIOHandler<T,P,G>>();
+	public final List<IIOHandler<P, G>> actors = new ArrayList<>();
 
 	private WorkingThread workingRunnable;
-	private Thread workingThread;
+	private Thread        workingThread;
+
+	private static final File configFile = new File("config.fw").getAbsoluteFile();
 
 	protected IIOHandler Target;
 
-	protected Side side;
-	protected IPermissionRegistrie<T,P,G> permReg;
+	protected Side                       side;
+	protected IPermissionRegistrie<P, G> permReg;
 	protected IPacketDistributor PD = new PacketDistributor(this);
-	protected IPacketRegistrie PR = new PacketRegistrie(this);
+	protected IPacketRegistrie   PR = new PacketRegistrie();
 
 	protected SSLSocket socket;
 
 	protected IOHandler IRServer = null;
 
-	private final List<ICommand> commandList = new ArrayList<ICommand>();
+	private final List<ICommand> commandList = new ArrayList<>();
 
 	protected IIOHandler localActor;
 
-	private final List<IBasicChatPanel> BCPList = new ArrayList<IBasicChatPanel>();
+	protected IBasicChatPanel BCP;
 
 
 	@SuppressWarnings("unchecked")
 	public BasicMessageHandler() {
 		PD.registerPacketHandler(PR);
+		load();
 	}
 
 	@SuppressWarnings("unchecked")
 	public BasicMessageHandler(IPacketRegistrie packetRegistrie) {
 		PR = packetRegistrie;
 		PD.registerPacketHandler(PR);
+		load();
 	}
 
+	@SuppressWarnings("unchecked")
 	public BasicMessageHandler(IPacketDistributor<IPacketRegistrie> packetDistributor) {
 		PD = packetDistributor;
-		packetDistributor.registerPacketHandler(PR);
+		PD.registerPacketHandler(PR);
+		load();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -59,40 +67,74 @@ public abstract class BasicMessageHandler<T,P extends IPermission<T>,G extends I
 		PD = packetDistributor;
 		PR = packetRegistrie;
 		PD.registerPacketHandler(PR);
+		load();
 	}
 
 	@Override
 	public void disconnect(IIOHandler a) {
 
-		if(side==Side.CLIENT){
-		try {
-			stopWorkingThread();
-			if(socket != null) {
-				socket.close();
+		if(side == Side.CLIENT) {
+			try {
+				stopWorkingThread();
+				if(socket != null) {
+					socket.close();
+				}
+
+			} catch(IOException e) {
+				e.printStackTrace();
 			}
 
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
-
-		if(IRServer != null) {
-			IRServer.stop();
-			IRServer = null;
-		}
-		}
-		else{
-			if(a!=ALL&&a!=SERVER){
+			if(IRServer != null) {
+				IRServer.stop();
+				IRServer = null;
+			}
+		} else {
+			if(a != ALL && a != SERVER) {
 				a.stop();
 				actors.remove(a);
-			}
-			else{
-				for(IIOHandler iioHandler:actors){
+			} else {
+				for(IIOHandler<P, G> iioHandler : actors) {
 					iioHandler.stop();
 					actors.remove(iioHandler);
 				}
 			}
 		}
 
+	}
+
+	@Override
+	public void save() {
+		if(side == Side.SERVER) {
+			if(!configFile.exists()) {
+				try {
+					configFile.createNewFile();
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			}
+			FileWriter fileWriter = new FileWriter();
+			fileWriter.add(permReg, "permGen");
+			try {
+				fileWriter.writeToFile(configFile);
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void load() {
+		if(side == Side.SERVER) {
+			if(configFile.exists()) {
+				FileWriter fileWriter = new FileWriter();
+				try {
+					fileWriter.readFromFile(configFile);
+					permReg.loadFromFileWriter((FileWriter) fileWriter.get("permGen"));
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	public void shutdown() {
@@ -117,7 +159,7 @@ public abstract class BasicMessageHandler<T,P extends IPermission<T>,G extends I
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
-		PD.distributePacket(PR.getID(p.getClass()),dataOut.getBytes(),sender);
+		PD.distributePacket(PR.getID(p.getClass()), dataOut.getBytes(), sender);
 	}
 
 	public synchronized void stopWorkingThread() {
@@ -129,9 +171,8 @@ public abstract class BasicMessageHandler<T,P extends IPermission<T>,G extends I
 	}
 
 	@Override
-	public final void addBasicChatPanel(IBasicChatPanel BCP) {
-
-		BCPList.add(BCP);
+	public final void setBasicChatPanel(IBasicChatPanel BCP) {
+		this.BCP = BCP;
 	}
 
 	@Override
@@ -159,7 +200,7 @@ public abstract class BasicMessageHandler<T,P extends IPermission<T>,G extends I
 	}
 
 	@Override
-	public IPermissionRegistrie<T, P, G> getPermissionRegistry() {
+	public IPermissionRegistrie<P, G> getPermissionRegistry() {
 		return permReg;
 	}
 
@@ -184,7 +225,7 @@ public abstract class BasicMessageHandler<T,P extends IPermission<T>,G extends I
 	public final ICommand getCommand(String text) {
 
 		for(ICommand c : commandList) {
-			if(c.getName().equals(text)) {
+			if(text.equals(c.getName())) {
 				return c;
 			}
 
@@ -202,7 +243,7 @@ public abstract class BasicMessageHandler<T,P extends IPermission<T>,G extends I
 	@Override
 	public final IIOHandler getUserByName(String s) {
 
-		for(IIOHandler ica : actors) {
+		for(IIOHandler<P, G> ica : actors) {
 			if(ica.getActorName().equals(s)) {
 				return ica;
 			}
@@ -215,7 +256,7 @@ public abstract class BasicMessageHandler<T,P extends IPermission<T>,G extends I
 	@Override
 	public final String[] getHelpForAllCommands() {
 
-		List<String> sList = new ArrayList<String>();
+		List<String> sList = new ArrayList<>();
 
 		for(ICommand ic : commandList) {
 			sList.add(getHelpFromCommand(ic));
@@ -259,25 +300,19 @@ public abstract class BasicMessageHandler<T,P extends IPermission<T>,G extends I
 	public final void print(String s) {
 
 		System.out.println(s);
-		for(IBasicChatPanel bcp : BCPList) {
-			bcp.print(s);
-		}
+		BCP.print(s);
 	}
 
 	@Override
 	public final void println(String s) {
 
 		System.out.println(s);
-		for(IBasicChatPanel bcp : BCPList) {
-			bcp.println(s);
-		}
+		BCP.println(s);
 	}
 
 	@Override
 	public final void wipe() {
-		for(IBasicChatPanel bcp : BCPList) {
-			bcp.WipeLog();
-		}
+		BCP.WipeLog();
 	}
 
 	class WorkingThread implements Runnable {
@@ -290,7 +325,7 @@ public abstract class BasicMessageHandler<T,P extends IPermission<T>,G extends I
 		}
 
 		private final BasicMessageHandler basicMessageHandler;
-		private final LinkedList<String> toProcess = new LinkedList<String>();
+		private final LinkedList<String> toProcess = new LinkedList<>();
 
 		public WorkingThread(BasicMessageHandler bmh) {
 			basicMessageHandler = bmh;

@@ -3,7 +3,7 @@ package bb.chat.interfaces;
 /**
  * Created by BB20101997 on 05.09.2014.
  */
-public interface IIOHandler<T, P extends IPermission<T>, G extends IUserPermissionGroup<T, P, G>> extends Runnable {
+public interface IIOHandler<P extends IPermission, G extends IUserPermissionGroup<P>> extends Runnable {
 
 	void start();
 
@@ -21,5 +21,5 @@ public interface IIOHandler<T, P extends IPermission<T>, G extends IUserPermissi
 
 	void receivedHandshake();
 
-	IUserPermission<T, P, G> getUserPermission();
+	IUserPermission getUserPermission();
 }

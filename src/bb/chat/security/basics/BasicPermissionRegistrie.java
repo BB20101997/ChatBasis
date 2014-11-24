@@ -11,10 +11,10 @@ import java.util.List;
 /**
  * Created by BB20101997 on 07.09.2014.
  */
-public abstract class BasicPermissionRegistrie<T, P extends IPermission<T>, G extends IUserPermissionGroup<T, P, G>> implements IPermissionRegistrie<T, P, G> {
+public abstract class BasicPermissionRegistrie<P extends IPermission, G extends IUserPermissionGroup<P>> implements IPermissionRegistrie<P, G> {
 
-	protected final List<P> registeredPermissions = new ArrayList<P>();
-	protected final List<G> registeredUserGroups = new ArrayList<G>();
+	protected final List<P> registeredPermissions = new ArrayList<>();
+	protected final List<G> registeredUserGroups  = new ArrayList<>();
 
 	@Override
 	public void registerPermission(P p) {
@@ -77,7 +77,7 @@ public abstract class BasicPermissionRegistrie<T, P extends IPermission<T>, G ex
 
 	protected List<P> getGroupsPermission(List<String> names) {
 
-		List<P> permissions = new ArrayList<P>();
+		List<P> permissions = new ArrayList<>();
 
 		for(String name : names) {
 			List<P> perms = getUserGroupByName(name).getPermissions();
@@ -94,7 +94,7 @@ public abstract class BasicPermissionRegistrie<T, P extends IPermission<T>, G ex
 
 	protected List<P> getGroupsDeniedPermission(List<String> names) {
 
-		List<P> permissions = new ArrayList<P>();
+		List<P> permissions = new ArrayList<>();
 
 		for(String name : names) {
 			List<P> perms = getUserGroupByName(name).getDeniedPermissions();
@@ -109,16 +109,15 @@ public abstract class BasicPermissionRegistrie<T, P extends IPermission<T>, G ex
 
 	}
 
-
 	@Override
-	public boolean hasPermission(IUserPermission<T, P, G> iup, List<P> permission) {
+	public boolean hasPermission(IUserPermission<P> iup, List<P> permission) {
 		List<String> groups = getSubGroups(iup.getContainedGroups());
 
-		List<P> permissions = new ArrayList<P>();
+		List<P> permissions = new ArrayList<>();
 		permissions.addAll(getGroupsPermission(groups));
 		permissions.addAll(iup.getPermissions());
 
-		List<P> deniedPermissions = new ArrayList<P>();
+		List<P> deniedPermissions = new ArrayList<>();
 		deniedPermissions.addAll(getGroupsDeniedPermission(groups));
 		deniedPermissions.addAll(iup.getDeniedPermissions());
 
@@ -126,13 +125,12 @@ public abstract class BasicPermissionRegistrie<T, P extends IPermission<T>, G ex
 
 	}
 
-
 	@Override
-	public boolean hasPositivePermission(IUserPermission<T, P, G> iup, List<P> permission) {
+	public boolean hasPositivePermission(IUserPermission<P> iup, List<P> permission) {
 
 		List<String> groups = getSubGroups(iup.getContainedGroups());
 
-		List<P> permissions = new ArrayList<P>();
+		List<P> permissions = new ArrayList<>();
 		permissions.addAll(getGroupsPermission(groups));
 		permissions.addAll(iup.getPermissions());
 
@@ -141,11 +139,11 @@ public abstract class BasicPermissionRegistrie<T, P extends IPermission<T>, G ex
 	}
 
 	@Override
-	public boolean hasNegativePermission(IUserPermission<T, P, G> iup, List<P> permission) {
+	public boolean hasNegativePermission(IUserPermission<P> iup, List<P> permission) {
 
 		List<String> groups = getSubGroups(iup.getContainedGroups());
 
-		List<P> deniedPermissions = new ArrayList<P>();
+		List<P> deniedPermissions = new ArrayList<>();
 		deniedPermissions.addAll(getGroupsDeniedPermission(groups));
 		deniedPermissions.addAll(iup.getDeniedPermissions());
 

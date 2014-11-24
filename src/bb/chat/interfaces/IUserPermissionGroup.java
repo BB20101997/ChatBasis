@@ -1,9 +1,11 @@
 package bb.chat.interfaces;
 
+import bb.util.file.database.ISaveAble;
+
 /**
  * Created by BB20101997 on 07.09.2014.
  */
-public interface IUserPermissionGroup<T, P extends IPermission<T>, G extends IUserPermissionGroup<T, P, G>> extends IUserPermission<T, P, G> {
+public interface IUserPermissionGroup<P extends IPermission> extends IUserPermission<P>,ISaveAble{
 
 	String getGroupName();
 
