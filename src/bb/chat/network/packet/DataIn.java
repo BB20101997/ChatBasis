@@ -11,7 +11,6 @@ import java.util.LinkedList;
  * Created by BB20101997 on 31.08.2014.
  */
 
-
 public class DataIn extends DataInputStream implements IData {
 
 	public static DataIn newInstance(byte[] b) {
@@ -31,7 +30,7 @@ public class DataIn extends DataInputStream implements IData {
 			}
 		}
 
-		private final LinkedList<Byte> bList = new LinkedList<Byte>();
+		private final LinkedList<Byte> bList = new LinkedList<>();
 
 		@Override
 		public int read() throws IOException {

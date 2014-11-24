@@ -30,7 +30,7 @@ public class DataOut extends DataOutputStream implements IData {
 
 	private static class OutStream extends OutputStream {
 
-		private final List<Byte> bList = new ArrayList<Byte>();
+		private final List<Byte> bList = new ArrayList<>();
 
 		@Override
 		public void write(int b) throws IOException {

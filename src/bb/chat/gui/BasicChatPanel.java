@@ -15,7 +15,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	/**
 	 * the Command send by the Send button
 	 */
-	public static final String SEND_EVENT = "BUTTON_SEND";
+	public static final String SEND_EVENT  = "BUTTON_SEND";
 	/**
 	 * the Command send when hitting Enter in the Text Field ,should be treated like SEND_EVENT
 	 */
@@ -24,21 +24,21 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	/**
 	 * if the Standard ActionListener Should be used
 	 */
-	private boolean useStandardActionListener = true;
+	private       boolean    useStandardActionListener = true;
 	/**
 	 * The Button to send the Text of the ChatSendBar
 	 */
-	private final JButton Send = new JButton("Send");
+	private final JButton    Send                      = new JButton("Send");
 	/**
 	 * The ChatLog --Obvious--
 	 */
-	private final JTextArea ChatLog = new JTextArea();
+	private final JTextArea  ChatLog                   = new JTextArea();
 	/**
 	 * The Field to enter a Message
 	 */
-	public final JTextField ChatSendBar = new JTextField();
+	public final  JTextField ChatSendBar               = new JTextField();
 
-	public JScrollPane chatLogScroll = new JScrollPane(ChatLog);
+	public final JScrollPane chatLogScroll = new JScrollPane(ChatLog);
 
 	public final IMessageHandler IMH;
 
