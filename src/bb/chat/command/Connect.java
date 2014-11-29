@@ -31,22 +31,18 @@ public class Connect implements ICommand {
 	}
 
 	@Override
-	public boolean runCommand(String commandLine, IMessageHandler imh) {
+	public void runCommand(String commandLine, IMessageHandler imh) {
 		if(imh.getSide() == Side.CLIENT) {
 			String[] strA = commandLine.split(" ");
 			imh.wipe();
 			if(strA.length >= 3) {
 				imh.connect(strA[1], Integer.valueOf(strA[2]));
-				return true;
 			} else if(strA.length >= 2) {
 				imh.connect(strA[1], 256);
-				return true;
 			} else {
 				imh.connect("192.168.178.21", 256);
-				return true;
 			}
 		}
-		return false;
 	}
 
 	@Override

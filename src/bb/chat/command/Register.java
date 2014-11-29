@@ -33,7 +33,7 @@ public class Register implements ICommand {
 	}
 
 	@Override
-	public boolean runCommand(String commandLine, IMessageHandler imh) {
+	public void runCommand(String commandLine, IMessageHandler imh) {
 		if(imh.getSide() == Side.CLIENT) {
 			String[] c = commandLine.split(" ", 4);
 			if(c.length == 4 && c[2].equals(c[3])) {
@@ -41,13 +41,10 @@ public class Register implements ICommand {
 				p.setPassword(c[2]);
 				p.setUsername(c[1]);
 				imh.sendPackage(p);
-				return true;
 			} else if(c.length == 4) {
 				imh.println("[Client] Password and Repeated Password did not match!");
-				return true;
 			}
 		}
-		return false;
 	}
 
 	@Override

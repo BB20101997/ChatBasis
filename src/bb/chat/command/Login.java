@@ -31,7 +31,7 @@ public class Login implements ICommand {
 	}
 
 	@Override
-	public boolean runCommand(String commandLine, IMessageHandler imh) {
+	public void runCommand(String commandLine, IMessageHandler imh) {
 		if(imh.getSide() == Side.CLIENT) {
 			String[] c = commandLine.split(" ", 3);
 			if(c.length == 3) {
@@ -39,10 +39,8 @@ public class Login implements ICommand {
 				p.setPassword(c[2]);
 				p.setUsername(c[1]);
 				imh.sendPackage(p);
-				return true;
 			}
 		}
-		return false;
 	}
 
 	@Override

@@ -33,26 +33,23 @@ public class Whisper implements ICommand {
 	}
 
 	@Override
-	public boolean runCommand(String commandLine, IMessageHandler imh) {
+	public void runCommand(String commandLine, IMessageHandler imh) {
 
 		String[] c = commandLine.split(" ", 3);
 
 		if(imh.getSide() == Side.CLIENT) {
 			if(c.length <= 2) {
-				return false;
+				return;
 			}
 			imh.setEmpfaenger(IMessageHandler.SERVER);
 			imh.sendPackage(new WhisperPacket(imh.getActor().getActorName(), c[2], c[1]));
-			return true;
 		} else {
 			String str[] = commandLine.split(" ", 3);
 			if(str.length > 2) {
 				System.out.println(str[1] + " : " + str[2]);
 				imh.setEmpfaenger(imh.getUserByName(str[1]));
 				imh.sendPackage(new WhisperPacket(imh.getActor().getActorName(), str[2], c[1]));
-				return true;
 			}
-			return false;
 		}
 	}
 

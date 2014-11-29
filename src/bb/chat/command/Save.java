@@ -32,15 +32,12 @@ public class Save implements ICommand {
 	}
 
 	@Override
-	public boolean runCommand(String commandLine, IMessageHandler imh) {
-		if(imh.getSide()== Side.CLIENT){
+	public void runCommand(String commandLine, IMessageHandler imh) {
+		if(imh.getSide() == Side.CLIENT) {
 			imh.sendPackage(new SavePacket());
-		}
-		else{
+		} else {
 			imh.save();
 		}
-
-		return true;
 	}
 
 	@Override

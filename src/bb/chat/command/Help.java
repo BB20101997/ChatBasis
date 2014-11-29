@@ -33,7 +33,7 @@ public class Help implements ICommand {
 	}
 
 	@Override
-	public boolean runCommand(String commandLine, IMessageHandler imh) {
+	public void runCommand(String commandLine, IMessageHandler imh) {
 		if(imh.getSide() == Side.CLIENT) {
 			String[] helps = imh.getHelpForAllCommands();
 			StringBuilder s = new StringBuilder();
@@ -50,7 +50,6 @@ public class Help implements ICommand {
 			imh.setEmpfaenger(imh.getActor());
 			imh.sendPackage(new ChatPacket(str, imh.getActor().getActorName()));
 			System.out.println("Executing Help Command");
-			return true;
 		} else {
 			String[] helps = imh.getHelpForAllCommands();
 			StringBuilder s = new StringBuilder();
@@ -66,7 +65,6 @@ public class Help implements ICommand {
 			String str = s.toString();
 			imh.setEmpfaenger(imh.getActor());
 			imh.sendPackage(new ChatPacket(str, imh.getActor().getActorName()));
-			return false;
 		}
 	}
 
