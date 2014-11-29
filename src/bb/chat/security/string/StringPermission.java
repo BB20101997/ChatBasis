@@ -9,7 +9,7 @@ import bb.util.file.database.FileWriter;
  */
 public class StringPermission extends BasicPermission<String> {
 
-	public StringPermission(){
+	public StringPermission() {
 	}
 
 	public StringPermission(String permission) {
@@ -29,11 +29,11 @@ public class StringPermission extends BasicPermission<String> {
 
 	@Override
 	public void writeToFileWriter(FileWriter fw) {
-		fw.add(perm,"Permission");
+		fw.add(perm, "Permission");
 	}
 
 	@Override
 	public void loadFromFileWriter(FileWriter fw) {
-		perm = (String)fw.get("Permission");
+		perm = (String) fw.get("Permission");
 	}
 }
