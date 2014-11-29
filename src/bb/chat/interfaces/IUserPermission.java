@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by BB20101997 on 07.09.2014.
  */
-public interface IUserPermission<P extends IPermission> extends ISaveAble{
+public interface IUserPermission<P extends IPermission> extends ISaveAble {
 
 	void addPermission(P perm);
 
