@@ -1,14 +1,12 @@
 package bb.chat.network.handler;
 
 import bb.chat.enums.Side;
-import bb.chat.interfaces.IIOHandler;
-import bb.chat.interfaces.IMessageHandler;
-import bb.chat.interfaces.IPacket;
-import bb.chat.interfaces.IPacketRegistrie;
+import bb.chat.interfaces.*;
 import bb.chat.network.packet.Chatting.ChatPacket;
 import bb.chat.network.packet.Command.*;
 import bb.chat.network.packet.Handshake.LoginPacket;
 import bb.chat.network.packet.Handshake.SignUpPacket;
+import bb.chat.network.packet.PermissionPacket;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,6 +27,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 		addAssociatedPacket(LoginPacket.class);
 		addAssociatedPacket(SignUpPacket.class);
 		addAssociatedPacket(SavePacket.class);
+		addAssociatedPacket(PermissionPacket.class);
 	}
 
 	@Override
@@ -103,10 +102,32 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 	}
 
 	@SuppressWarnings("UnusedParameters")
-	private void handlePacket(SavePacket sp,IIOHandler sender){
-		if(IMH.getSide() == Side.SERVER){
+	private void handlePacket(SavePacket sp, IIOHandler sender) {
+		if(IMH.getSide() == Side.SERVER) {
 			IMH.save();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void handlePacket(LoginPacket lp, IIOHandler sender) {
+
+		IUser u = IMH.getUserDatabase().getUserByName(lp.getUsername());
+		if(u != null && u.checkPassword(lp.getPassword())) {
+			sender.setUser(u);
+		} else {
+			IMH.setEmpfaenger(sender);
+			IMH.sendPackage(new ChatPacket("Your login has failed either the password or username was wrong, please try again!", IMessageHandler.SERVER.getActorName()));
+		}
+
+	}
+
+	private void handlePAcket(PermissionPacket pp, IIOHandler sender) {
+
+		String s = pp.perm;
+		IIOHandler user = IMH.getUserByName(pp.user);
+		String command = pp.cmd;
+		IMH.getPermissionRegistry().setPermission(sender, user, command, s);
+
 	}
 
 }
