@@ -12,19 +12,19 @@ import java.util.List;
  */
 public abstract class BasicPacketHandler<P extends IPacket> implements IPacketHandler<P> {
 
-	public final IMessageHandler IMH;
+	final IMessageHandler IMH;
 
-	protected final List<Class<? extends P>> CList = new ArrayList<>();
+	private final List<Class<? extends P>> CList = new ArrayList<>();
 
-	public BasicPacketHandler(IMessageHandler iMessageHandler) {
+	BasicPacketHandler(IMessageHandler iMessageHandler) {
 		IMH = iMessageHandler;
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void addAssociatedPacket(Class<? extends P> cp) {
+	void addAssociatedPacket(Class<? extends P> cp) {
 		if(!CList.contains(cp)) {
 			CList.add(cp);
-			if(!IMH.getPacketRegistrie().containsPacket(cp)){
+			if(!IMH.getPacketRegistrie().containsPacket(cp)) {
 				IMH.getPacketRegistrie().registerPacket(cp);
 			}
 		}

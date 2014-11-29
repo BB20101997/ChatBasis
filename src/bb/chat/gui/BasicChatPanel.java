@@ -15,11 +15,11 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	/**
 	 * the Command send by the Send button
 	 */
-	public static final String SEND_EVENT  = "BUTTON_SEND";
+	private static final String SEND_EVENT  = "BUTTON_SEND";
 	/**
 	 * the Command send when hitting Enter in the Text Field ,should be treated like SEND_EVENT
 	 */
-	public static final String ENTER_EVENT = "CSB_ENTER";
+	private static final String ENTER_EVENT = "CSB_ENTER";
 
 	/**
 	 * if the Standard ActionListener Should be used
@@ -36,9 +36,9 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	/**
 	 * The Field to enter a Message
 	 */
-	public final  JTextField ChatSendBar               = new JTextField();
+	private final JTextField ChatSendBar               = new JTextField();
 
-	public final JScrollPane chatLogScroll = new JScrollPane(ChatLog);
+	private final JScrollPane chatLogScroll = new JScrollPane(ChatLog);
 
 	public final IMessageHandler IMH;
 
@@ -66,14 +66,14 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	 * can be used to disable the default processing of input
 	 */
 
-	public void setUseStandardActionListener(boolean b) {
+	void setUseStandardActionListener(boolean b) {
 		useStandardActionListener = b;
 	}
 
 	/**
 	 * @param a adds an ActionListener to the Send Button and the ChatSendBar
 	 */
-	public void addActionListener(ActionListener a) {
+	void addActionListener(ActionListener a) {
 
 		Send.addActionListener(a);
 		ChatSendBar.addActionListener(a);
@@ -113,15 +113,6 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	public void print(String s) {
 
 		ChatLog.append(s);
-	}
-
-	/**
-	 * @param s prints to the ChatLog and adds a NewLine at the end
-	 */
-	@Override
-	public void println(String s) {
-
-		ChatLog.append(s + "\n");
 	}
 
 }
