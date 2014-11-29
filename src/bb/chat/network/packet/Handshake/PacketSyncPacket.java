@@ -11,11 +11,10 @@ import java.io.IOException;
  */
 public class PacketSyncPacket extends IPacket {
 
-	Class<? extends IPacket>[] classes;
+	private Class<? extends IPacket>[] classes;
 
 	public PacketSyncPacket(Class<? extends IPacket>[] cs) {
 		classes = cs;
-		state = PacketState.DATA;
 	}
 
 	public PacketSyncPacket() {
@@ -49,6 +48,5 @@ public class PacketSyncPacket extends IPacket {
 			}
 			i--;
 		}
-		state = PacketState.DATA;
 	}
 }

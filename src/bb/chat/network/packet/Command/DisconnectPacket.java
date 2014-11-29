@@ -12,7 +12,6 @@ import java.io.IOException;
 public class DisconnectPacket extends IPacket {
 
 	public DisconnectPacket() {
-		state = PacketState.DATA;
 	}
 
 	@Override

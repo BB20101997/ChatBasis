@@ -31,19 +31,18 @@ public class PacketDistributor implements IPacketDistributor<IPacketHandler> {
 	@SuppressWarnings("unchecked")
 	public void distributePacket(int id, byte[] data, IIOHandler sender) {
 
-		IPacket p;
+		IPacket p = IMH.getPacketRegistrie().getNewPacketOfID(id);
+		try {
+			p.readFromData(DataIn.newInstance(data.clone()));
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 
 		main:
 		for(IPacketHandler iph : PHList) {
 			for(Class c : iph.getAssociatedPackets()) {
 				if(c.equals(IMH.getPacketRegistrie().getPacketClassByID(id))) {
-					try {
-						p = IMH.getPacketRegistrie().getNewPacketOfID(id);
-						p.readFromData(DataIn.newInstance(data.clone()));
-						iph.HandlePacket(p, sender);
-					} catch(IOException e) {
-						e.printStackTrace();
-					}
+					iph.HandlePacket(p.copy(), sender);
 					continue main;
 
 				}

@@ -22,7 +22,6 @@ public class RenamePacket extends IPacket {
 	public RenamePacket(String old, String newN) {
 		oldName = old;
 		newName = newN;
-		state = PacketState.DATA;
 	}
 
 	@Override
@@ -35,6 +34,5 @@ public class RenamePacket extends IPacket {
 	public void readFromData(DataIn dataIn) throws IOException {
 		newName = dataIn.readUTF();
 		oldName = dataIn.readUTF();
-		state = PacketState.DATA;
 	}
 }

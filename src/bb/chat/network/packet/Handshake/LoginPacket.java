@@ -14,19 +14,19 @@ public class LoginPacket extends IPacket {
 	private String userName;
 	private String userPasswd;
 
-	public void setUsername(String name){
+	public void setUsername(String name) {
 		userName = name;
 	}
 
-	public void setPassword(String Passwd){
+	public void setPassword(String Passwd) {
 		userName = Passwd;
 	}
 
-	public String getUsername(){
+	public String getUsername() {
 		return userName;
 	}
 
-	public String getPassword(){
+	public String getPassword() {
 		return userPasswd;
 		//TODO make it that only a hash value will be returned!
 	}

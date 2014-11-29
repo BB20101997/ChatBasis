@@ -12,7 +12,6 @@ import java.io.IOException;
 public class StopPacket extends IPacket {
 
 	public StopPacket() {
-		state = PacketState.DATA;
 	}
 
 	@Override

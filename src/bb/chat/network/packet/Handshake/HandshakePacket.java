@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class HandshakePacket extends IPacket {
 
-	public String Version = "1.0";
+	private String Version = "1.0";
 
 	@Override
 	public void writeToData(DataOut dataOut) throws IOException {
@@ -21,6 +21,5 @@ public class HandshakePacket extends IPacket {
 	@Override
 	public void readFromData(DataIn dataIn) throws IOException {
 		Version = dataIn.readUTF();
-		state = PacketState.DATA;
 	}
 }
