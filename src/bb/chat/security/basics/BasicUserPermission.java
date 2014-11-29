@@ -12,9 +12,9 @@ import java.util.List;
  */
 public class BasicUserPermission<P extends IPermission> implements IUserPermission<P> {
 
-	protected final List<P>      permission       = new ArrayList<>();
-	protected final List<P>      deniedPermission = new ArrayList<>();
-	protected final List<String> groups           = new ArrayList<>();
+	private final List<P>      permission       = new ArrayList<>();
+	private final List<P>      deniedPermission = new ArrayList<>();
+	private final List<String> groups           = new ArrayList<>();
 
 
 	@Override
@@ -92,24 +92,24 @@ public class BasicUserPermission<P extends IPermission> implements IUserPermissi
 
 	@Override
 	public void writeToFileWriter(FileWriter fw) {
-		fw.add(groups.size(),"GROUPS-SIZE");
-		fw.add(permission.size(),"PERMISSION-SIZE");
-		fw.add(deniedPermission.size(),"DENIEPERMISSION-SIZE");
-		for(int i = 0;i<groups.size();i++){
-			fw.add(groups.get(i),"GROUPS"+i);
+		fw.add(groups.size(), "GROUPS-SIZE");
+		fw.add(permission.size(), "PERMISSION-SIZE");
+		fw.add(deniedPermission.size(), "DENIEPERMISSION-SIZE");
+		for(int i = 0; i < groups.size(); i++) {
+			fw.add(groups.get(i), "GROUPS" + i);
 		}
 		FileWriter fwPerm;
-		for(int i = 0;i<permission.size();i++){
+		for(int i = 0; i < permission.size(); i++) {
 			fwPerm = new FileWriter();
 			permission.get(i).writeToFileWriter(fwPerm);
-			fw.add(fwPerm,"PERMISSION"+i);
-			fw.add(permission.getClass().toString(),"PERMISSION-CLASS"+i);
+			fw.add(fwPerm, "PERMISSION" + i);
+			fw.add(permission.getClass().toString(), "PERMISSION-CLASS" + i);
 		}
-		for(int i = 0;i<deniedPermission.size();i++){
+		for(int i = 0; i < deniedPermission.size(); i++) {
 			fwPerm = new FileWriter();
 			deniedPermission.get(i).writeToFileWriter(fwPerm);
-			fw.add(fwPerm,"DENIEDPERMISSION"+i);
-			fw.add(deniedPermission.getClass().toString(),"DENIEDPERMISSION-CLASS"+i);
+			fw.add(fwPerm, "DENIEDPERMISSION" + i);
+			fw.add(deniedPermission.getClass().toString(), "DENIEDPERMISSION-CLASS" + i);
 		}
 	}
 
@@ -120,25 +120,25 @@ public class BasicUserPermission<P extends IPermission> implements IUserPermissi
 		int ps = (int) fw.get("PERMISSION-SIZE");
 		int dps = (int) fw.get("DENIEPERMISSION-SIZE");
 
-		for(int i = 0;i<gs;i++){
-			addUserPermissionGroup((String)fw.get("GROUPS"+i));
+		for(int i = 0; i < gs; i++) {
+			addUserPermissionGroup((String) fw.get("GROUPS" + i));
 		}
-		for(int i = 0;i<ps;i++){
+		for(int i = 0; i < ps; i++) {
 			try {
 				Class<P> c = (Class<P>) Class.forName((String) fw.get("PERMISSION-CLASS" + i));
-				P  ip = c.newInstance();
-				ip.loadFromFileWriter((FileWriter) fw.get("PERMISSION"+i));
+				P ip = c.newInstance();
+				ip.loadFromFileWriter((FileWriter) fw.get("PERMISSION" + i));
 				addPermission(ip);
 			} catch(ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
 
-		for(int i = 0;i<ps;i++){
+		for(int i = 0; i < ps; i++) {
 			try {
-				Class<P> c = (Class<P>) Class.forName((String) fw.get("DENIEDPERMISSION-CLASS"+i));
-				P  ip = c.newInstance();
-				ip.loadFromFileWriter((FileWriter) fw.get("DENIEDPERMISSION"+i));
+				Class<P> c = (Class<P>) Class.forName((String) fw.get("DENIEDPERMISSION-CLASS" + i));
+				P ip = c.newInstance();
+				ip.loadFromFileWriter((FileWriter) fw.get("DENIEDPERMISSION" + i));
 				addDeniedPermission(ip);
 			} catch(ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();

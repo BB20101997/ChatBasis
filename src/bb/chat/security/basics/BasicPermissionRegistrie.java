@@ -1,9 +1,6 @@
 package bb.chat.security.basics;
 
-import bb.chat.interfaces.IPermission;
-import bb.chat.interfaces.IPermissionRegistrie;
-import bb.chat.interfaces.IUserPermission;
-import bb.chat.interfaces.IUserPermissionGroup;
+import bb.chat.interfaces.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +55,7 @@ public abstract class BasicPermissionRegistrie<P extends IPermission, G extends 
 		return null;
 	}
 
-	protected List<String> getSubGroups(List<String> name) {
+	List<String> getSubGroups(List<String> name) {
 
 		List<String> s;
 
@@ -75,7 +72,7 @@ public abstract class BasicPermissionRegistrie<P extends IPermission, G extends 
 		return name;
 	}
 
-	protected List<P> getGroupsPermission(List<String> names) {
+	List<P> getGroupsPermission(List<String> names) {
 
 		List<P> permissions = new ArrayList<>();
 
@@ -92,7 +89,7 @@ public abstract class BasicPermissionRegistrie<P extends IPermission, G extends 
 
 	}
 
-	protected List<P> getGroupsDeniedPermission(List<String> names) {
+	List<P> getGroupsDeniedPermission(List<String> names) {
 
 		List<P> permissions = new ArrayList<>();
 
@@ -151,7 +148,7 @@ public abstract class BasicPermissionRegistrie<P extends IPermission, G extends 
 
 	}
 
-	protected boolean hasPermission(List<P> presentPermissions, List<P> deniedPermission, List<P> neededPermissions) {
+	boolean hasPermission(List<P> presentPermissions, List<P> deniedPermission, List<P> neededPermissions) {
 		for(P p : neededPermissions) {
 			if(!hasPermission(presentPermissions, deniedPermission, p)) {
 				return false;
@@ -160,7 +157,9 @@ public abstract class BasicPermissionRegistrie<P extends IPermission, G extends 
 		return true;
 	}
 
-	protected boolean hasPermission(List<P> presentPermissions, List<P> deniedPermission, P permission) {
+
+	@SuppressWarnings("unchecked")
+	boolean hasPermission(List<P> presentPermissions, List<P> deniedPermission, P permission) {
 
 		for(P p : deniedPermission) {
 			if(p.includesPermission(permission)) {
@@ -175,5 +174,10 @@ public abstract class BasicPermissionRegistrie<P extends IPermission, G extends 
 		}
 
 		return false;
+	}
+
+	@Override
+	public void setPermission(IIOHandler sender, IIOHandler user, String command, String perm) {
+		//TODO: Implement
 	}
 }

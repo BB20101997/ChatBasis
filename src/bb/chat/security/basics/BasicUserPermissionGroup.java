@@ -9,7 +9,7 @@ import bb.util.file.database.FileWriter;
  */
 public class BasicUserPermissionGroup<P extends IPermission> extends BasicUserPermission<P> implements IUserPermissionGroup<P> {
 
-	protected String name = "";
+	private String name = "";
 
 	@Override
 	public String getGroupName() {
@@ -25,7 +25,7 @@ public class BasicUserPermissionGroup<P extends IPermission> extends BasicUserPe
 	@Override
 	public void writeToFileWriter(FileWriter fw) {
 		super.writeToFileWriter(fw);
-		fw.add(name,"NAME");
+		fw.add(name, "NAME");
 	}
 
 	@Override
