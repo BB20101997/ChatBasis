@@ -116,6 +116,26 @@ public interface IMessageHandler<P extends IPermission, G extends IUserPermissio
 		}
 
 		@Override
+		public void setUserPermission(IUserPermission iUserPermission) {
+
+		}
+
+		@Override
+		public boolean isLogedIn() {
+			return false;
+		}
+
+		@Override
+		public IUser getUser() {
+			return null;
+		}
+
+		@Override
+		public void setUser(IUser u) {
+
+		}
+
+		@Override
 		public void run() {
 
 		}
@@ -129,7 +149,6 @@ public interface IMessageHandler<P extends IPermission, G extends IUserPermissio
 
 			@Override
 			public void addPermission(IPermission perm) {
-				permi.add(perm);
 			}
 
 			@Override
@@ -164,6 +183,22 @@ public interface IMessageHandler<P extends IPermission, G extends IUserPermissio
 
 			@Override
 			public List getPermissions() {
+				permi.add(new IPermission() {
+					@Override
+					public boolean includesPermission(IPermission permission) {
+						return true;
+					}
+
+					@Override
+					public void writeToFileWriter(FileWriter fw) {
+
+					}
+
+					@Override
+					public void loadFromFileWriter(FileWriter fw) {
+
+					}
+				});
 				return permi;
 			}
 
@@ -229,6 +264,26 @@ public interface IMessageHandler<P extends IPermission, G extends IUserPermissio
 		}
 
 		@Override
+		public void setUserPermission(IUserPermission iUserPermission) {
+
+		}
+
+		@Override
+		public boolean isLogedIn() {
+			return false;
+		}
+
+		@Override
+		public IUser getUser() {
+			return null;
+		}
+
+		@Override
+		public void setUser(IUser u) {
+
+		}
+
+		@Override
 		public void run() {
 
 		}
@@ -246,6 +301,8 @@ public interface IMessageHandler<P extends IPermission, G extends IUserPermissio
 
 	IPacketDistributor getPacketDistributor();
 
+	IUserDatabase getUserDatabase();
+
 	String getHelpFromCommand(ICommand a);
 
 	String getHelpFromCommandName(String s);
@@ -254,8 +311,6 @@ public interface IMessageHandler<P extends IPermission, G extends IUserPermissio
 
 	// messages entered by the user should land here
 	void Message(String s);
-
-	void receivePackage(IPacket p, IIOHandler sender);
 
 	void sendPackage(IPacket p);
 
@@ -282,17 +337,19 @@ public interface IMessageHandler<P extends IPermission, G extends IUserPermissio
 	void disconnect(IIOHandler a);
 
 	void save();
+
 	void load();
 
 	void shutdown();
 
 	// connects to the host at the port port
-	void connect(String host, int port);
+	boolean connect(String host, int port);
 
 	// gets the local ChatActor
 	IIOHandler getActor();
 
 	//Will whip the chat log
 	public void wipe();
+
 
 }
