@@ -3,7 +3,7 @@ package bb.chat.network.handler;
 import bb.chat.enums.Side;
 import bb.chat.interfaces.*;
 import bb.chat.network.packet.Chatting.ChatPacket;
-import bb.chat.network.packet.DataOut;
+import bb.chat.network.packet.Command.DisconnectPacket;
 import bb.chat.network.packet.PacketDistributor;
 import bb.chat.network.packet.PacketRegistrie;
 import bb.util.file.database.FileWriter;
@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class BasicMessageHandler<T, P extends IPermission<T>, G extends IUserPermissionGroup<P>> implements IMessageHandler<P, G> {
+public abstract class BasicMessageHandler<P extends IPermission, U extends IUserPermission<P>, G extends IUserPermissionGroup<P>> implements IMessageHandler<P, G> {
 
-	public final List<IIOHandler<P, G>> actors = new ArrayList<>();
+	protected final List<IIOHandler<U>> actors = new ArrayList<>();
 
 	private WorkingThread workingRunnable;
 	private Thread        workingThread;
@@ -29,7 +29,8 @@ public abstract class BasicMessageHandler<T, P extends IPermission<T>, G extends
 	protected Side                       side;
 	protected IPermissionRegistrie<P, G> permReg;
 	protected IPacketDistributor PD = new PacketDistributor(this);
-	protected IPacketRegistrie   PR = new PacketRegistrie();
+	private   IPacketRegistrie   PR = new PacketRegistrie();
+	private IUserDatabase<IUser<U>> userDatabase;
 
 	protected SSLSocket socket;
 
@@ -39,7 +40,7 @@ public abstract class BasicMessageHandler<T, P extends IPermission<T>, G extends
 
 	protected IIOHandler localActor;
 
-	protected IBasicChatPanel BCP;
+	private IBasicChatPanel BCP;
 
 
 	@SuppressWarnings("unchecked")
@@ -74,6 +75,12 @@ public abstract class BasicMessageHandler<T, P extends IPermission<T>, G extends
 	public void disconnect(IIOHandler a) {
 
 		if(side == Side.CLIENT) {
+
+			if(IRServer != null) {
+				sendPackage(new DisconnectPacket());
+				IRServer.stop();
+				IRServer = null;
+			}
 			try {
 				stopWorkingThread();
 				if(socket != null) {
@@ -84,16 +91,13 @@ public abstract class BasicMessageHandler<T, P extends IPermission<T>, G extends
 				e.printStackTrace();
 			}
 
-			if(IRServer != null) {
-				IRServer.stop();
-				IRServer = null;
-			}
+
 		} else {
 			if(a != ALL && a != SERVER) {
 				a.stop();
 				actors.remove(a);
 			} else {
-				for(IIOHandler<P, G> iioHandler : actors) {
+				for(IIOHandler<U> iioHandler : actors) {
 					iioHandler.stop();
 					actors.remove(iioHandler);
 				}
@@ -142,7 +146,7 @@ public abstract class BasicMessageHandler<T, P extends IPermission<T>, G extends
 		stopWorkingThread();
 	}
 
-	public synchronized void startWorkingThread() {
+	synchronized void startWorkingThread() {
 		if(workingRunnable == null) {
 			workingRunnable = new WorkingThread(this);
 			workingThread = new Thread(workingRunnable);
@@ -150,19 +154,7 @@ public abstract class BasicMessageHandler<T, P extends IPermission<T>, G extends
 		}
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public void receivePackage(IPacket p, IIOHandler sender) {
-		DataOut dataOut = DataOut.newInstance();
-		try {
-			p.writeToData(dataOut);
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
-		PD.distributePacket(PR.getID(p.getClass()), dataOut.getBytes(), sender);
-	}
-
-	public synchronized void stopWorkingThread() {
+	synchronized void stopWorkingThread() {
 		if(workingRunnable != null) {
 			workingRunnable.stop();
 			workingRunnable = null;
@@ -192,6 +184,11 @@ public abstract class BasicMessageHandler<T, P extends IPermission<T>, G extends
 	@Override
 	public IPacketDistributor getPacketDistributor() {
 		return PD;
+	}
+
+	@Override
+	public IUserDatabase getUserDatabase() {
+		return userDatabase;
 	}
 
 	@Override
@@ -243,7 +240,7 @@ public abstract class BasicMessageHandler<T, P extends IPermission<T>, G extends
 	@Override
 	public final IIOHandler getUserByName(String s) {
 
-		for(IIOHandler<P, G> ica : actors) {
+		for(IIOHandler<U> ica : actors) {
 			if(ica.getActorName().equals(s)) {
 				return ica;
 			}
@@ -307,7 +304,7 @@ public abstract class BasicMessageHandler<T, P extends IPermission<T>, G extends
 	public final void println(String s) {
 
 		System.out.println(s);
-		BCP.println(s);
+		print(s + System.lineSeparator());
 	}
 
 	@Override
