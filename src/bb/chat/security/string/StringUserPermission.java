@@ -1,4 +1,4 @@
-package bb.chat.security;
+package bb.chat.security.string;
 
 import bb.chat.security.basics.BasicUserPermission;
 import bb.util.file.database.FileWriter;
