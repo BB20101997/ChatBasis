@@ -35,23 +35,25 @@ public class BasicUser implements ISaveAble {
 
 
 	public boolean changePassword(String old, String wen, BasicUser user) {
-		//TODO: add PermissionCheck
+		//TODO: add PermissionCheck not Possible no acces to permission registrie!?
 		if(passwd.equals(old)) {
 			passwd = wen;
+			return true;
 		}
 		return false;
 	}
 
 
 	public boolean setPassword(String s, BasicUser user) {
-		//TODO: add PermissionCheck
+		//TODO: add PermissionCheck not Possible no acces to permission registrie!?
 		passwd = s;
 		return false;
 	}
 
 
 	public boolean changeUsername(String s, BasicUser user) {
-		//TODO: add PermissionCheck
+		//TODO: add PermissionCheck not Possible no acces to permission registrie!?
+		//check for username occupied not possible no access to IMassageHandler instance!?
 		name = s;
 		return false;
 	}
