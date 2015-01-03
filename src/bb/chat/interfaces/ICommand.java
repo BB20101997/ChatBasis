@@ -5,11 +5,6 @@ package bb.chat.interfaces;
  */
 public interface ICommand {
 
-	// -1 for no max
-	int maxParameterCount();
-
-	int minParameterCount();
-
 	String[] getAlias();
 
 	/**
