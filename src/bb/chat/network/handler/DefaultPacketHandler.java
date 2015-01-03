@@ -1,12 +1,15 @@
 package bb.chat.network.handler;
 
 import bb.chat.enums.Side;
-import bb.chat.interfaces.*;
+import bb.chat.interfaces.IIOHandler;
+import bb.chat.interfaces.IMessageHandler;
+import bb.chat.interfaces.IPacket;
 import bb.chat.network.packet.Chatting.ChatPacket;
 import bb.chat.network.packet.Command.*;
 import bb.chat.network.packet.Handshake.LoginPacket;
 import bb.chat.network.packet.Handshake.SignUpPacket;
-import bb.chat.network.packet.PermissionPacket;
+import bb.chat.security.BasicUser;
+import bb.chat.security.BasicUserDatabase;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -34,8 +37,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 	@SuppressWarnings("unchecked")
 	public void HandlePacket(IPacket iPacket, IIOHandler sender) {
 
-		IPacketRegistrie PR = IMH.getPacketRegistrie();
-		int id = PR.getID(iPacket.getClass());
+		int id = IMH.getPacketRegistrie().getID(iPacket.getClass());
 
 		System.out.println("DefaultPacketHandler : " + iPacket.getClass() + ", ID : " + id);
 
@@ -67,9 +69,18 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 				IMH.getActor().setActorName(rp.newName);
 			}
 		} else {
-			IMH.getUserByName(rp.oldName).setActorName(rp.newName);
-			IMH.setEmpfaenger(IMessageHandler.ALL);
-			IMH.sendPackage(new ChatPacket(rp.oldName + " is now known as " + rp.newName, IMH.getActor().getActorName()));
+			IIOHandler io;
+			if((io = IMH.getUserByName(rp.oldName)) != null && io.setActorName(rp.newName)) {
+				IMH.setEmpfaenger(IMessageHandler.ALL);
+				IMH.sendPackage(new ChatPacket(rp.oldName + " is now known as " + rp.newName, IMH.getActor().getActorName()));
+				IMH.setEmpfaenger(io);
+				IMH.sendPackage(new RenamePacket(rp.oldName,rp.newName));
+				IMH.println("[Server] : " + rp.oldName + " is now known as " + rp.newName);
+			}
+			else {
+				IMH.setEmpfaenger(sender);
+				IMH.sendPackage(new ChatPacket("Couldn't rename User!",IMH.getActor().getActorName()));
+			}
 		}
 	}
 
@@ -111,7 +122,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 	@SuppressWarnings("unchecked")
 	private void handlePacket(LoginPacket lp, IIOHandler sender) {
 
-		IUser u = IMH.getUserDatabase().getUserByName(lp.getUsername());
+		BasicUser u = IMH.getUserDatabase().getUserByName(lp.getUsername());
 		if(u != null && u.checkPassword(lp.getPassword())) {
 			sender.setUser(u);
 		} else {
@@ -121,13 +132,26 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 
 	}
 
-	private void handlePAcket(PermissionPacket pp, IIOHandler sender) {
+	private void handlePacket(PermissionPacket pp, IIOHandler sender) {
 
 		String s = pp.perm;
 		IIOHandler user = IMH.getUserByName(pp.user);
 		String command = pp.cmd;
 		IMH.getPermissionRegistry().setPermission(sender, user, command, s);
 
+	}
+
+	private void handlePacket(SignUpPacket sup, IIOHandler sender) {
+		if(IMH.getSide() == Side.SERVER) {
+			BasicUserDatabase bud = IMH.getUserDatabase();
+			if(bud.createAndAddNewUser(sup.getUsername(), sup.getPassword()) != null) {
+				IMH.println("[SERVER] : An Account with username " + sup.getUsername() + " was created!");
+				IMH.sendPackage(new ChatPacket("User-Accout successfully created!",IMH.getActor().getActorName()));
+			} else {
+				IMH.println("[SERVER] : Tried to create an Account with username " + sup.getUsername() + " already existed!");
+				IMH.sendPackage(new ChatPacket("Couldn´t create User-Account,already existed!",IMH.getActor().getActorName()));
+			}
+		}
 	}
 
 }
