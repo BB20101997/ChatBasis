@@ -12,28 +12,24 @@ import java.io.IOException;
 public class PermissionPacket extends IPacket {
 
 	public String cmd;
-	public String user;
-	public String perm;
+	public String restCmd;
 
 	public PermissionPacket() {}
 
-	public PermissionPacket(String commandType, String userToChange, String permission) {
+	public PermissionPacket(String commandType, String restOfCommand) {
 		cmd = commandType;
-		user = userToChange;
-		perm = permission;
+		restCmd = restOfCommand;
 	}
 
 	@Override
 	public void writeToData(DataOut dataOut) throws IOException {
 		dataOut.writeUTF(cmd);
-		dataOut.writeUTF(user);
-		dataOut.writeUTF(perm);
+		dataOut.writeUTF(restCmd);
 	}
 
 	@Override
 	public void readFromData(DataIn dataIn) throws IOException {
 		cmd = dataIn.readUTF();
-		user = dataIn.readUTF();
-		perm = dataIn.readUTF();
+		restCmd = dataIn.readUTF();
 	}
 }
