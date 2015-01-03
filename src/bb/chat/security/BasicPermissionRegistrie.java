@@ -1,6 +1,10 @@
 package bb.chat.security;
 
+import bb.chat.command.Permission;
+import bb.chat.command.Subcommands.Permission.SubPermission;
+import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IIOHandler;
+import bb.chat.interfaces.IMessageHandler;
 import bb.util.file.database.FileWriter;
 import bb.util.file.database.ISaveAble;
 
@@ -208,7 +212,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 	}
 
 	public void setPermission(IIOHandler sender, IIOHandler user, String command, String perm) {
-		//TODO: Implement
+		// TODO: Implement
 	}
 
 	public synchronized void writeToFileWriter(FileWriter fw) {
@@ -238,6 +242,21 @@ public class BasicPermissionRegistrie implements ISaveAble {
 			registeredGroups.add(g);
 		}
 
+	}
+
+	public void executePermissionCommand(IMessageHandler imh,IIOHandler userRunningCommand,String command,String restOfCommand) {
+		ICommand cmd = imh.getCommand("permission");
+		if(cmd instanceof Permission){
+			for(SubPermission sp:((Permission) cmd).subCommandList){
+				if(sp.getName().equals(command)){
+					sp.executePermissionCommand(imh,userRunningCommand,command,restOfCommand);
+					return;
+				}
+			}
+		}
+		else {
+			throw new RuntimeException("Did not get Permission Command as requested!");
+		}
 	}
 
 	private static class Group implements ISaveAble{
