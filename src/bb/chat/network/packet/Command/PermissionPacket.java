@@ -1,6 +1,8 @@
-package bb.chat.network.packet;
+package bb.chat.network.packet.Command;
 
 import bb.chat.interfaces.IPacket;
+import bb.chat.network.packet.DataIn;
+import bb.chat.network.packet.DataOut;
 
 import java.io.IOException;
 

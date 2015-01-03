@@ -83,16 +83,14 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	public void actionPerformed(ActionEvent arg0) {
 
 		if(useStandardActionListener) {
-			/*
-	  Latest Send Message
-	 */
 			String lastSend = ChatSendBar.getText();
-			IMH.Message(lastSend);
+			if(!"".equals(lastSend)){
+				IMH.Message(lastSend);
+			}
 			ChatSendBar.setText("");
 			setSize(getSize());
 			chatLogScroll.getVerticalScrollBar().setValue(ChatLog.getRows());
 			invalidate();
-
 		}
 
 	}

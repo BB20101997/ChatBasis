@@ -8,6 +8,7 @@ import bb.chat.network.packet.DataOut;
 import bb.chat.network.packet.Handshake.HandshakePacket;
 import bb.chat.network.packet.Handshake.LoginPacket;
 import bb.chat.network.packet.Handshake.SignUpPacket;
+import bb.chat.security.BasicUser;
 import com.sun.istack.internal.Nullable;
 
 import java.io.*;
@@ -17,41 +18,20 @@ import static bb.chat.enums.NetworkState.LOGIN;
 /**
  * @author BB20101997
  */
-public class IOHandler<U extends IUserPermission> implements Runnable, IIOHandler<U> {
+public class BasicIOHandler implements Runnable, IIOHandler {
 
 	private final IMessageHandler  IMH;
 	private final DataInputStream  dis;
 	private final DataOutputStream dos;
 	private boolean handshakeReceived = false;
 	@Nullable
-	private IUser<U> user;
-	private U       userPermission = null;
+	private BasicUser user;
 	private String  name           = "NO-NAME-BUG";
 	private boolean continueLoop   = true;
 	private Thread thread;
 	private NetworkState status = NetworkState.UNKNOWN;
 
-
-	/**
-	 * @param IS  the InputStream to be used
-	 * @param OS  the OutputStream to be used
-	 * @param imh an IMessageHandler to be linked to
-	 */
-	public IOHandler(final InputStream IS, OutputStream OS, IMessageHandler imh, U iup) {
-		IMH = imh;
-		System.out.println("Creating Streams");
-		dis = new DataInputStream(IS);
-		dos = new DataOutputStream(OS);
-		status = NetworkState.HANDSHAKE;
-		if(imh.getSide() == Side.CLIENT) {
-			startHandshake();
-		} else {
-			sendPacket(imh.getPacketRegistrie().getSyncPacket());
-		}
-		userPermission = iup;
-	}
-
-	public IOHandler(final InputStream IS, OutputStream OS, IMessageHandler imh) {
+	public BasicIOHandler(final InputStream IS, OutputStream OS, IMessageHandler imh) {
 		IMH = imh;
 		System.out.println("Creating Streams");
 		dis = new DataInputStream(IS);
@@ -63,7 +43,6 @@ public class IOHandler<U extends IUserPermission> implements Runnable, IIOHandle
 			sendPacket(imh.getPacketRegistrie().getSyncPacket());
 		}
 	}
-
 
 	private class handshakeRunnable implements Runnable {
 		public handshakeRunnable() {
@@ -242,27 +221,17 @@ public class IOHandler<U extends IUserPermission> implements Runnable, IIOHandle
 	}
 
 	@Override
-	public U getUserPermission() {
-		return userPermission;
-	}
-
-	@Override
-	public void setUserPermission(U iUserPermission) {
-		userPermission = iUserPermission;
-	}
-
-	@Override
 	public boolean isLogedIn() {
 		return status.ordinal() >= LOGIN.ordinal();
 	}
 
 	@Override
-	public IUser<U> getUser() {
+	public BasicUser getUser() {
 		return user;
 	}
 
 	@Override
-	public void setUser(IUser<U> u) {
+	public void setUser(BasicUser u) {
 		user = u;
 	}
 
