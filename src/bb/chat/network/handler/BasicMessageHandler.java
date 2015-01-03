@@ -6,6 +6,8 @@ import bb.chat.network.packet.Chatting.ChatPacket;
 import bb.chat.network.packet.Command.DisconnectPacket;
 import bb.chat.network.packet.PacketDistributor;
 import bb.chat.network.packet.PacketRegistrie;
+import bb.chat.security.BasicPermissionRegistrie;
+import bb.chat.security.BasicUserDatabase;
 import bb.util.file.database.FileWriter;
 
 import javax.net.ssl.SSLSocket;
@@ -15,9 +17,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class BasicMessageHandler<P extends IPermission, U extends IUserPermission<P>, G extends IUserPermissionGroup<P>> implements IMessageHandler<P, G> {
+public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDatabase, BasicPermissionRegistrie> {
 
-	protected final List<IIOHandler<U>> actors = new ArrayList<>();
+	protected final List<IIOHandler> actors = new ArrayList<>();
 
 	private WorkingThread workingRunnable;
 	private Thread        workingThread;
@@ -26,15 +28,15 @@ public abstract class BasicMessageHandler<P extends IPermission, U extends IUser
 
 	protected IIOHandler Target;
 
-	protected Side                       side;
-	protected IPermissionRegistrie<P, G> permReg;
-	protected IPacketDistributor PD = new PacketDistributor(this);
-	private   IPacketRegistrie   PR = new PacketRegistrie();
-	private IUserDatabase<IUser<U>> userDatabase;
+	protected Side                     side;
+	protected BasicPermissionRegistrie permReg;
+	protected     IPacketDistributor PD           = new PacketDistributor(this);
+	private       IPacketRegistrie   PR           = new PacketRegistrie();
+	private final BasicUserDatabase  userDatabase = new BasicUserDatabase();
 
 	protected SSLSocket socket;
 
-	protected IOHandler IRServer = null;
+	protected BasicIOHandler IRServer = null;
 
 	private final List<ICommand> commandList = new ArrayList<>();
 
@@ -97,7 +99,7 @@ public abstract class BasicMessageHandler<P extends IPermission, U extends IUser
 				a.stop();
 				actors.remove(a);
 			} else {
-				for(IIOHandler<U> iioHandler : actors) {
+				for(IIOHandler iioHandler : actors) {
 					iioHandler.stop();
 					actors.remove(iioHandler);
 				}
@@ -111,6 +113,7 @@ public abstract class BasicMessageHandler<P extends IPermission, U extends IUser
 		if(side == Side.SERVER) {
 			if(!configFile.exists()) {
 				try {
+					//noinspection ResultOfMethodCallIgnored
 					configFile.createNewFile();
 				} catch(IOException e) {
 					e.printStackTrace();
@@ -118,6 +121,7 @@ public abstract class BasicMessageHandler<P extends IPermission, U extends IUser
 			}
 			FileWriter fileWriter = new FileWriter();
 			fileWriter.add(permReg, "permGen");
+			fileWriter.add(userDatabase,"bur");
 			try {
 				fileWriter.writeToFile(configFile);
 			} catch(IOException e) {
@@ -134,6 +138,7 @@ public abstract class BasicMessageHandler<P extends IPermission, U extends IUser
 				try {
 					fileWriter.readFromFile(configFile);
 					permReg.loadFromFileWriter((FileWriter) fileWriter.get("permGen"));
+					userDatabase.loadFromFileWriter((FileWriter) fileWriter.get("bur"));
 				} catch(IOException e) {
 					e.printStackTrace();
 				}
@@ -187,7 +192,7 @@ public abstract class BasicMessageHandler<P extends IPermission, U extends IUser
 	}
 
 	@Override
-	public IUserDatabase getUserDatabase() {
+	public BasicUserDatabase getUserDatabase() {
 		return userDatabase;
 	}
 
@@ -197,7 +202,7 @@ public abstract class BasicMessageHandler<P extends IPermission, U extends IUser
 	}
 
 	@Override
-	public IPermissionRegistrie<P, G> getPermissionRegistry() {
+	public BasicPermissionRegistrie getPermissionRegistry() {
 		return permReg;
 	}
 
@@ -240,7 +245,7 @@ public abstract class BasicMessageHandler<P extends IPermission, U extends IUser
 	@Override
 	public final IIOHandler getUserByName(String s) {
 
-		for(IIOHandler<U> ica : actors) {
+		for(IIOHandler ica : actors) {
 			if(ica.getActorName().equals(s)) {
 				return ica;
 			}
