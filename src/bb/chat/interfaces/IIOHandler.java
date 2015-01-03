@@ -1,9 +1,11 @@
 package bb.chat.interfaces;
 
+import bb.chat.security.BasicUser;
+
 /**
  * Created by BB20101997 on 05.09.2014.
  */
-public interface IIOHandler<U extends IUserPermission> extends Runnable {
+public interface IIOHandler extends Runnable {
 
 	void start();
 
@@ -13,7 +15,7 @@ public interface IIOHandler<U extends IUserPermission> extends Runnable {
 
 	String getActorName();
 
-	void setActorName(String name);
+	boolean setActorName(String name);
 
 	boolean sendPacket(IPacket p);
 
@@ -21,13 +23,9 @@ public interface IIOHandler<U extends IUserPermission> extends Runnable {
 
 	void receivedHandshake();
 
-	U getUserPermission();
+	boolean isLoggedIn();
 
-	void setUserPermission(U u);
+	BasicUser getUser();
 
-	boolean isLogedIn();
-
-	IUser<U> getUser();
-
-	void setUser(IUser<U> u);
+	void setUser(BasicUser u);
 }

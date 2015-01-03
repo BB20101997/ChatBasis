@@ -2,16 +2,15 @@ package bb.chat.interfaces;
 
 
 import bb.chat.enums.Side;
-import bb.util.file.database.FileWriter;
-
-import java.util.ArrayList;
-import java.util.List;
+import bb.chat.security.BasicPermissionRegistrie;
+import bb.chat.security.BasicUser;
+import bb.chat.security.BasicUserDatabase;
 
 /**
  * @author BB20101997
  */
 @SuppressWarnings("javadoc")
-public interface IMessageHandler<P extends IPermission, G extends IUserPermissionGroup<P>> {
+public interface IMessageHandler<UD extends BasicUserDatabase,PR extends BasicPermissionRegistrie> {
 
 	IIOHandler ALL = new IIOHandler() {
 		@Override
@@ -35,8 +34,8 @@ public interface IMessageHandler<P extends IPermission, G extends IUserPermissio
 		}
 
 		@Override
-		public void setActorName(String name) {
-
+		public boolean setActorName(String name) {
+			return false;
 		}
 
 		@Override
@@ -55,83 +54,17 @@ public interface IMessageHandler<P extends IPermission, G extends IUserPermissio
 		}
 
 		@Override
-		public IUserPermission getUserPermission() {
-			return new IUserPermission() {
-				@Override
-				public void addPermission(IPermission perm) {
-
-				}
-
-				@Override
-				public void removePermission(IPermission perm) {
-
-				}
-
-				@Override
-				public void addDeniedPermission(IPermission perm) {
-
-				}
-
-				@Override
-				public void removeDeniedPermission(IPermission perm) {
-
-				}
-
-				@Override
-				public List<String> getContainedGroups() {
-					return null;
-				}
-
-				@Override
-				public void addUserPermissionGroup(String name) {
-
-				}
-
-				@Override
-				public void removeUserPermissionGroup(String name) {
-
-				}
-
-				@Override
-				public List getPermissions() {
-					return null;
-				}
-
-				@Override
-				public List getDeniedPermissions() {
-					return null;
-				}
-
-
-				@Override
-				public void writeToFileWriter(FileWriter fw) {
-
-				}
-
-				@Override
-				public void loadFromFileWriter(FileWriter fw) {
-
-				}
-			};
-		}
-
-		@Override
-		public void setUserPermission(IUserPermission iUserPermission) {
-
-		}
-
-		@Override
-		public boolean isLogedIn() {
+		public boolean isLoggedIn() {
 			return false;
 		}
 
 		@Override
-		public IUser getUser() {
-			return null;
+		public BasicUser getUser() {
+			return new BasicUser();
 		}
 
 		@Override
-		public void setUser(IUser u) {
+		public void setUser(BasicUser u) {
 
 		}
 
@@ -142,81 +75,6 @@ public interface IMessageHandler<P extends IPermission, G extends IUserPermissio
 	};
 
 	IIOHandler SERVER = new IIOHandler() {
-
-		final IUserPermission iup = new IUserPermission() {
-
-			final List<IPermission> permi = new ArrayList<>();
-
-			@Override
-			public void addPermission(IPermission perm) {
-			}
-
-			@Override
-			public void removePermission(IPermission perm) {
-
-			}
-
-			@Override
-			public void addDeniedPermission(IPermission perm) {
-
-			}
-
-			@Override
-			public void removeDeniedPermission(IPermission perm) {
-
-			}
-
-			@Override
-			public List<String> getContainedGroups() {
-				return null;
-			}
-
-			@Override
-			public void addUserPermissionGroup(String name) {
-
-			}
-
-			@Override
-			public void removeUserPermissionGroup(String name) {
-
-			}
-
-			@Override
-			public List getPermissions() {
-				permi.add(new IPermission() {
-					@Override
-					public boolean includesPermission(IPermission permission) {
-						return true;
-					}
-
-					@Override
-					public void writeToFileWriter(FileWriter fw) {
-
-					}
-
-					@Override
-					public void loadFromFileWriter(FileWriter fw) {
-
-					}
-				});
-				return permi;
-			}
-
-			@Override
-			public List getDeniedPermissions() {
-				return new ArrayList();
-			}
-
-			@Override
-			public void writeToFileWriter(FileWriter fw) {
-
-			}
-
-			@Override
-			public void loadFromFileWriter(FileWriter fw) {
-
-			}
-		};
 
 		@Override
 		public void start() {
@@ -239,8 +97,8 @@ public interface IMessageHandler<P extends IPermission, G extends IUserPermissio
 		}
 
 		@Override
-		public void setActorName(String name) {
-
+		public boolean setActorName(String name) {
+			return false;
 		}
 
 		@Override
@@ -259,27 +117,20 @@ public interface IMessageHandler<P extends IPermission, G extends IUserPermissio
 		}
 
 		@Override
-		public IUserPermission getUserPermission() {
-			return iup;
-		}
-
-		@Override
-		public void setUserPermission(IUserPermission iUserPermission) {
-
-		}
-
-		@Override
-		public boolean isLogedIn() {
+		public boolean isLoggedIn() {
 			return false;
 		}
 
 		@Override
-		public IUser getUser() {
-			return null;
+		public BasicUser getUser() {
+			BasicUser b = new BasicUser();
+			b.setUserID(-1);
+			b.addUserPermission("*");
+			return b;
 		}
 
 		@Override
-		public void setUser(IUser u) {
+		public void setUser(BasicUser u) {
 
 		}
 
@@ -297,11 +148,11 @@ public interface IMessageHandler<P extends IPermission, G extends IUserPermissio
 
 	IPacketRegistrie getPacketRegistrie();
 
-	IPermissionRegistrie<P, G> getPermissionRegistry();
+	PR getPermissionRegistry();
 
 	IPacketDistributor getPacketDistributor();
 
-	IUserDatabase getUserDatabase();
+	UD getUserDatabase();
 
 	String getHelpFromCommand(ICommand a);
 
