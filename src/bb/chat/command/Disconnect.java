@@ -12,17 +12,6 @@ public class Disconnect implements ICommand {
 
 	private static final String[] helpMessage = new String[]{"Disconnects the client from the Server,only executed Client Side"};
 
-
-	@Override
-	public int maxParameterCount() {
-		return 0;
-	}
-
-	@Override
-	public int minParameterCount() {
-		return 0;
-	}
-
 	@Override
 	public String[] getAlias() {
 		return new String[0];

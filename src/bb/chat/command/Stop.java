@@ -10,17 +10,6 @@ import bb.chat.network.packet.Command.StopPacket;
  */
 public class Stop implements ICommand {
 
-
-	@Override
-	public int maxParameterCount() {
-		return 0;
-	}
-
-	@Override
-	public int minParameterCount() {
-		return 0;
-	}
-
 	@Override
 	public String[] getAlias() {
 		return new String[0];

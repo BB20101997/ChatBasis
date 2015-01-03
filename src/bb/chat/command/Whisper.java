@@ -11,17 +11,6 @@ import bb.chat.network.packet.Command.WhisperPacket;
 
 public class Whisper implements ICommand {
 
-
-	@Override
-	public int maxParameterCount() {
-		return -1;
-	}
-
-	@Override
-	public int minParameterCount() {
-		return 2;
-	}
-
 	@Override
 	public String[] getAlias() {
 		return new String[0];

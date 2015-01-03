@@ -9,17 +9,6 @@ import bb.chat.interfaces.IMessageHandler;
  */
 public class Connect implements ICommand {
 
-
-	@Override
-	public int maxParameterCount() {
-		return 2;
-	}
-
-	@Override
-	public int minParameterCount() {
-		return 0;
-	}
-
 	@Override
 	public String[] getAlias() {
 		return new String[0];

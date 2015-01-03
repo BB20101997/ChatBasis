@@ -11,17 +11,6 @@ import bb.chat.network.packet.Handshake.SignUpPacket;
  */
 public class Register implements ICommand {
 
-
-	@Override
-	public int maxParameterCount() {
-		return 2;
-	}
-
-	@Override
-	public int minParameterCount() {
-		return 2;
-	}
-
 	@Override
 	public String[] getAlias() {
 		return new String[0];

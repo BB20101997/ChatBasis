@@ -10,17 +10,6 @@ import bb.chat.network.packet.Handshake.LoginPacket;
  */
 public class Login implements ICommand {
 
-
-	@Override
-	public int maxParameterCount() {
-		return 2;
-	}
-
-	@Override
-	public int minParameterCount() {
-		return 1;
-	}
-
 	@Override
 	public String[] getAlias() {
 		return new String[0];

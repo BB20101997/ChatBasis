@@ -10,16 +10,7 @@ import bb.chat.network.packet.Chatting.ChatPacket;
  */
 public class Help implements ICommand {
 
-
-	@Override
-	public int maxParameterCount() {
-		return -1;
-	}
-
-	@Override
-	public int minParameterCount() {
-		return 0;
-	}
+	//TODO:FIX runCommand
 
 	@Override
 	public String[] getAlias() {

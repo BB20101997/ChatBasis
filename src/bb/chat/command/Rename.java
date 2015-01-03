@@ -4,23 +4,13 @@ import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IIOHandler;
 import bb.chat.interfaces.IMessageHandler;
+import bb.chat.network.packet.Chatting.ChatPacket;
 import bb.chat.network.packet.Command.RenamePacket;
 
 /**
  * @author BB20101997
  */
 public class Rename implements ICommand {
-
-
-	@Override
-	public int maxParameterCount() {
-		return 2;
-	}
-
-	@Override
-	public int minParameterCount() {
-		return 2;
-	}
 
 	@Override
 	public String[] getAlias() {
@@ -35,28 +25,22 @@ public class Rename implements ICommand {
 
 	@Override
 	public void runCommand(String commandLine, IMessageHandler imh) {
-
+		String[] dS = commandLine.split(" ");
+		if(dS.length <= 2 || "Client".equals(dS[2]) || "SERVER".equals(dS[2])) {
+			return;
+		}
 		if(imh.getSide() == Side.CLIENT) {
-			String[] dS = commandLine.split(" ");
-			if(dS.length <= 2) {
-				return;
-			}
-			if("Client".equals(dS[2]) || "SERVER".equals(dS[2])) {
-				return;
-			}
 			imh.setEmpfaenger(IMessageHandler.ALL);
 			imh.sendPackage(new RenamePacket(dS[1], dS[2]));
 		} else {
-			String[] dS = commandLine.split(" ");
-			if(dS.length > 2) {
-				IIOHandler ica = imh.getUserByName(dS[1]);
-				if(ica != null) {
-					imh.getActor().setActorName(dS[2]);
-					imh.println("[" + imh.getActor().getActorName() + "] " + dS[1] + " is now known as " + dS[2]);
-					imh.setEmpfaenger(IMessageHandler.ALL);
-					imh.sendPackage(new RenamePacket(dS[1], dS[2]));
-				}
-
+			IIOHandler ica = imh.getUserByName(dS[1]);
+			if(ica != null) {
+				ica.setActorName(dS[2]);
+				imh.println("[" + imh.getActor().getActorName() + "] " + dS[1] + " is now known as " + dS[2]);
+				imh.setEmpfaenger(IMessageHandler.ALL);
+				imh.sendPackage(new ChatPacket(dS[1] + " is now known as " + dS[2], imh.getActor().getActorName()));
+				imh.setEmpfaenger(imh.getUserByName(dS[2]));
+				imh.sendPackage(new RenamePacket(dS[1], dS[2]));
 			}
 		}
 	}

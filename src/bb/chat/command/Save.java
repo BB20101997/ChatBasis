@@ -10,17 +10,6 @@ import bb.chat.network.packet.Command.SavePacket;
  */
 public class Save implements ICommand {
 
-
-	@Override
-	public int maxParameterCount() {
-		return 0;
-	}
-
-	@Override
-	public int minParameterCount() {
-		return 0;
-	}
-
 	@Override
 	public String[] getAlias() {
 		return new String[0];
