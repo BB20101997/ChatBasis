@@ -2,7 +2,9 @@ package bb.chat.network.handler;
 
 import bb.chat.enums.NetworkState;
 import bb.chat.enums.Side;
-import bb.chat.interfaces.*;
+import bb.chat.interfaces.IIOHandler;
+import bb.chat.interfaces.IMessageHandler;
+import bb.chat.interfaces.IPacket;
 import bb.chat.network.packet.Command.DisconnectPacket;
 import bb.chat.network.packet.DataOut;
 import bb.chat.network.packet.Handshake.HandshakePacket;
@@ -26,8 +28,8 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 	private boolean handshakeReceived = false;
 	@Nullable
 	private BasicUser user;
-	private String  name           = "NO-NAME-BUG";
-	private boolean continueLoop   = true;
+	private String  name         = "NO-NAME-BUG";
+	private boolean continueLoop = true;
 	private Thread thread;
 	private NetworkState status = NetworkState.UNKNOWN;
 
@@ -152,12 +154,22 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 	@Override
 	public String getActorName() {
 
-		return name;
+		return user == null ? name : user.getUserName();
 	}
 
 	@Override
-	public void setActorName(String s) {
-		name = s;
+	public boolean setActorName(String s) {
+		synchronized(IMH.getUserDatabase()) {
+			if(IMH.getUserByName(s) == null && (IMH.getUserDatabase() == null || !IMH.getUserDatabase().doesUserExist(s))) {
+				if(user == null) {
+					name = s;
+				} else {
+					user.setUserName(s);
+				}
+				return true;
+			}
+			return false;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -221,7 +233,7 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 	}
 
 	@Override
-	public boolean isLogedIn() {
+	public boolean isLoggedIn() {
 		return status.ordinal() >= LOGIN.ordinal();
 	}
 
