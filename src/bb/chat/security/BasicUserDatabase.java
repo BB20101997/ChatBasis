@@ -1,5 +1,6 @@
 package bb.chat.security;
 
+import bb.chat.interfaces.IMessageHandler;
 import bb.util.file.database.FileWriter;
 import bb.util.file.database.ISaveAble;
 
@@ -23,7 +24,6 @@ public class BasicUserDatabase implements ISaveAble {
 		return null;
 	}
 
-
 	public BasicUser getUserByName(String s) {
 		for(BasicUser b : bul) {
 			if(b.getUserName().equals(s)) {
@@ -32,7 +32,6 @@ public class BasicUserDatabase implements ISaveAble {
 		}
 		return null;
 	}
-
 
 	public boolean doesUserExist(String name) {
 		for(BasicUser b : bul) {
@@ -43,33 +42,36 @@ public class BasicUserDatabase implements ISaveAble {
 		return false;
 	}
 
-	public BasicUser createNewUser(String name) {
+	public BasicUser createAndAddNewUser(String name,String passwd) {
 		synchronized(bul) {
 			if(!doesUserExist(name)) {
 				BasicUser b = new BasicUser();
 				b.setUserName(name);
+				b.setPassword(passwd, IMessageHandler.SERVER.getUser());
+				b.setUserID(nextFree);
+				nextFree++;
+				bul.add(b);
 				return b;
 			}
 		}
 		return null;
 	}
 
-
-	public void addUserToDatabase(BasicUser u) {
+	public void removeUserFromDatabase(BasicUser u) {
 		synchronized(bul) {
-			if(!doesUserExist(u.getUserName())) {
-				bul.add(u);
-				u.setUserID(nextFree);
-				nextFree++;
+			if(bul.contains(u)) {
+				bul.remove(u);
+			}
+		}
+	}
+
+	public void removeUserFromDatabase(String name){
+		synchronized(bul){
+			if(doesUserExist(name)){
+				bul.remove(getUserByName(name));
 			}
 		}
 
-	}
-
-	public void removeUserFromDatabase(BasicUser u) {
-		if(bul.contains(u)) {
-			bul.remove(u);
-		}
 	}
 
 	@Override
