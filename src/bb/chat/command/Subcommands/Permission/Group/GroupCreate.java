@@ -7,9 +7,9 @@ import bb.chat.interfaces.IMessageHandler;
 /**
  * Created by BB20101997 on 15.12.2014.
  */
-public class GroupDelete extends SubPermission {
-	public GroupDelete() {
-		super("group-delete");
+public class GroupCreate extends SubPermission {
+	public GroupCreate() {
+		super("group-create");
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package bb.chat.command.Subcommands.Permission;
 
-import bb.chat.command.Permission;
 import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IIOHandler;
@@ -17,11 +16,9 @@ public abstract class SubPermission implements ICommand{
 	public String[] alias = new String[0];
 	public String[] help = new String[0];
 	public boolean debug = false;
-	protected final Permission instance;
 
-	public SubPermission(Permission instance,String name){
+	public SubPermission(String name){
 		this.name = "permission-"+name;
-		this.instance = instance;
 	}
 
 	@Override

@@ -14,5 +14,6 @@ public class UserPermAdd extends SubPermission {
 
 	@Override
 	public void executePermissionCommand(IMessageHandler imh, IIOHandler executor, String cmd, String rest){
+		//TODO
 	}
 }
