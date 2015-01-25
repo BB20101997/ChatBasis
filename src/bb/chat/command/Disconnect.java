@@ -26,8 +26,7 @@ public class Disconnect implements ICommand {
 	@Override
 	public void runCommand(String commandLine, IMessageHandler imh) {
 		if(imh.getSide() == Side.CLIENT) {
-			imh.setEmpfaenger(IMessageHandler.SERVER);
-			imh.sendPackage(new DisconnectPacket());
+			imh.sendPackage(new DisconnectPacket(),IMessageHandler.SERVER);
 			imh.disconnect(imh.getActor());
 			imh.wipe();
 			imh.println("Successfully disconnected!");

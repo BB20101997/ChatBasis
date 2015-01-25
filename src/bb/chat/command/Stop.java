@@ -23,7 +23,7 @@ public class Stop implements ICommand {
 	@Override
 	public void runCommand(String commandLine, IMessageHandler imh) {
 		if(imh.getSide() == Side.CLIENT) {
-			imh.sendPackage(new StopPacket());
+			imh.sendPackage(new StopPacket(),IMessageHandler.SERVER);
 		} else {
 			imh.shutdown();
 		}

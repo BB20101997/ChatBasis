@@ -30,14 +30,12 @@ public class Whisper implements ICommand {
 			if(c.length <= 2) {
 				return;
 			}
-			imh.setEmpfaenger(IMessageHandler.SERVER);
-			imh.sendPackage(new WhisperPacket(imh.getActor().getActorName(), c[2], c[1]));
+			imh.sendPackage(new WhisperPacket(imh.getActor().getActorName(), c[2], c[1]),IMessageHandler.SERVER);
 		} else {
 			String str[] = commandLine.split(" ", 3);
 			if(str.length > 2) {
 				System.out.println(str[1] + " : " + str[2]);
-				imh.setEmpfaenger(imh.getUserByName(str[1]));
-				imh.sendPackage(new WhisperPacket(imh.getActor().getActorName(), str[2], c[1]));
+				imh.sendPackage(new WhisperPacket(imh.getActor().getActorName(), str[2], c[1]),imh.getUserByName(str[1]));
 			}
 		}
 	}

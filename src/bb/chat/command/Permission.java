@@ -15,9 +15,9 @@ import java.util.List;
  */
 public class Permission implements ICommand {
 
-	public List<SubPermission> subCommandList = new ArrayList<>();
+	public final List<SubPermission> subCommandList = new ArrayList<>();
 
-	public Permission(){
+	public Permission() {
 		subCommandList.add(new Help(this));
 		subCommandList.add(new Create());
 		subCommandList.add(new Delete());

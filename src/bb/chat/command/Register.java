@@ -3,7 +3,6 @@ package bb.chat.command;
 import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IMessageHandler;
-import bb.chat.network.packet.Handshake.LoginPacket;
 import bb.chat.network.packet.Handshake.SignUpPacket;
 
 /**
@@ -18,7 +17,7 @@ public class Register implements ICommand {
 
 	@Override
 	public String getName() {
-		return null;
+		return "register";
 	}
 
 	@Override
@@ -26,10 +25,10 @@ public class Register implements ICommand {
 		if(imh.getSide() == Side.CLIENT) {
 			String[] c = commandLine.split(" ", 4);
 			if(c.length == 4 && c[2].equals(c[3])) {
-				LoginPacket p = new SignUpPacket();
+				SignUpPacket p = new SignUpPacket();
 				p.setPassword(c[2]);
 				p.setUsername(c[1]);
-				imh.sendPackage(p);
+				imh.sendPackage(p,IMessageHandler.SERVER);
 			} else if(c.length == 4) {
 				imh.println("[Client] Password and Repeated Password did not match!");
 			}

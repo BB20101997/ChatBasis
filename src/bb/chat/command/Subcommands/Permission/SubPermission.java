@@ -40,7 +40,7 @@ public abstract class SubPermission implements ICommand{
 	protected void runClient(String cL, IMessageHandler imh) {
 		String[] command = cL.split(" ", 2);
 		IPacket p = new PermissionPacket(command[0], command[1]);
-		imh.sendPackage(p);
+		imh.sendPackage(p,IMessageHandler.SERVER);
 		System.out.println("Run permission Sub-Command "+cL+" on Side Client");
 	}
 

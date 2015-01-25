@@ -23,7 +23,7 @@ public class Save implements ICommand {
 	@Override
 	public void runCommand(String commandLine, IMessageHandler imh) {
 		if(imh.getSide() == Side.CLIENT) {
-			imh.sendPackage(new SavePacket());
+			imh.sendPackage(new SavePacket(),IMessageHandler.SERVER);
 		} else {
 			imh.save();
 		}

@@ -38,8 +38,7 @@ public class Help implements ICommand {
 			}
 
 			String str = s.toString();
-			imh.setEmpfaenger(imh.getActor());
-			imh.sendPackage(new ChatPacket(str, imh.getActor().getActorName()));
+			imh.sendPackage(new ChatPacket(str, imh.getActor().getActorName()),imh.getActor());
 			System.out.println("Executing Help Command");
 		} else {
 			String[] helps = imh.getHelpForAllCommands();
@@ -54,8 +53,7 @@ public class Help implements ICommand {
 			}
 
 			String str = s.toString();
-			imh.setEmpfaenger(imh.getActor());
-			imh.sendPackage(new ChatPacket(str, imh.getActor().getActorName()));
+			imh.sendPackage(new ChatPacket(str, imh.getActor().getActorName()),imh.getActor());
 		}
 	}
 

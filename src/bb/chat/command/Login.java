@@ -27,7 +27,7 @@ public class Login implements ICommand {
 				LoginPacket p = new LoginPacket();
 				p.setPassword(c[2]);
 				p.setUsername(c[1]);
-				imh.sendPackage(p);
+				imh.sendPackage(p,IMessageHandler.SERVER);
 			}
 		}
 	}
