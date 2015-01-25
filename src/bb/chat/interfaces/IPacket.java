@@ -26,11 +26,11 @@ public abstract class IPacket {
 	}
 
 	@SuppressWarnings("CanBeFinal")
-	private NetworkState minNetworkState = NetworkState.UNKNOWN;
+	protected NetworkState minNetworkState = NetworkState.POST_HANDSHAKE;
 
 	protected IPacket() {
 		try {
-			getClass().getConstructor(new Class[0]);
+			getClass().getConstructor();
 		} catch(NoSuchMethodException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Missing default constructor in Packet class : " + getClass().getName());
