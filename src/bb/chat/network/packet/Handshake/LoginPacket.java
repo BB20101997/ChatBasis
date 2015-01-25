@@ -19,7 +19,7 @@ public class LoginPacket extends IPacket {
 	}
 
 	public void setPassword(String Passwd) {
-		userName = Passwd;
+		userPasswd = Passwd;
 	}
 
 	public String getUsername() {
@@ -28,7 +28,6 @@ public class LoginPacket extends IPacket {
 
 	public String getPassword() {
 		return userPasswd;
-		//TODO make it that only a hash value will be returned!
 	}
 
 	@Override
