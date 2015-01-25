@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by BB20101997 on 31.08.2014.
  */
-public class PacketDistributor implements IPacketDistributor<IPacketHandler> {
+public class PacketDistributor implements IPacketDistributor<IPacket> {
 
 	private final IMessageHandler IMH;
 
