@@ -76,11 +76,23 @@ public class BasicUserDatabase implements ISaveAble {
 
 	@Override
 	public void writeToFileWriter(FileWriter fw) {
-
+			fw.add(nextFree, "next");
+			fw.add(bul.size(),"USIZE");
+		for(int i =0;i<bul.size();i++){
+			fw.add(bul.get(i),"U"+i);
+		}
 	}
 
 	@Override
 	public void loadFromFileWriter(FileWriter fw) {
-
+		nextFree = (int)fw.get("next");
+		int size = (int)fw.get("USIZE");
+		for(int i = 0;i<size;i++){
+			FileWriter f = (FileWriter) fw.get("U"+i);
+			BasicUser b = new BasicUser();
+			b.loadFromFileWriter(f);
+			bul.add(b);
+			System.out.println("Loaded User with Name:"+b.getUserName());
+		}
 	}
 }
