@@ -26,12 +26,10 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 
 	private static final File configFile = new File("config.fw").getAbsoluteFile();
 
-	protected IIOHandler Target;
-
 	protected Side                     side;
 	protected BasicPermissionRegistrie permReg;
 	protected     IPacketDistributor PD           = new PacketDistributor(this);
-	private       IPacketRegistrie   PR           = new PacketRegistrie();
+	protected       IPacketRegistrie   PR           = new PacketRegistrie();
 	private final BasicUserDatabase  userDatabase = new BasicUserDatabase();
 
 	protected SSLSocket socket;
@@ -48,29 +46,13 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 	@SuppressWarnings("unchecked")
 	public BasicMessageHandler() {
 		PD.registerPacketHandler(PR);
-		load();
 	}
 
-	@SuppressWarnings("unchecked")
-	public BasicMessageHandler(IPacketRegistrie packetRegistrie) {
-		PR = packetRegistrie;
-		PD.registerPacketHandler(PR);
-		load();
-	}
-
-	@SuppressWarnings("unchecked")
-	public BasicMessageHandler(IPacketDistributor<IPacketRegistrie> packetDistributor) {
-		PD = packetDistributor;
-		PD.registerPacketHandler(PR);
-		load();
-	}
-
-	@SuppressWarnings("unchecked")
-	public BasicMessageHandler(IPacketRegistrie packetRegistrie, IPacketDistributor packetDistributor) {
+	public <P extends IPacket> BasicMessageHandler(IPacketRegistrie<? extends P> packetRegistrie, IPacketDistributor<? extends P> packetDistributor) {
 		PD = packetDistributor;
 		PR = packetRegistrie;
+		//noinspection unchecked
 		PD.registerPacketHandler(PR);
-		load();
 	}
 
 	@Override
@@ -79,7 +61,7 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 		if(side == Side.CLIENT) {
 
 			if(IRServer != null) {
-				sendPackage(new DisconnectPacket());
+				sendPackage(new DisconnectPacket(),SERVER);
 				IRServer.stop();
 				IRServer = null;
 			}
@@ -113,15 +95,18 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 		if(side == Side.SERVER) {
 			if(!configFile.exists()) {
 				try {
-					//noinspection ResultOfMethodCallIgnored
-					configFile.createNewFile();
+
+					if(!configFile.createNewFile()) {
+						sendPackage(new ChatPacket("Couldn't create save file,changes not saved!", "SYSTEM"),SERVER);
+					}
+
 				} catch(IOException e) {
 					e.printStackTrace();
 				}
 			}
 			FileWriter fileWriter = new FileWriter();
 			fileWriter.add(permReg, "permGen");
-			fileWriter.add(userDatabase,"bur");
+			fileWriter.add(userDatabase, "bur");
 			try {
 				fileWriter.writeToFile(configFile);
 			} catch(IOException e) {
@@ -132,6 +117,7 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 
 	@Override
 	public void load() {
+		System.out.println("Loading config...");
 		if(side == Side.SERVER) {
 			if(configFile.exists()) {
 				FileWriter fileWriter = new FileWriter();
@@ -142,6 +128,9 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 				} catch(IOException e) {
 					e.printStackTrace();
 				}
+			}
+			else{
+				System.err.println("Couldn't find config File!");
 			}
 		}
 	}
@@ -204,12 +193,6 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 	@Override
 	public BasicPermissionRegistrie getPermissionRegistry() {
 		return permReg;
-	}
-
-	@Override
-	public final void setEmpfaenger(IIOHandler ica) {
-
-		Target = ica;
 	}
 
 	@Override
@@ -362,9 +345,7 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 
 					} else {
 
-						setEmpfaenger(ALL);
-
-						sendPackage(new ChatPacket(s, getActor().getActorName()));
+						sendPackage(new ChatPacket(s, getActor().getActorName()),ALL);
 
 						if(side == Side.SERVER) {
 							println("[" + localActor.getActorName() + "] " + s);
