@@ -16,8 +16,17 @@ import java.util.List;
  */
 public class BasicPermissionRegistrie implements ISaveAble {
 
-	protected final List<String> registeredPermissions = new ArrayList<>();
-	protected final List<Group>  registeredGroups      = new ArrayList<>();
+	private final List<String> registeredPermissions = new ArrayList<>();
+	private final List<Group>  registeredGroups      = new ArrayList<>();
+
+	public boolean isPermissionRegistered(String p){
+		for(String s:registeredPermissions){
+			if(s.equals(p)){
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public void createPermission(String p) {
 
@@ -206,13 +215,26 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		return false;
 	}
 
-	private boolean includesPermission(String deniedPermission, String permission) {
-		//TODO:IMPLEMENT
-		return false;
-	}
+	private boolean includesPermission(String Permission, String perm) {
+		if(Permission==null||perm==null){
+			return false;
+		}
+		if(Permission.equals(perm)){
+			return true;
+		}
+		String[] PermissionArray = Permission.split(".");
+		String[] permArray = Permission.split(".");
 
-	public void setPermission(IIOHandler sender, IIOHandler user, String command, String perm) {
-		// TODO: Implement
+		for(int i= 0;i < PermissionArray.length&&i<permArray.length;i++){
+			if(PermissionArray[i].equals("*")){
+				continue;
+			}
+			if(!PermissionArray[i].equals(permArray[i])){
+				return false;
+			}
+
+		}
+		return true;
 	}
 
 	public synchronized void writeToFileWriter(FileWriter fw) {
@@ -230,7 +252,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		registeredPermissions.clear();
 		registeredGroups.clear();
 
-		int rps = (int) fw.get("PRS");
+		int rps = (int) fw.get("RPS");
 		int rgs = (int) fw.get("RGS");
 
 		for(int i = 0;i<rps;i++){
