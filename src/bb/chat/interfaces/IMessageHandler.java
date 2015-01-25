@@ -142,8 +142,6 @@ public interface IMessageHandler<UD extends BasicUserDatabase,PR extends BasicPe
 
 	IIOHandler getUserByName(String s);
 
-	void setEmpfaenger(IIOHandler ica);
-
 	Side getSide();
 
 	IPacketRegistrie getPacketRegistrie();
@@ -163,7 +161,7 @@ public interface IMessageHandler<UD extends BasicUserDatabase,PR extends BasicPe
 	// messages entered by the user should land here
 	void Message(String s);
 
-	void sendPackage(IPacket p);
+	void sendPackage(IPacket p,IIOHandler target);
 
 	// adds a Command
 	void addCommand(Class<? extends ICommand> c);
@@ -201,6 +199,5 @@ public interface IMessageHandler<UD extends BasicUserDatabase,PR extends BasicPe
 
 	//Will whip the chat log
 	public void wipe();
-
 
 }
