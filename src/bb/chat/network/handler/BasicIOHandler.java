@@ -181,6 +181,7 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 
 		if(IMH.getPacketRegistrie().containsPacket(p.getClass())) {
 
+			System.out.println(p.getClass());
 			int id = IMH.getPacketRegistrie().getID(p.getClass());
 
 			DataOut dataOut = DataOut.newInstance();
