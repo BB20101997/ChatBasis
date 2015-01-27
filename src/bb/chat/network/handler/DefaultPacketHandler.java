@@ -1,11 +1,11 @@
 package bb.chat.network.handler;
 
 import bb.chat.enums.QuerryType;
+import bb.chat.enums.ServerStatus;
 import bb.chat.enums.Side;
 import bb.chat.interfaces.IIOHandler;
 import bb.chat.interfaces.IMessageHandler;
 import bb.chat.interfaces.IPacket;
-import bb.chat.interfaces.IServerMessageHandler;
 import bb.chat.network.packet.Chatting.ChatPacket;
 import bb.chat.network.packet.Command.*;
 import bb.chat.network.packet.Handshake.LoginPacket;
@@ -14,6 +14,7 @@ import bb.chat.security.BasicUser;
 import bb.chat.security.BasicUserDatabase;
 import bb.util.file.database.FileWriter;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -75,7 +76,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 			}
 		} else {
 			IIOHandler io;
-			if((io = IMH.getUserByName(rp.oldName)) != null && io.setActorName(rp.newName)) {
+			if((io = IMH.getConnectionByName(rp.oldName)) != null && io.setActorName(rp.newName)) {
 				IMH.sendPackage(new ChatPacket(rp.oldName + " is now known as " + rp.newName, IMH.getActor().getActorName()), IMessageHandler.ALL);
 				IMH.sendPackage(new RenamePacket(rp.oldName, rp.newName), io);
 				IMH.println("[Server] : " + rp.oldName + " is now known as " + rp.newName);
@@ -88,7 +89,9 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 	@SuppressWarnings("UnusedParameters")
 	private void handlePacket(DisconnectPacket dp, IIOHandler sender) {
 		IMH.disconnect(sender);
-		IMH.sendPackage(new ChatPacket(sender.getActorName() + " disconnected!", IMH.getActor().getActorName()), IMessageHandler.ALL);
+		if(IMH.getSide() == Side.SERVER) {
+			IMH.sendPackage(new ChatPacket(sender.getActorName() + " disconnected!", IMH.getActor().getActorName()), IMessageHandler.ALL);
+		}
 		IMH.println("[" + IMH.getActor().getActorName() + "] " + sender.getActorName() + " disconnected!");
 	}
 
@@ -103,7 +106,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 	@SuppressWarnings("UnusedParameters")
 	private void handlePacket(WhisperPacket wp, IIOHandler sender) {
 		if(IMH.getSide() == Side.SERVER && !wp.getReceiver().equals(IMH.getActor().getActorName())) {
-			IMH.sendPackage(wp, IMH.getUserByName(wp.getReceiver()));
+			IMH.sendPackage(wp, IMH.getConnectionByName(wp.getReceiver()));
 		} else {
 			if(IMH.getActor().getActorName().equals(wp.getReceiver())) {
 				IMH.println("[" + wp.getSender() + " whispered to you: ] \"" + wp.getMessage() + "\"");
@@ -151,7 +154,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 		}
 	}
 
-	private void handlePacket(QuerryPacket qp, IIOHandler sender) {
+	private void handlePacket(QuerryPacket qp, IIOHandler sender){
 		boolean server = IMH.getSide() == Side.SERVER;
 		boolean request = qp.isRequest();
 		QuerryType querryType = qp.getQT();
@@ -161,73 +164,77 @@ public final class DefaultPacketHandler extends BasicPacketHandler<IPacket> {
 			switch(querryType) {
 
 				case SERVERNAME: {
-					if(IMH instanceof IServerMessageHandler) {
-						querryPacket = new QuerryPacket(querryType, ((IServerMessageHandler) IMH).getServerName());
-					}
+					querryPacket = new QuerryPacket(querryType, IMH.getServerName());
 					break;
 				}
-
 				case SERVERSTATUS: {
-					if(IMH instanceof IServerMessageHandler) {
-						querryPacket = new QuerryPacket(querryType,String.valueOf(((IServerMessageHandler) IMH).getServerStatus().ordinal()));
-					}
+					querryPacket = new QuerryPacket(querryType, String.valueOf(IMH.getServerStatus().ordinal()));
 					break;
 				}
 				case SERVERMESSAGE: {
-					if(IMH instanceof IServerMessageHandler) {
-						querryPacket = new QuerryPacket(querryType, ((IServerMessageHandler) IMH).getServerMessage());
-					}
+					querryPacket = new QuerryPacket(querryType, IMH.getServerMessage());
 					break;
 				}
 				case ONLINEUSERSNUMBER: {
-					if(IMH instanceof IServerMessageHandler) {
-						int n = ((IServerMessageHandler) IMH).getOnlineUsers();
-						querryPacket = new QuerryPacket(querryType, String.valueOf(n));
-					}
+					querryPacket = new QuerryPacket(querryType, String.valueOf(IMH.getOnlineUsers()));
 					break;
 				}
 				case ONLINEUSERSLIST: {
-					if(IMH instanceof IServerMessageHandler) {
-						FileWriter fw = new FileWriter();
-						String[] names = ((IServerMessageHandler) IMH).getActiveUserList();
-						fw.add(names.length, "SIZE");
-						for(int i = 0; i < names.length; i++) {
-							fw.add(names[i], "NR" + i);
-						}
-						ByteArrayOutputStream baos = new ByteArrayOutputStream();
-						try {
-							fw.writeToStream(baos);
-							querryPacket = new QuerryPacket(querryType, baos.toString());
-						} catch(IOException e) {
-							e.printStackTrace();
-						}
+					FileWriter fw = new FileWriter();
+					String[] names = IMH.getActiveUserList();
+					fw.add(names.length, "SIZE");
+					for(int i = 0; i < names.length; i++) {
+						fw.add(names[i], "NR" + i);
+					}
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+					try {
+						fw.writeToStream(baos);
+						querryPacket = new QuerryPacket(querryType, baos.toString());
+					} catch(IOException e) {
+						e.printStackTrace();
 					}
 					break;
 				}
 				case MAXONLINEUSERS: {
-
-					if(IMH instanceof IServerMessageHandler) {
-						querryPacket = new QuerryPacket(querryType, String.valueOf(((IServerMessageHandler) IMH).getMaxUsers()));
-					}
+					querryPacket = new QuerryPacket(querryType, String.valueOf(IMH.getMaxUsers()));
+					break;
 				}
 			}
 			IMH.sendPackage(querryPacket, sender);
 		}
-		if(!(request|server)){
-			switch(querryType){
+		if(!(request | server)) {
+			switch(querryType) {
 
 				case SERVERNAME:
-					break;//TODO
+					IMH.setServerName(qp.getResponse());
+					break;
 				case SERVERSTATUS:
-					break;//TODO
+					IMH.setServerStatus(ServerStatus.values()[Integer.valueOf(qp.getResponse())]);
+					break;
 				case SERVERMESSAGE:
-					break;//TODO
+					IMH.setServerMessage(qp.getResponse());
+					break;
 				case ONLINEUSERSNUMBER:
-					break;//TODO
+					IMH.setOnlineUsers(Integer.valueOf(qp.getResponse()));
+					break;
 				case ONLINEUSERSLIST:
-					break;//TODO
+					try {
+						FileWriter fw = new FileWriter();
+						ByteArrayInputStream bais = new ByteArrayInputStream(qp.getResponse().getBytes());
+						fw.readFromStream(bais);
+						int size = (int) fw.get("SIZE");
+						String[] names = new String[size];
+						for(int i = 0; i < size; i++) {
+							names[i]= (String) fw.get("NR" + i);
+						}
+						IMH.setActiveUsers(names);
+					} catch(IOException e) {
+						e.printStackTrace();
+					}
+					break;
 				case MAXONLINEUSERS:
-					break;//TODO
+					IMH.setMaxUsers(Integer.valueOf(qp.getResponse()));
+					break;
 			}
 		}
 	}
