@@ -8,14 +8,11 @@ import bb.chat.interfaces.IPacket;
 import bb.chat.network.packet.Command.DisconnectPacket;
 import bb.chat.network.packet.DataOut;
 import bb.chat.network.packet.Handshake.HandshakePacket;
-import bb.chat.network.packet.Handshake.LoginPacket;
-import bb.chat.network.packet.Handshake.SignUpPacket;
 import bb.chat.security.BasicUser;
 import com.sun.istack.internal.Nullable;
 
 import java.io.*;
 
-import static bb.chat.enums.NetworkState.LOGIN;
 
 /**
  * @author BB20101997
@@ -33,14 +30,14 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 	private Thread thread;
 	private NetworkState status = NetworkState.UNKNOWN;
 
-	public BasicIOHandler(final InputStream IS, OutputStream OS, IMessageHandler imh) {
+	public BasicIOHandler(final InputStream IS, OutputStream OS, IMessageHandler imh,boolean client) {
 		IMH = imh;
 		System.out.println("Creating Streams");
 		dis = new DataInputStream(IS);
 		dos = new DataOutputStream(OS);
-		status = NetworkState.HANDSHAKE;
+		status = NetworkState.PRE_HANDSHAKE;
 		if(imh.getSide() == Side.CLIENT) {
-			startHandshake();
+			startHandshake(client);
 		} else {
 			sendPacket(imh.getPacketRegistrie().getSyncPacket());
 		}
@@ -75,8 +72,8 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 		}
 	}
 
-	private void startHandshake() {
-		sendPacket(new HandshakePacket());
+	private void startHandshake(boolean client) {
+		sendPacket(new HandshakePacket(client));
 	}
 
 	public void start() {
@@ -159,8 +156,9 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 
 	@Override
 	public boolean setActorName(String s) {
+		//TODO:if server send Packet to Client
 		synchronized(IMH.getUserDatabase()) {
-			if(IMH.getUserByName(s) == null && (IMH.getUserDatabase() == null || !IMH.getUserDatabase().doesUserExist(s))) {
+			if(IMH.getConnectionByName(s) == null && (IMH.getUserDatabase() == null || !IMH.getUserDatabase().doesUserExist(s))) {
 				if(user == null) {
 					name = s;
 				} else {
@@ -174,10 +172,6 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 
 	@SuppressWarnings("unchecked")
 	public boolean sendPacket(IPacket p) {
-
-		if(p instanceof LoginPacket && !(p instanceof SignUpPacket)) {
-			status = LOGIN;
-		}
 
 		if(IMH.getPacketRegistrie().containsPacket(p.getClass())) {
 
@@ -201,7 +195,6 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 				dos.writeInt(b.length);
 				dos.write(b);
 			} catch(IOException e) {
-				// e.printStackTrace();
 				return false;
 			}
 
@@ -234,8 +227,13 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 	}
 
 	@Override
+	public NetworkState getNetworkState() {
+		return status;
+	}
+
+	@Override
 	public boolean isLoggedIn() {
-		return status.ordinal() >= LOGIN.ordinal();
+		return user!=null;
 	}
 
 	@Override
