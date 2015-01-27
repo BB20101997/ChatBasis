@@ -1,5 +1,6 @@
 package bb.chat.network.handler;
 
+import bb.chat.enums.ServerStatus;
 import bb.chat.enums.Side;
 import bb.chat.interfaces.*;
 import bb.chat.network.packet.Chatting.ChatPacket;
@@ -14,6 +15,7 @@ import javax.net.ssl.SSLSocket;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,17 +26,22 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 	private WorkingThread workingRunnable;
 	private Thread        workingThread;
 
+	protected String serverMessage = "", serverName = "";
+	protected int onlineUserNr = 0, maxOnlineUser = 0;
+	protected ServerStatus serverStatus = ServerStatus.UNKNOWN;
+	protected final List<String> activeUsers  = new ArrayList<>();
+
 	private static final File configFile = new File("config.fw").getAbsoluteFile();
 
 	protected Side                     side;
 	protected BasicPermissionRegistrie permReg;
 	protected     IPacketDistributor PD           = new PacketDistributor(this);
-	protected       IPacketRegistrie   PR           = new PacketRegistrie();
+	protected     IPacketRegistrie   PR           = new PacketRegistrie();
 	private final BasicUserDatabase  userDatabase = new BasicUserDatabase();
 
 	protected SSLSocket socket;
 
-	protected BasicIOHandler IRServer = null;
+	protected BasicIOHandler IRServer;
 
 	private final List<ICommand> commandList = new ArrayList<>();
 
@@ -45,6 +52,7 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 
 	@SuppressWarnings("unchecked")
 	public BasicMessageHandler() {
+		serverStatus = ServerStatus.STARTING;
 		PD.registerPacketHandler(PR);
 	}
 
@@ -61,7 +69,7 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 		if(side == Side.CLIENT) {
 
 			if(IRServer != null) {
-				sendPackage(new DisconnectPacket(),SERVER);
+				sendPackage(new DisconnectPacket(), SERVER);
 				IRServer.stop();
 				IRServer = null;
 			}
@@ -136,6 +144,7 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 	}
 
 	public void shutdown() {
+		serverStatus = ServerStatus.SHUTDOWN;
 		disconnect(ALL);
 		stopWorkingThread();
 	}
@@ -171,27 +180,27 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 	}
 
 	@Override
-	public Side getSide() {
+	public final Side getSide() {
 		return side;
 	}
 
 	@Override
-	public IPacketDistributor getPacketDistributor() {
+	public final IPacketDistributor getPacketDistributor() {
 		return PD;
 	}
 
 	@Override
-	public BasicUserDatabase getUserDatabase() {
+	public final BasicUserDatabase getUserDatabase() {
 		return userDatabase;
 	}
 
 	@Override
-	public IPacketRegistrie getPacketRegistrie() {
+	public final IPacketRegistrie getPacketRegistrie() {
 		return PR;
 	}
 
 	@Override
-	public BasicPermissionRegistrie getPermissionRegistry() {
+	public final BasicPermissionRegistrie getPermissionRegistry() {
 		return permReg;
 	}
 
@@ -226,7 +235,7 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 	}
 
 	@Override
-	public final IIOHandler getUserByName(String s) {
+	public final IIOHandler getConnectionByName(String s) {
 
 		for(IIOHandler ica : actors) {
 			if(ica.getActorName().equals(s)) {
@@ -283,24 +292,105 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 
 	@Override
 	public final void print(String s) {
-
 		System.out.println(s);
-		BCP.print(s);
+		if(BCP!=null) {
+			BCP.print(s);
+		}
 	}
 
 	@Override
 	public final void println(String s) {
-
 		System.out.println(s);
 		print(s + System.lineSeparator());
 	}
 
 	@Override
-	public final void wipe() {
+	public void wipe() {
+		System.console().flush();
 		BCP.WipeLog();
 	}
 
-	class WorkingThread implements Runnable {
+	@Override
+	public final int getMaxUsers() {
+		return maxOnlineUser;
+	}
+
+	@Override
+	public final void setMaxUsers(int i) {
+		maxOnlineUser = i;
+	}
+
+	@Override
+	public final int getOnlineUsers() {
+		return onlineUserNr;
+	}
+
+	@Override
+	public final void setOnlineUsers(int i) {
+		onlineUserNr = i;
+	}
+
+	@Override
+	public final ServerStatus getServerStatus() {
+		return serverStatus;
+	}
+
+	@Override
+	public final void setServerStatus(ServerStatus serverStat) {
+		serverStatus = serverStat;
+	}
+
+	@Override
+	public final String getServerMessage() {
+		return serverMessage;
+	}
+
+	@Override
+	public final void setServerMessage(String msg) {
+		serverMessage = msg;
+	}
+
+	@Override
+	public final String getServerName() {
+		return serverName;
+	}
+
+	public final void setServerName(String s){
+		serverName = s;
+	}
+
+	@Override
+	public String[] getActiveUserList(){
+		return activeUsers.toArray(new String[activeUsers.size()]);
+	}
+
+	@Override
+	public void setActiveUsers(String[] sArgs) {
+		synchronized(activeUsers) {
+			activeUsers.clear();
+			Collections.addAll(activeUsers, sArgs);
+		}
+	}
+
+	@Override
+	public void addActiveUser(String name) {
+		synchronized(activeUsers) {
+			if(!activeUsers.contains(name)) {
+				activeUsers.add(name);
+			}
+		}
+	}
+
+	@Override
+	public void removeActiveUser(String name) {
+		synchronized(activeUsers) {
+			if(activeUsers.contains(name)){
+				activeUsers.remove(name);
+			}
+		}
+	}
+
+	protected class WorkingThread implements Runnable {
 
 
 		private boolean keepGoing = true;
