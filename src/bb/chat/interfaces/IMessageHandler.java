@@ -1,6 +1,8 @@
 package bb.chat.interfaces;
 
 
+import bb.chat.enums.NetworkState;
+import bb.chat.enums.ServerStatus;
 import bb.chat.enums.Side;
 import bb.chat.security.BasicPermissionRegistrie;
 import bb.chat.security.BasicUser;
@@ -51,6 +53,11 @@ public interface IMessageHandler<UD extends BasicUserDatabase,PR extends BasicPe
 		@Override
 		public void receivedHandshake() {
 
+		}
+
+		@Override
+		public NetworkState getNetworkState() {
+			return NetworkState.POST_HANDSHAKE;
 		}
 
 		@Override
@@ -117,6 +124,11 @@ public interface IMessageHandler<UD extends BasicUserDatabase,PR extends BasicPe
 		}
 
 		@Override
+		public NetworkState getNetworkState() {
+			return NetworkState.MANAGEMENT;
+		}
+
+		@Override
 		public boolean isLoggedIn() {
 			return false;
 		}
@@ -140,7 +152,7 @@ public interface IMessageHandler<UD extends BasicUserDatabase,PR extends BasicPe
 		}
 	};
 
-	IIOHandler getUserByName(String s);
+	IIOHandler getConnectionByName(String s);
 
 	Side getSide();
 
@@ -199,5 +211,20 @@ public interface IMessageHandler<UD extends BasicUserDatabase,PR extends BasicPe
 
 	//Will whip the chat log
 	public void wipe();
+
+	String[] getActiveUserList();
+	void setActiveUsers(String[] sArgs);
+	void addActiveUser(String name);
+	void removeActiveUser(String name);
+	int getOnlineUsers();
+	void setOnlineUsers(int i);
+	int getMaxUsers();
+	void setMaxUsers(int i);
+	String getServerName();
+	void setServerName(String s);
+	String getServerMessage();
+	void setServerMessage(String msg);
+	ServerStatus getServerStatus();
+	void setServerStatus(ServerStatus status);
 
 }
