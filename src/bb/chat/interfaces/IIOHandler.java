@@ -1,5 +1,6 @@
 package bb.chat.interfaces;
 
+import bb.chat.enums.NetworkState;
 import bb.chat.security.BasicUser;
 
 /**
@@ -22,6 +23,8 @@ public interface IIOHandler extends Runnable {
 	public boolean isAlive();
 
 	void receivedHandshake();
+
+	NetworkState getNetworkState();
 
 	boolean isLoggedIn();
 
