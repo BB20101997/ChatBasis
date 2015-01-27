@@ -4,7 +4,6 @@ import bb.chat.enums.QuerryType;
 import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IMessageHandler;
-import bb.chat.interfaces.IServerMessageHandler;
 import bb.chat.network.packet.Command.QuerryPacket;
 
 /**
@@ -24,11 +23,9 @@ public class List implements ICommand {
 	@Override
 	public void runCommand(String commandLine, IMessageHandler imh) {
 		if(imh.getSide() == Side.SERVER) {
-			if(imh instanceof IServerMessageHandler) {
-				String[] names = ((IServerMessageHandler) imh).getActiveUserList();
+				String[] names = imh.getActiveUserList();
 				for(String name : names) {
 					imh.println(name);
-				}
 			}
 		}
 		else{

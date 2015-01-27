@@ -32,12 +32,12 @@ public class Rename implements ICommand {
 		if(imh.getSide() == Side.CLIENT) {
 			imh.sendPackage(new RenamePacket(dS[1], dS[2]),IMessageHandler.ALL);
 		} else {
-			IIOHandler ica = imh.getUserByName(dS[1]);
+			IIOHandler ica = imh.getConnectionByName(dS[1]);
 			if(ica != null) {
 				ica.setActorName(dS[2]);
 				imh.println("[" + imh.getActor().getActorName() + "] " + dS[1] + " is now known as " + dS[2]);
 				imh.sendPackage(new ChatPacket(dS[1] + " is now known as " + dS[2], imh.getActor().getActorName()),IMessageHandler.ALL);
-				imh.sendPackage(new RenamePacket(dS[1], dS[2]),imh.getUserByName(dS[2]));
+				imh.sendPackage(new RenamePacket(dS[1], dS[2]),imh.getConnectionByName(dS[2]));
 			}
 		}
 	}

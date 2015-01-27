@@ -35,7 +35,7 @@ public class Whisper implements ICommand {
 			String str[] = commandLine.split(" ", 3);
 			if(str.length > 2) {
 				System.out.println(str[1] + " : " + str[2]);
-				imh.sendPackage(new WhisperPacket(imh.getActor().getActorName(), str[2], c[1]),imh.getUserByName(str[1]));
+				imh.sendPackage(new WhisperPacket(imh.getActor().getActorName(), str[2], c[1]),imh.getConnectionByName(str[1]));
 			}
 		}
 	}
