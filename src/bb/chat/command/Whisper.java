@@ -2,7 +2,7 @@ package bb.chat.command;
 
 import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IMessageHandler;
+import bb.chat.interfaces.IConnectionHandler;
 import bb.chat.network.packet.Command.WhisperPacket;
 
 /**
@@ -22,7 +22,7 @@ public class Whisper implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IMessageHandler imh) {
+	public void runCommand(String commandLine, IConnectionHandler imh) {
 
 		String[] c = commandLine.split(" ", 3);
 
@@ -30,7 +30,7 @@ public class Whisper implements ICommand {
 			if(c.length <= 2) {
 				return;
 			}
-			imh.sendPackage(new WhisperPacket(imh.getActor().getActorName(), c[2], c[1]),IMessageHandler.SERVER);
+			imh.sendPackage(new WhisperPacket(imh.getActor().getActorName(), c[2], c[1]), IConnectionHandler.SERVER);
 		} else {
 			String str[] = commandLine.split(" ", 3);
 			if(str.length > 2) {

@@ -2,7 +2,7 @@ package bb.chat.command;
 
 import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IMessageHandler;
+import bb.chat.interfaces.IConnectionHandler;
 import bb.chat.network.packet.Command.SavePacket;
 
 /**
@@ -21,11 +21,11 @@ public class Save implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IMessageHandler imh) {
+	public void runCommand(String commandLine, IConnectionHandler imh) {
 		if(imh.getSide() == Side.CLIENT) {
-			imh.sendPackage(new SavePacket(),IMessageHandler.SERVER);
+			imh.sendPackage(new SavePacket(), IConnectionHandler.SERVER);
 		} else {
-			imh.save();
+			imh.getIChatInstance().save();
 		}
 	}
 

@@ -1,7 +1,7 @@
 package bb.chat.gui;
 
 import bb.chat.interfaces.IBasicChatPanel;
-import bb.chat.interfaces.IMessageHandler;
+import bb.chat.interfaces.IConnectionHandler;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,12 +40,12 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 
 	private final JScrollPane chatLogScroll = new JScrollPane(ChatLog);
 
-	public final IMessageHandler IMH;
+	public final IConnectionHandler IMH;
 
 	/**
 	 * The constructor to set up the JPanel
 	 */
-	public BasicChatPanel(IMessageHandler imh) {
+	public BasicChatPanel(IConnectionHandler imh) {
 		super();
 		IMH = imh;
 		Send.setActionCommand(SEND_EVENT);

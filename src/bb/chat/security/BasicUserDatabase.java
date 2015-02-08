@@ -1,6 +1,6 @@
 package bb.chat.security;
 
-import bb.chat.interfaces.IMessageHandler;
+import bb.chat.interfaces.IConnectionHandler;
 import bb.util.file.database.FileWriter;
 import bb.util.file.database.ISaveAble;
 
@@ -47,7 +47,7 @@ public class BasicUserDatabase implements ISaveAble {
 			if(!doesUserExist(name)) {
 				BasicUser b = new BasicUser();
 				b.setUserName(name);
-				b.setPassword(passwd, IMessageHandler.SERVER.getUser());
+				b.setPassword(passwd, IConnectionHandler.SERVER.getUser());
 				b.setUserID(nextFree);
 				nextFree++;
 				bul.add(b);

@@ -2,7 +2,7 @@ package bb.chat.command;
 
 import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IMessageHandler;
+import bb.chat.interfaces.IConnectionHandler;
 import bb.chat.network.packet.Chatting.ChatPacket;
 
 /**
@@ -24,9 +24,9 @@ public class Help implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IMessageHandler imh) {
+	public void runCommand(String commandLine, IConnectionHandler imh) {
 		if(imh.getSide() == Side.CLIENT) {
-			String[] helps = imh.getHelpForAllCommands();
+			String[] helps = imh.getIChatInstance().getCommandRegestry().getHelpForAllCommands();
 			StringBuilder s = new StringBuilder();
 
 			s.append("Help for the server side commands:");
@@ -41,7 +41,7 @@ public class Help implements ICommand {
 			imh.sendPackage(new ChatPacket(str, imh.getActor().getActorName()),imh.getActor());
 			System.out.println("Executing Help Command");
 		} else {
-			String[] helps = imh.getHelpForAllCommands();
+			String[] helps = imh.getIChatInstance().getCommandRegestry().getHelpForAllCommands();
 			StringBuilder s = new StringBuilder();
 
 			s.append("Help for the client side commands:");

@@ -2,7 +2,7 @@ package bb.chat.command;
 
 import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IMessageHandler;
+import bb.chat.interfaces.IConnectionHandler;
 import bb.chat.network.packet.Handshake.LoginPacket;
 
 /**
@@ -20,14 +20,14 @@ public class Login implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IMessageHandler imh) {
+	public void runCommand(String commandLine, IConnectionHandler imh) {
 		if(imh.getSide() == Side.CLIENT) {
 			String[] c = commandLine.split(" ", 3);
 			if(c.length == 3) {
 				LoginPacket p = new LoginPacket();
 				p.setPassword(c[2]);
 				p.setUsername(c[1]);
-				imh.sendPackage(p,IMessageHandler.SERVER);
+				imh.sendPackage(p, IConnectionHandler.SERVER);
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 package bb.chat.network.packet.Command;
 
-import bb.chat.interfaces.IPacket;
+import bb.chat.interfaces.APacket;
 import bb.chat.network.packet.DataIn;
 import bb.chat.network.packet.DataOut;
 
@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Created by BB20101997 on 28.11.2014.
  */
-public class PermissionPacket extends IPacket {
+public class PermissionPacket extends APacket {
 
 	public String cmd;
 	public String restCmd;

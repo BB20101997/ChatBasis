@@ -1,6 +1,6 @@
 package bb.chat.network.packet.Handshake;
 
-import bb.chat.interfaces.IPacket;
+import bb.chat.interfaces.APacket;
 import bb.chat.network.packet.DataIn;
 import bb.chat.network.packet.DataOut;
 
@@ -9,18 +9,18 @@ import java.io.IOException;
 /**
  * Created by BB20101997 on 30.08.2014.
  */
-public class PacketSyncPacket extends IPacket {
+public class PacketSyncPacket extends APacket {
 
-	private Class<? extends IPacket>[] classes;
+	private Class<? extends APacket>[] classes;
 
-	public PacketSyncPacket(Class<? extends IPacket>[] cs) {
+	public PacketSyncPacket(Class<? extends APacket>[] cs) {
 		classes = cs;
 	}
 
 	public PacketSyncPacket() {
 	}
 
-	public Class<? extends IPacket>[] getPackageClasses() {
+	public Class<? extends APacket>[] getPackageClasses() {
 		return classes;
 	}
 

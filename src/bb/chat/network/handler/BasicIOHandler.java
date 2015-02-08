@@ -3,8 +3,8 @@ package bb.chat.network.handler;
 import bb.chat.enums.NetworkState;
 import bb.chat.enums.Side;
 import bb.chat.interfaces.IIOHandler;
-import bb.chat.interfaces.IMessageHandler;
-import bb.chat.interfaces.IPacket;
+import bb.chat.interfaces.IConnectionHandler;
+import bb.chat.interfaces.APacket;
 import bb.chat.network.packet.Command.DisconnectPacket;
 import bb.chat.network.packet.DataOut;
 import bb.chat.network.packet.Handshake.HandshakePacket;
@@ -19,9 +19,9 @@ import java.io.*;
  */
 public class BasicIOHandler implements Runnable, IIOHandler {
 
-	private final IMessageHandler  IMH;
-	private final DataInputStream  dis;
-	private final DataOutputStream dos;
+	private final IConnectionHandler IMH;
+	private final DataInputStream    dis;
+	private final DataOutputStream   dos;
 	private boolean handshakeReceived = false;
 	@Nullable
 	private BasicUser user;
@@ -30,7 +30,7 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 	private Thread thread;
 	private NetworkState status = NetworkState.UNKNOWN;
 
-	public BasicIOHandler(final InputStream IS, OutputStream OS, IMessageHandler imh,boolean client) {
+	public BasicIOHandler(final InputStream IS, OutputStream OS, IConnectionHandler imh, boolean client) {
 		IMH = imh;
 		System.out.println("Creating Streams");
 		dis = new DataInputStream(IS);
@@ -39,7 +39,7 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 		if(imh.getSide() == Side.CLIENT) {
 			startHandshake(client);
 		} else {
-			sendPacket(imh.getPacketRegistrie().getSyncPacket());
+			sendPacket(imh.getIChatInstance().getPacketRegistrie().getSyncPacket());
 		}
 	}
 
@@ -117,8 +117,8 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 				length = dis.readInt();
 				byte[] by = new byte[length];
 				dis.readFully(by);
-				System.out.println("IOHandler: PacketReceived : " + IMH.getPacketRegistrie().getPacketClassByID(id) + " on Side : " + IMH.getSide());
-				IMH.getPacketDistributor().distributePacket(id, by, this);
+				System.out.println("IOHandler: PacketReceived : " + IMH.getIChatInstance().getPacketRegistrie().getPacketClassByID(id) + " on Side : " + IMH.getSide());
+				IMH.getIChatInstance().getPacketDistributor().distributePacket(id, by, this);
 
 			} catch(Exception e) {
 				sendPacket(new DisconnectPacket());
@@ -157,8 +157,8 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 	@Override
 	public boolean setActorName(String s) {
 		//TODO:if server send Packet to Client
-		synchronized(IMH.getUserDatabase()) {
-			if(IMH.getConnectionByName(s) == null && (IMH.getUserDatabase() == null || !IMH.getUserDatabase().doesUserExist(s))) {
+		synchronized(IMH.getIChatInstance().getUserDatabase()) {
+			if(IMH.getConnectionByName(s) == null && (IMH.getIChatInstance().getUserDatabase() == null || !IMH.getIChatInstance().getUserDatabase().doesUserExist(s))) {
 				if(user == null) {
 					name = s;
 				} else {
@@ -171,12 +171,14 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	public boolean sendPacket(IPacket p) {
+	public boolean sendPacket(APacket p) {
 
-		if(IMH.getPacketRegistrie().containsPacket(p.getClass())) {
+		System.out.println(IMH!=null);
+		System.out.println(IMH.getIChatInstance()!=null);
+		if(IMH.getIChatInstance().getPacketRegistrie().containsPacket(p.getClass())) {
 
 			System.out.println(p.getClass());
-			int id = IMH.getPacketRegistrie().getID(p.getClass());
+			int id = IMH.getIChatInstance().getPacketRegistrie().getID(p.getClass());
 
 			DataOut dataOut = DataOut.newInstance();
 

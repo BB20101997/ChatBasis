@@ -2,7 +2,7 @@ package bb.chat.command;
 
 import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IMessageHandler;
+import bb.chat.interfaces.IConnectionHandler;
 
 /**
  * @author BB20101997
@@ -20,7 +20,7 @@ public class Connect implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IMessageHandler imh) {
+	public void runCommand(String commandLine, IConnectionHandler imh) {
 		if(imh.getSide() == Side.CLIENT) {
 			String[] strA = commandLine.split(" ");
 			imh.wipe();

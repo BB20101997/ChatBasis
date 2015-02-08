@@ -4,7 +4,7 @@ import bb.chat.command.Permission;
 import bb.chat.command.Subcommands.Permission.SubPermission;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.IIOHandler;
-import bb.chat.interfaces.IMessageHandler;
+import bb.chat.interfaces.IConnectionHandler;
 import bb.util.file.database.FileWriter;
 import bb.util.file.database.ISaveAble;
 
@@ -249,6 +249,9 @@ public class BasicPermissionRegistrie implements ISaveAble {
 	}
 
 	public synchronized void loadFromFileWriter(FileWriter fw) {
+		if(fw==null){
+			return;
+		}
 		registeredPermissions.clear();
 		registeredGroups.clear();
 
@@ -266,8 +269,8 @@ public class BasicPermissionRegistrie implements ISaveAble {
 
 	}
 
-	public void executePermissionCommand(IMessageHandler imh,IIOHandler userRunningCommand,String command,String restOfCommand) {
-		ICommand cmd = imh.getCommand("permission");
+	public void executePermissionCommand(IConnectionHandler imh,IIOHandler userRunningCommand,String command,String restOfCommand) {
+		ICommand cmd = imh.getIChatInstance().getCommandRegestry().getCommand("permission");
 		if(cmd instanceof Permission){
 			for(SubPermission sp:((Permission) cmd).subCommandList){
 				if(sp.getName().equals(command)){

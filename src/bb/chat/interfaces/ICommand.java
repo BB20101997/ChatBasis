@@ -15,7 +15,7 @@ public interface ICommand {
 	/**
 	 * Replacing the old runCommand you can get the IChatActor by calling : imh.getActor(); It should be the same!
 	 */
-	void runCommand(String commandLine, IMessageHandler imh);
+	void runCommand(String commandLine, IConnectionHandler imh);
 
 	String[] helpCommand();
 

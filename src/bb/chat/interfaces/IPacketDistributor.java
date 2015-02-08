@@ -3,7 +3,7 @@ package bb.chat.interfaces;
 /**
  * Created by BB20101997 on 03.09.2014.
  */
-public interface IPacketDistributor<P extends IPacket> {
+public interface IPacketDistributor<P extends APacket> {
 
 
 	/**

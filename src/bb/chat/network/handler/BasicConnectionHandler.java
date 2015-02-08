@@ -5,11 +5,8 @@ import bb.chat.enums.Side;
 import bb.chat.interfaces.*;
 import bb.chat.network.packet.Chatting.ChatPacket;
 import bb.chat.network.packet.Command.DisconnectPacket;
-import bb.chat.network.packet.PacketDistributor;
-import bb.chat.network.packet.PacketRegistrie;
 import bb.chat.security.BasicPermissionRegistrie;
 import bb.chat.security.BasicUserDatabase;
-import bb.util.file.database.FileWriter;
 
 import javax.net.ssl.SSLSocket;
 import java.io.File;
@@ -28,16 +25,13 @@ public abstract class BasicConnectionHandler implements IConnectionHandler<Basic
 
 	protected String serverMessage = "", serverName = "";
 	protected int onlineUserNr = 0, maxOnlineUser = 0;
-	protected ServerStatus serverStatus = ServerStatus.UNKNOWN;
+	protected       ServerStatus serverStatus = ServerStatus.NOT_STARTED;
 	protected final List<String> activeUsers  = new ArrayList<>();
 
 	private static final File configFile = new File("config.fw").getAbsoluteFile();
 
-	protected Side                     side;
-	protected BasicPermissionRegistrie permReg;
-	protected     IPacketDistributor PD           = new PacketDistributor(this);
-	protected     IPacketRegistrie   PR           = new PacketRegistrie();
-	private final BasicUserDatabase  userDatabase = new BasicUserDatabase();
+	protected Side                                               side;
+	private   IChat<BasicUserDatabase, BasicPermissionRegistrie> iChat;
 
 	protected SSLSocket socket;
 
@@ -46,22 +40,6 @@ public abstract class BasicConnectionHandler implements IConnectionHandler<Basic
 	private final List<ICommand> commandList = new ArrayList<>();
 
 	protected IIOHandler localActor;
-
-	private IBasicChatPanel BCP;
-
-
-	@SuppressWarnings("unchecked")
-	public BasicConnectionHandler() {
-		serverStatus = ServerStatus.STARTING;
-		PD.registerPacketHandler(PR);
-	}
-
-	public <P extends IPacket> BasicConnectionHandler(IPacketRegistrie<? extends P> packetRegistrie, IPacketDistributor<? extends P> packetDistributor) {
-		PD = packetDistributor;
-		PR = packetRegistrie;
-		//noinspection unchecked
-		PD.registerPacketHandler(PR);
-	}
 
 	@Override
 	public void disconnect(IIOHandler a) {
@@ -98,58 +76,13 @@ public abstract class BasicConnectionHandler implements IConnectionHandler<Basic
 
 	}
 
-	@Override
-	public void save() {
-		if(side == Side.SERVER) {
-			if(!configFile.exists()) {
-				try {
-
-					if(!configFile.createNewFile()) {
-						sendPackage(new ChatPacket("Couldn't create save file,changes not saved!", "SYSTEM"),SERVER);
-					}
-
-				} catch(IOException e) {
-					e.printStackTrace();
-				}
-			}
-			FileWriter fileWriter = new FileWriter();
-			fileWriter.add(permReg, "permGen");
-			fileWriter.add(userDatabase, "bur");
-			try {
-				fileWriter.writeToFile(configFile);
-			} catch(IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	@Override
-	public void load() {
-		System.out.println("Loading config...");
-		if(side == Side.SERVER) {
-			if(configFile.exists()) {
-				FileWriter fileWriter = new FileWriter();
-				try {
-					fileWriter.readFromFile(configFile);
-					permReg.loadFromFileWriter((FileWriter) fileWriter.get("permGen"));
-					userDatabase.loadFromFileWriter((FileWriter) fileWriter.get("bur"));
-				} catch(IOException e) {
-					e.printStackTrace();
-				}
-			}
-			else{
-				System.err.println("Couldn't find config File!");
-			}
-		}
-	}
-
 	public void shutdown() {
 		serverStatus = ServerStatus.SHUTDOWN;
 		disconnect(ALL);
 		stopWorkingThread();
 	}
 
-	synchronized void startWorkingThread() {
+	final synchronized void startWorkingThread() {
 		if(workingRunnable == null) {
 			workingRunnable = new WorkingThread(this);
 			workingThread = new Thread(workingRunnable);
@@ -157,16 +90,12 @@ public abstract class BasicConnectionHandler implements IConnectionHandler<Basic
 		}
 	}
 
-	synchronized void stopWorkingThread() {
+	final synchronized void stopWorkingThread() {
 		if(workingRunnable != null) {
 			workingRunnable.stop();
 			workingRunnable = null;
 			workingThread = null;
 		}
-	}
-
-	public final void setBasicChatPanel(IBasicChatPanel BCP) {
-		this.BCP = BCP;
 	}
 
 	@Override
@@ -181,50 +110,6 @@ public abstract class BasicConnectionHandler implements IConnectionHandler<Basic
 	@Override
 	public final Side getSide() {
 		return side;
-	}
-
-	@Override
-	public final IPacketDistributor getPacketDistributor() {
-		return PD;
-	}
-
-	@Override
-	public final BasicUserDatabase getUserDatabase() {
-		return userDatabase;
-	}
-
-	@Override
-	public final IPacketRegistrie getPacketRegistrie() {
-		return PR;
-	}
-
-	@Override
-	public final BasicPermissionRegistrie getPermissionRegistry() {
-		return permReg;
-	}
-
-	@Override
-	public final void addCommand(java.lang.Class<? extends ICommand> c) {
-
-		try {
-			ICommand com = c.newInstance();
-			commandList.add(com);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public final ICommand getCommand(String text) {
-
-		for(ICommand c : commandList) {
-			if(text.equals(c.getName())) {
-				return c;
-			}
-
-		}
-
-		return null;
 	}
 
 	@Override
@@ -247,53 +132,22 @@ public abstract class BasicConnectionHandler implements IConnectionHandler<Basic
 	}
 
 	@Override
-	public final String[] getHelpForAllCommands() {
-
-		List<String> sList = new ArrayList<>();
-
-		for(ICommand ic : commandList) {
-			sList.add(getHelpFromCommand(ic));
-		}
-
-		String[] sArr = new String[sList.size()];
-		for(int i = 0; i < sList.size(); i++) {
-			sArr[i] = sList.get(i);
-		}
-
-		return sArr;
+	public final IChat<BasicUserDatabase, BasicPermissionRegistrie> getIChatInstance() {
+		if(iChat==null)System.out.println("IChat is null!At get IChatInstance()");
+		return iChat;
 	}
 
 	@Override
-	public final String getHelpFromCommandName(String s) {
-
-		ICommand c = getCommand(s);
-		if(c != null) {
-			return getHelpFromCommand(c);
-		}
-		return null;
-	}
-
-	@Override
-	public final String getHelpFromCommand(ICommand a) {
-
-		String[] h = a.helpCommand();
-		StringBuilder sb = new StringBuilder();
-		sb.append(a.getName()).append(":\n");
-		for(String s : h) {
-			sb.append("\t- ");
-			sb.append(s);
-			sb.append("\n");
-		}
-
-		return sb.toString();
-
+	public final void setIChatInstance(IChat<BasicUserDatabase, BasicPermissionRegistrie> ic) {
+		if(ic==null)System.out.println("ic is null!At setIChatInstance(ic)");
+		iChat = ic;
 	}
 
 	@Override
 	public final void print(String s) {
 		System.out.println(s);
-		if(BCP!=null) {
-			BCP.print(s);
+		if(iChat.getBasicChatPanel() != null) {
+			iChat.getBasicChatPanel().print(s);
 		}
 	}
 
@@ -306,7 +160,10 @@ public abstract class BasicConnectionHandler implements IConnectionHandler<Basic
 	@Override
 	public void wipe() {
 		System.console().flush();
-		BCP.WipeLog();
+		//TODO check how to clear the console
+		if(iChat.getBasicChatPanel() != null) {
+			iChat.getBasicChatPanel().WipeLog();
+		}
 	}
 
 	@Override
@@ -354,17 +211,17 @@ public abstract class BasicConnectionHandler implements IConnectionHandler<Basic
 		return serverName;
 	}
 
-	public final void setServerName(String s){
+	public final void setServerName(String s) {
 		serverName = s;
 	}
 
 	@Override
-	public String[] getActiveUserList(){
+	public final String[] getActiveUserList() {
 		return activeUsers.toArray(new String[activeUsers.size()]);
 	}
 
 	@Override
-	public void setActiveUsers(String[] sArgs) {
+	public final void setActiveUsers(String[] sArgs) {
 		synchronized(activeUsers) {
 			activeUsers.clear();
 			Collections.addAll(activeUsers, sArgs);
@@ -372,7 +229,7 @@ public abstract class BasicConnectionHandler implements IConnectionHandler<Basic
 	}
 
 	@Override
-	public void addActiveUser(String name) {
+	public final void addActiveUser(String name) {
 		synchronized(activeUsers) {
 			if(!activeUsers.contains(name)) {
 				activeUsers.add(name);
@@ -381,9 +238,9 @@ public abstract class BasicConnectionHandler implements IConnectionHandler<Basic
 	}
 
 	@Override
-	public void removeActiveUser(String name) {
+	public final void removeActiveUser(String name) {
 		synchronized(activeUsers) {
-			if(activeUsers.contains(name)){
+			if(activeUsers.contains(name)) {
 				activeUsers.remove(name);
 			}
 		}
@@ -420,7 +277,7 @@ public abstract class BasicConnectionHandler implements IConnectionHandler<Basic
 
 						String[] strA = s.split(" ");
 						strA[0] = strA[0].replace("/", "");
-						ICommand c = getCommand(strA[0]);
+						ICommand c = getIChatInstance().getCommandRegestry().getCommand(strA[0]);
 
 						if(c != null) {
 							if(side == Side.SERVER) {

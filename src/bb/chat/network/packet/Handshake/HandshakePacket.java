@@ -1,7 +1,7 @@
 package bb.chat.network.packet.Handshake;
 
 import bb.chat.enums.NetworkState;
-import bb.chat.interfaces.IPacket;
+import bb.chat.interfaces.APacket;
 import bb.chat.network.packet.DataIn;
 import bb.chat.network.packet.DataOut;
 
@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * Created by BB20101997 on 31.08.2014.
  */
-public class HandshakePacket extends IPacket {
+public class HandshakePacket extends APacket {
 
 	private String Version = "1.0";
 	private boolean userClient;

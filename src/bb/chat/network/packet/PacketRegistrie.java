@@ -1,7 +1,7 @@
 package bb.chat.network.packet;
 
 import bb.chat.interfaces.IIOHandler;
-import bb.chat.interfaces.IPacket;
+import bb.chat.interfaces.APacket;
 import bb.chat.interfaces.IPacketRegistrie;
 import bb.chat.network.packet.Handshake.HandshakePacket;
 import bb.chat.network.packet.Handshake.PacketSyncPacket;
@@ -13,39 +13,39 @@ import java.util.List;
 /**
  * Created by BB20101997 on 30.08.2014.
  */
-public class PacketRegistrie implements IPacketRegistrie<IPacket> {
+public class PacketRegistrie implements IPacketRegistrie<APacket> {
 
-	private List<Class<? extends IPacket>> PList = new ArrayList<>();
+	private List<Class<? extends APacket>> PList = new ArrayList<>();
 
 	public PacketRegistrie() {
 		registerPacket(HandshakePacket.class);
 		registerPacket(PacketSyncPacket.class);
 	}
 
-	public int registerPacket(Class<? extends IPacket> p) {
+	public int registerPacket(Class<? extends APacket> p) {
 		if(!PList.contains(p)) {
 			PList.add(p);
 		}
 		return PList.indexOf(p);
 	}
 
-	public int getID(Class<? extends IPacket> p) {
+	public int getID(Class<? extends APacket> p) {
 		return PList.indexOf(p);
 	}
 
-	public boolean containsPacket(Class<? extends IPacket> p) {
+	public boolean containsPacket(Class<? extends APacket> p) {
 		return PList.contains(p);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public PacketSyncPacket getSyncPacket() {
-		Class<? extends IPacket>[] pa = new Class[0];
+		Class<? extends APacket>[] pa = new Class[0];
 		pa = PList.toArray(pa);
 		return new PacketSyncPacket(pa);
 	}
 
-	public IPacket getNewPacketOfID(int id) {
+	public APacket getNewPacketOfID(int id) {
 		try {
 			return PList.get(id).newInstance();
 		} catch(InstantiationException e) {
@@ -59,12 +59,12 @@ public class PacketRegistrie implements IPacketRegistrie<IPacket> {
 		}
 	}
 
-	public Class<? extends IPacket> getPacketClassByID(int id) {
+	public Class<? extends APacket> getPacketClassByID(int id) {
 		return PList.get(id);
 	}
 
 	@Override
-	public void HandlePacket(IPacket p, IIOHandler sender) {
+	public void HandlePacket(APacket p, IIOHandler sender) {
 		if(p instanceof PacketSyncPacket) {
 			PList = new ArrayList<>();
 			Collections.addAll(PList, ((PacketSyncPacket) p).getPackageClasses());
@@ -75,7 +75,7 @@ public class PacketRegistrie implements IPacketRegistrie<IPacket> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Class<? extends IPacket>[] getAssociatedPackets() {
+	public Class<? extends APacket>[] getAssociatedPackets() {
 		return new Class[]{PacketSyncPacket.class};
 	}
 }

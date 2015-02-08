@@ -2,7 +2,7 @@ package bb.chat.command;
 
 import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IMessageHandler;
+import bb.chat.interfaces.IConnectionHandler;
 import bb.chat.network.packet.Command.DisconnectPacket;
 
 /**
@@ -24,9 +24,9 @@ public class Disconnect implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IMessageHandler imh) {
+	public void runCommand(String commandLine, IConnectionHandler imh) {
 		if(imh.getSide() == Side.CLIENT) {
-			imh.sendPackage(new DisconnectPacket(),IMessageHandler.SERVER);
+			imh.sendPackage(new DisconnectPacket(), IConnectionHandler.SERVER);
 			imh.disconnect(imh.getActor());
 			imh.wipe();
 			imh.println("Successfully disconnected!");

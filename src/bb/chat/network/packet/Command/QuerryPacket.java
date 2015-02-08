@@ -2,7 +2,7 @@ package bb.chat.network.packet.Command;
 
 import bb.chat.enums.NetworkState;
 import bb.chat.enums.QuerryType;
-import bb.chat.interfaces.IPacket;
+import bb.chat.interfaces.APacket;
 import bb.chat.network.packet.DataIn;
 import bb.chat.network.packet.DataOut;
 
@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  * Created by BB20101997 on 25.01.2015.
  */
-public class QuerryPacket extends IPacket {
+public class QuerryPacket extends APacket {
 
 	private QuerryType QT;
 

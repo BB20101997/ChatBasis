@@ -3,6 +3,7 @@ package bb.chat.interfaces;
 
 import bb.chat.enums.NetworkState;
 import bb.chat.enums.ServerStatus;
+import bb.chat.enums.Side;
 import bb.chat.security.BasicPermissionRegistrie;
 import bb.chat.security.BasicUser;
 import bb.chat.security.BasicUserDatabase;
@@ -11,7 +12,7 @@ import bb.chat.security.BasicUserDatabase;
  * @author BB20101997
  */
 @SuppressWarnings("javadoc")
-public interface IConnectionHandler<UD extends BasicUserDatabase,PR extends BasicPermissionRegistrie> extends IChat,ICommandRegistry{
+public interface IConnectionHandler<UD extends BasicUserDatabase,PR extends BasicPermissionRegistrie>{
 
 	IIOHandler ALL = new IIOHandler() {
 		@Override
@@ -40,7 +41,7 @@ public interface IConnectionHandler<UD extends BasicUserDatabase,PR extends Basi
 		}
 
 		@Override
-		public boolean sendPacket(IPacket p) {
+		public boolean sendPacket(APacket p) {
 			return false;
 		}
 
@@ -108,7 +109,7 @@ public interface IConnectionHandler<UD extends BasicUserDatabase,PR extends Basi
 		}
 
 		@Override
-		public boolean sendPacket(IPacket p) {
+		public boolean sendPacket(APacket p) {
 			return false;
 		}
 
@@ -153,10 +154,16 @@ public interface IConnectionHandler<UD extends BasicUserDatabase,PR extends Basi
 
 	IIOHandler getConnectionByName(String s);
 
+	IChat<UD, PR> getIChatInstance();
+
+	void setIChatInstance(IChat<UD, PR> ic);
+
+	void initiate();
+
 	// messages entered by the user should land here
 	void Message(String s);
 
-	void sendPackage(IPacket p,IIOHandler target);
+	void sendPackage(APacket p, IIOHandler target);
 
 	// print to all local outputs
 	void print(String s);
@@ -166,6 +173,8 @@ public interface IConnectionHandler<UD extends BasicUserDatabase,PR extends Basi
 
 	// disconnect the connection to a
 	void disconnect(IIOHandler a);
+
+	Side getSide();
 
 	// connects to the host at the port port
 	boolean connect(String host, int port);

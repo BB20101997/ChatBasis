@@ -3,7 +3,7 @@ package bb.chat.command;
 import bb.chat.enums.QuerryType;
 import bb.chat.enums.Side;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IMessageHandler;
+import bb.chat.interfaces.IConnectionHandler;
 import bb.chat.network.packet.Command.QuerryPacket;
 
 /**
@@ -21,7 +21,7 @@ public class List implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IMessageHandler imh) {
+	public void runCommand(String commandLine, IConnectionHandler imh) {
 		if(imh.getSide() == Side.SERVER) {
 				String[] names = imh.getActiveUserList();
 				for(String name : names) {
@@ -29,7 +29,7 @@ public class List implements ICommand {
 			}
 		}
 		else{
-			imh.sendPackage(new QuerryPacket(QuerryType.ONLINEUSERSLIST),IMessageHandler.SERVER);
+			imh.sendPackage(new QuerryPacket(QuerryType.ONLINEUSERSLIST), IConnectionHandler.SERVER);
 		}
 	}
 

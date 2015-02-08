@@ -18,7 +18,7 @@ public interface IIOHandler extends Runnable {
 
 	boolean setActorName(String name);
 
-	boolean sendPacket(IPacket p);
+	boolean sendPacket(APacket p);
 
 	public boolean isAlive();
 

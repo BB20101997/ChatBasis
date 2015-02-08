@@ -5,7 +5,7 @@ import bb.chat.command.Subcommands.Permission.Group.*;
 import bb.chat.command.Subcommands.Permission.Help;
 import bb.chat.command.Subcommands.Permission.User.*;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IMessageHandler;
+import bb.chat.interfaces.IConnectionHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class Permission implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IMessageHandler imh) {
+	public void runCommand(String commandLine, IConnectionHandler imh) {
 		String[] command = commandLine.split(" ", 3);
 
 		if(!"permission".equals(command[0])) {

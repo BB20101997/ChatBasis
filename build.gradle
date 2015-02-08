@@ -1,5 +1,7 @@
 apply plugin: java
 
+version = 'Dev-0.1'
+
 repositories {
     mavenCentral()
 }

@@ -1,6 +1,6 @@
 package bb.chat.network.packet.Handshake;
 
-import bb.chat.interfaces.IPacket;
+import bb.chat.interfaces.APacket;
 import bb.chat.network.packet.DataIn;
 import bb.chat.network.packet.DataOut;
 
@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Created by BB20101997 on 23.11.2014.
  */
-public class LoginPacket extends IPacket {
+public class LoginPacket extends APacket {
 
 	private String userName;
 	private String userPasswd;
