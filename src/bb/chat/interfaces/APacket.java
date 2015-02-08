@@ -9,12 +9,12 @@ import java.io.IOException;
 /**
  * Created by BB20101997 on 30.08.2014.
  */
-public abstract class IPacket {
+public abstract class APacket {
 
 
-	public IPacket copy() {
+	public APacket copy() {
 		try {
-			IPacket p = this.getClass().newInstance();
+			APacket p = this.getClass().newInstance();
 			DataOut dataOut = DataOut.newInstance();
 			writeToData(dataOut);
 			p.readFromData(DataIn.newInstance(dataOut.getBytes()));
@@ -28,7 +28,8 @@ public abstract class IPacket {
 	@SuppressWarnings("CanBeFinal")
 	protected NetworkState minNetworkState = NetworkState.POST_HANDSHAKE;
 
-	protected IPacket() {
+	protected APacket() {
+		//TODO: Add a history for the server the packet has been past over for preventing loop's
 		try {
 			getClass().getConstructor();
 		} catch(NoSuchMethodException e) {

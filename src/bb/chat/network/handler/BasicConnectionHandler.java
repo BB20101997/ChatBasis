@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDatabase, BasicPermissionRegistrie> {
+public abstract class BasicConnectionHandler implements IConnectionHandler<BasicUserDatabase, BasicPermissionRegistrie> {
 
 	protected final List<IIOHandler> actors = new ArrayList<>();
 
@@ -51,12 +51,12 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 
 
 	@SuppressWarnings("unchecked")
-	public BasicMessageHandler() {
+	public BasicConnectionHandler() {
 		serverStatus = ServerStatus.STARTING;
 		PD.registerPacketHandler(PR);
 	}
 
-	public <P extends IPacket> BasicMessageHandler(IPacketRegistrie<? extends P> packetRegistrie, IPacketDistributor<? extends P> packetDistributor) {
+	public <P extends IPacket> BasicConnectionHandler(IPacketRegistrie<? extends P> packetRegistrie, IPacketDistributor<? extends P> packetDistributor) {
 		PD = packetDistributor;
 		PR = packetRegistrie;
 		//noinspection unchecked
@@ -165,7 +165,6 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 		}
 	}
 
-	@Override
 	public final void setBasicChatPanel(IBasicChatPanel BCP) {
 		this.BCP = BCP;
 	}
@@ -399,10 +398,10 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 			keepGoing = false;
 		}
 
-		private final BasicMessageHandler basicMessageHandler;
+		private final BasicConnectionHandler basicMessageHandler;
 		private final LinkedList<String> toProcess = new LinkedList<>();
 
-		public WorkingThread(BasicMessageHandler bmh) {
+		public WorkingThread(BasicConnectionHandler bmh) {
 			basicMessageHandler = bmh;
 		}
 
@@ -435,7 +434,7 @@ public abstract class BasicMessageHandler implements IMessageHandler<BasicUserDa
 
 					} else {
 
-						sendPackage(new ChatPacket(s, getActor().getActorName()),ALL);
+						sendPackage(new ChatPacket(s, getActor().getActorName()), ALL);
 
 						if(side == Side.SERVER) {
 							println("[" + localActor.getActorName() + "] " + s);

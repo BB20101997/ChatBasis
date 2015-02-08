@@ -3,7 +3,6 @@ package bb.chat.interfaces;
 
 import bb.chat.enums.NetworkState;
 import bb.chat.enums.ServerStatus;
-import bb.chat.enums.Side;
 import bb.chat.security.BasicPermissionRegistrie;
 import bb.chat.security.BasicUser;
 import bb.chat.security.BasicUserDatabase;
@@ -12,7 +11,7 @@ import bb.chat.security.BasicUserDatabase;
  * @author BB20101997
  */
 @SuppressWarnings("javadoc")
-public interface IMessageHandler<UD extends BasicUserDatabase,PR extends BasicPermissionRegistrie> {
+public interface IConnectionHandler<UD extends BasicUserDatabase,PR extends BasicPermissionRegistrie> extends IChat,ICommandRegistry{
 
 	IIOHandler ALL = new IIOHandler() {
 		@Override
@@ -154,39 +153,10 @@ public interface IMessageHandler<UD extends BasicUserDatabase,PR extends BasicPe
 
 	IIOHandler getConnectionByName(String s);
 
-	Side getSide();
-
-	IPacketRegistrie getPacketRegistrie();
-
-	PR getPermissionRegistry();
-
-	IPacketDistributor getPacketDistributor();
-
-	UD getUserDatabase();
-
-	String getHelpFromCommand(ICommand a);
-
-	String getHelpFromCommandName(String s);
-
-	String[] getHelpForAllCommands();
-
 	// messages entered by the user should land here
 	void Message(String s);
 
 	void sendPackage(IPacket p,IIOHandler target);
-
-	// adds a Command
-	void addCommand(Class<? extends ICommand> c);
-
-	/**
-	 * @param text the text entered
-	 *
-	 * @return the command instance matching the text
-	 */
-	ICommand getCommand(String text);
-
-	// adds a BasicChatPanel to the Output�s
-	void setBasicChatPanel(IBasicChatPanel BCP);
 
 	// print to all local outputs
 	void print(String s);
@@ -196,12 +166,6 @@ public interface IMessageHandler<UD extends BasicUserDatabase,PR extends BasicPe
 
 	// disconnect the connection to a
 	void disconnect(IIOHandler a);
-
-	void save();
-
-	void load();
-
-	void shutdown();
 
 	// connects to the host at the port port
 	boolean connect(String host, int port);
@@ -213,18 +177,31 @@ public interface IMessageHandler<UD extends BasicUserDatabase,PR extends BasicPe
 	public void wipe();
 
 	String[] getActiveUserList();
+
 	void setActiveUsers(String[] sArgs);
+
 	void addActiveUser(String name);
+
 	void removeActiveUser(String name);
+
 	int getOnlineUsers();
+
 	void setOnlineUsers(int i);
+
 	int getMaxUsers();
+
 	void setMaxUsers(int i);
+
 	String getServerName();
+
 	void setServerName(String s);
+
 	String getServerMessage();
+
 	void setServerMessage(String msg);
+
 	ServerStatus getServerStatus();
+
 	void setServerStatus(ServerStatus status);
 
 }
