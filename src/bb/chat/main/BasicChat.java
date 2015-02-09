@@ -27,12 +27,12 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 
 	public BasicChat(IConnectionHandler<BasicUserDatabase, BasicPermissionRegistrie> imessagehandler, IPacketRegistrie pr, BasicPermissionRegistrie bpr, PacketDistributor pd, BasicUserDatabase bud,ICommandRegistry icr) {
 		this.imh = imessagehandler;
-		imh.setIChatInstance(this);
 		packetRegistrie = pr;
 		basicPermissionRegistrie = bpr;
 		packetDistributor = pd;
 		basicUserDatabase = bud;
 		commandRegistry = icr;
+		imh.setIChatInstance(this);
 		imh.initiate();
 		load();
 	}

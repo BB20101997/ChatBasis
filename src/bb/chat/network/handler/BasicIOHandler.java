@@ -123,7 +123,7 @@ public class BasicIOHandler implements Runnable, IIOHandler {
 			} catch(Exception e) {
 				sendPacket(new DisconnectPacket());
 				System.out.println("Exception in IOHandler, closing connection!");
-				//e.printStackTrace();
+				e.printStackTrace();
 				continueLoop = false;
 			}
 		}
