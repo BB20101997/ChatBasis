@@ -1,10 +1,10 @@
 package bb.chat.security;
 
 import bb.chat.command.Permission;
-import bb.chat.command.Subcommands.Permission.SubPermission;
+import bb.chat.command.subcommands.permission.SubPermission;
+import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IIOHandler;
-import bb.chat.interfaces.IConnectionHandler;
+import bb.net.interfaces.IIOHandler;
 import bb.util.file.database.FileWriter;
 import bb.util.file.database.ISaveAble;
 
@@ -19,9 +19,9 @@ public class BasicPermissionRegistrie implements ISaveAble {
 	private final List<String> registeredPermissions = new ArrayList<>();
 	private final List<Group>  registeredGroups      = new ArrayList<>();
 
-	public boolean isPermissionRegistered(String p){
-		for(String s:registeredPermissions){
-			if(s.equals(p)){
+	public boolean isPermissionRegistered(String p) {
+		for(String s : registeredPermissions) {
+			if(s.equals(p)) {
 				return true;
 			}
 		}
@@ -216,20 +216,21 @@ public class BasicPermissionRegistrie implements ISaveAble {
 	}
 
 	private boolean includesPermission(String Permission, String perm) {
-		if(Permission==null||perm==null){
+		if(Permission == null || perm == null) {
 			return false;
 		}
-		if(Permission.equals(perm)){
+
+		if(Permission.equals(perm)) {
 			return true;
 		}
 		String[] PermissionArray = Permission.split(".");
 		String[] permArray = Permission.split(".");
 
-		for(int i= 0;i < PermissionArray.length&&i<permArray.length;i++){
-			if(PermissionArray[i].equals("*")){
+		for(int i = 0; i < PermissionArray.length && i < permArray.length; i++) {
+			if(PermissionArray[i].equals("*")) {
 				continue;
 			}
-			if(!PermissionArray[i].equals(permArray[i])){
+			if(!PermissionArray[i].equals(permArray[i])) {
 				return false;
 			}
 
@@ -237,19 +238,21 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		return true;
 	}
 
+	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	public synchronized void writeToFileWriter(FileWriter fw) {
-		fw.add(registeredPermissions.size(),"RPS");
-		for(int i= 0;i<registeredPermissions.size();i++){
-			fw.add(registeredPermissions.get(i),"PR"+i);
+		fw.add(registeredPermissions.size(), "RPS");
+		for(int i = 0; i < registeredPermissions.size(); i++) {
+			fw.add(registeredPermissions.get(i), "PR" + i);
 		}
-		fw.add(registeredGroups.size(),"RGS");
-		for(int i = 0;i<registeredGroups.size();i++){
-			fw.add(registeredGroups.get(i),"RG"+i);
+		fw.add(registeredGroups.size(), "RGS");
+		for(int i = 0; i < registeredGroups.size(); i++) {
+			fw.add(registeredGroups.get(i), "RG" + i);
 		}
 	}
 
+	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	public synchronized void loadFromFileWriter(FileWriter fw) {
-		if(fw==null){
+		if(fw == null) {
 			return;
 		}
 		registeredPermissions.clear();
@@ -258,56 +261,57 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		int rps = (int) fw.get("RPS");
 		int rgs = (int) fw.get("RGS");
 
-		for(int i = 0;i<rps;i++){
-			registeredPermissions.add((String) fw.get("PR"+i));
+		for(int i = 0; i < rps; i++) {
+			registeredPermissions.add((String) fw.get("PR" + i));
 		}
-		for(int i = 0;i<rgs;i++){
+		for(int i = 0; i < rgs; i++) {
 			Group g = new Group();
-			g.loadFromFileWriter((FileWriter) fw.get("RG"+i));
+			g.loadFromFileWriter((FileWriter) fw.get("RG" + i));
 			registeredGroups.add(g);
 		}
 
 	}
 
-	public void executePermissionCommand(IConnectionHandler imh,IIOHandler userRunningCommand,String command,String restOfCommand) {
-		ICommand cmd = imh.getIChatInstance().getCommandRegestry().getCommand("permission");
-		if(cmd instanceof Permission){
-			for(SubPermission sp:((Permission) cmd).subCommandList){
-				if(sp.getName().equals(command)){
-					sp.executePermissionCommand(imh,userRunningCommand,command,restOfCommand);
+	public void executePermissionCommand(IChat iChat, IIOHandler userRunningCommand, String command, String restOfCommand) {
+		ICommand cmd = iChat.getCommandRegistry().getCommand("permission");
+		if(cmd instanceof Permission) {
+			for(SubPermission sp : ((Permission) cmd).subCommandList) {
+				if(sp.getName().equals(command)) {
+					sp.executePermissionCommand(iChat, userRunningCommand, command, restOfCommand);
 					return;
 				}
 			}
-		}
-		else {
-			throw new RuntimeException("Did not get Permission Command as requested!");
+		} else {
+			throw new RuntimeException("Did not get Permission command as requested!");
 		}
 	}
 
-	private static class Group implements ISaveAble{
+	private static class Group implements ISaveAble {
 
 		public List<String> groupPerm;
 		public List<String> groupDeniedPerm;
 		public List<String> groups;
 		public String       name;
 
+		@SuppressWarnings("StringConcatenationMissingWhitespace")
 		@Override
 		public synchronized void writeToFileWriter(FileWriter fw) {
-			fw.add(name,"NAME");
-			fw.add(groupPerm.size(),"GPS");
-			for(int i = 0;i<groupPerm.size();i++){
-				fw.add(groupPerm.get(i),"GP"+i);
+			fw.add(name, "NAME");
+			fw.add(groupPerm.size(), "GPS");
+			for(int i = 0; i < groupPerm.size(); i++) {
+				fw.add(groupPerm.get(i), "GP" + i);
 			}
-			fw.add(groupDeniedPerm.size(),"GDPS");
-			for(int i=0;i<groupDeniedPerm.size();i++){
-				fw.add(groupDeniedPerm.get(i),"GDP"+i);
+			fw.add(groupDeniedPerm.size(), "GDPS");
+			for(int i = 0; i < groupDeniedPerm.size(); i++) {
+				fw.add(groupDeniedPerm.get(i), "GDP" + i);
 			}
-			fw.add(groups.size(),"GS");
-			for(int i = 0;i<groups.size();i++){
-				fw.add(groups.get(i),"G"+i);
+			fw.add(groups.size(), "GS");
+			for(int i = 0; i < groups.size(); i++) {
+				fw.add(groups.get(i), "G" + i);
 			}
 		}
 
+		@SuppressWarnings("StringConcatenationMissingWhitespace")
 		@Override
 		public synchronized void loadFromFileWriter(FileWriter fw) {
 			groupPerm.clear();
@@ -318,14 +322,14 @@ public class BasicPermissionRegistrie implements ISaveAble {
 			int gps = (int) fw.get("GPS");
 			int gdps = (int) fw.get("GDPS");
 			int gs = (int) fw.get("GS");
-			for(int i=0;i<gps;i++){
-				groupPerm.add((String) fw.get("GP"+i));
+			for(int i = 0; i < gps; i++) {
+				groupPerm.add((String) fw.get("GP" + i));
 			}
-			for(int i=0;i<gdps;i++){
-				groupDeniedPerm.add((String) fw.get("GDP"+i));
+			for(int i = 0; i < gdps; i++) {
+				groupDeniedPerm.add((String) fw.get("GDP" + i));
 			}
-			for(int i=0;i<gs;i++){
-				groups.add((String) fw.get("G"+i));
+			for(int i = 0; i < gs; i++) {
+				groups.add((String) fw.get("G" + i));
 			}
 		}
 	}

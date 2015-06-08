@@ -12,22 +12,21 @@ public class EventHandler {
 
 	List<Method> mList = new ArrayList<>();
 
-	public void subscribeEvent(Method m) {
-		if (m.getParameterTypes().length == 1&& m.getParameterTypes()[0].isAssignableFrom(Event.class)){
-			if(!mList.contains(m)){
-				mList.add(m);
+	public void subscribeEvent(Method method) {
+		if(method.getParameterTypes().length == 1 && method.getParameterTypes()[0].isAssignableFrom(Event.class)) {
+			if(!mList.contains(method)) {
+				mList.add(method);
 			}
-		}
-		else{
-			throw new IllegalArgumentException("Methode has to have one Parameter,either of type Event.class or a Subtype!");
+		} else {
+			throw new IllegalArgumentException("Method has to have one Parameter,either of type Event.class or a Subtype!");
 		}
 	}
 
-	public void distributeEvent(Event e){
-		for(Method m : mList){
-			if(m.getParameterTypes()[0].isAssignableFrom(e.getClass())){
+	public void distributeEvent(Event event) {
+		for(Method m : mList) {
+			if(m.getParameterTypes()[0].isAssignableFrom(event.getClass())) {
 				try {
-					m.invoke(e);
+					m.invoke(event);
 				} catch(IllegalAccessException | InvocationTargetException e1) {
 					e1.printStackTrace();
 				}

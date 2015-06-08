@@ -1,15 +1,16 @@
 package bb.chat.command;
 
-import bb.chat.enums.Side;
+import bb.chat.chat.ChatActor;
+import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IIOHandler;
-import bb.chat.interfaces.IConnectionHandler;
-import bb.chat.network.packet.Chatting.ChatPacket;
-import bb.chat.network.packet.Command.RenamePacket;
+import bb.chat.network.packet.chatting.ChatPacket;
+import bb.chat.network.packet.command.RenamePacket;
+import bb.net.enums.Side;
 
 /**
  * @author BB20101997
  */
+@SuppressWarnings("HardcodedFileSeparator")
 public class Rename implements ICommand {
 
 	@Override
@@ -24,32 +25,32 @@ public class Rename implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IConnectionHandler imh) {
+	public void runCommand(String commandLine, IChat iChat) {
 		String[] dS = commandLine.split(" ");
 		if(dS.length <= 2 || "Client".equals(dS[2]) || "SERVER".equals(dS[2])) {
 			return;
 		}
-		if(imh.getSide() == Side.CLIENT) {
-			imh.sendPackage(new RenamePacket(dS[1], dS[2]), IConnectionHandler.ALL);
+		if(iChat.getIConnectionHandler().getSide() == Side.CLIENT) {
+			iChat.getIConnectionHandler().sendPackage(new RenamePacket(dS[1], dS[2]), iChat.getIConnectionHandler().ALL());
 		} else {
-			IIOHandler ica = imh.getConnectionByName(dS[1]);
+			ChatActor ica = iChat.getActorByName(dS[1]);
 			if(ica != null) {
 				ica.setActorName(dS[2]);
-				imh.println("[" + imh.getActor().getActorName() + "] " + dS[1] + " is now known as " + dS[2]);
-				imh.sendPackage(new ChatPacket(dS[1] + " is now known as " + dS[2], imh.getActor().getActorName()), IConnectionHandler.ALL);
-				imh.sendPackage(new RenamePacket(dS[1], dS[2]),imh.getConnectionByName(dS[2]));
+				iChat.getBasicChatPanel().println("[" + iChat.getLocalActor().getActorName() + "] " + dS[1] + " is now known as " + dS[2]);
+				iChat.getIConnectionHandler().sendPackage(new ChatPacket(dS[1] + " is now known as " + dS[2], iChat.getLocalActor().getActorName()), iChat.getIConnectionHandler().ALL());
+				iChat.getIConnectionHandler().sendPackage(new RenamePacket(dS[1], dS[2]), iChat.getActorByName(dS[2]).getIIOHandler());
 			}
 		}
 	}
 
 	@Override
 	public String[] helpCommand() {
-
-		return new String[]{"/rename <new Name>", "Used to rename you in Chat!"};
+		//noinspection StringConcatenationMissingWhitespace
+		return new String[]{ICommand.COMMAND_INIT_CHAR +"rename <new Name>", "Used to rename you in Chat!"};
 	}
 
 	@Override
-	public boolean debugModeOnly() {
+	public boolean isDebugModeOnly() {
 		return false;
 	}
 

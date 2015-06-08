@@ -1,25 +1,26 @@
 package bb.chat.command;
 
-import bb.chat.enums.Side;
+import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.ICommandRegistry;
-import bb.chat.interfaces.IConnectionHandler;
+import bb.net.enums.Side;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by BB20101997 on 30.01.2015.
+ * Created by @author BB20101997 on 30.01.2015.
  */
+@SuppressWarnings("HardcodedFileSeparator")
 public class BasicCommandRegistry implements ICommandRegistry {
 
 	private java.util.List<ICommand> commandList = new ArrayList<>();
 
 	@Override
-	public final void addCommand(java.lang.Class<? extends ICommand> c) {
+	public final void addCommand(java.lang.Class<? extends ICommand> command) {
 
 		try {
-			ICommand com = c.newInstance();
+			ICommand com = command.getConstructor().newInstance();
 			commandList.add(com);
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -29,9 +30,9 @@ public class BasicCommandRegistry implements ICommandRegistry {
 	@Override
 	public final ICommand getCommand(String text) {
 
-		for(ICommand c : commandList) {
-			if(text.equals(c.getName())) {
-				return c;
+		for(ICommand command : commandList) {
+			if(text.equals(command.getName())) {
+				return command;
 			}
 
 		}
@@ -39,21 +40,21 @@ public class BasicCommandRegistry implements ICommandRegistry {
 	}
 
 	@Override
-	public boolean runCommand(String commandLine, Side s, IConnectionHandler ich) {
+	public boolean runCommand(String commandLine, Side side, IChat ich) {
 		String[] strA = commandLine.split(" ");
-		strA[0] = strA[0].replace("/", "");
-		ICommand c = getCommand(strA[0]);
+		strA[0] = strA[0].replace(ICommand.COMMAND_INIT_STRING, "");
+		ICommand command = getCommand(strA[0]);
 
-		if(c != null) {
-			if(s == Side.SERVER) {
-				c.runCommand(commandLine, ich);
+		if(command != null) {
+			if(side == Side.SERVER) {
+				command.runCommand(commandLine, ich);
 			} else {
-				c.runCommand(commandLine, ich);
+				command.runCommand(commandLine, ich);
 			}
 			return true;
 		}
 
-		ich.println("[" + ich.getActor().getActorName() + "]Please enter a valid command!");
+		ich.getBasicChatPanel().println("[" + ich.getLocalActor().getActorName() + "]Please enter a valid command!");
 		return false;
 
 	}
@@ -78,9 +79,9 @@ public class BasicCommandRegistry implements ICommandRegistry {
 	@Override
 	public final String getHelpFromCommandName(String s) {
 
-		ICommand c = getCommand(s);
-		if(c != null) {
-			return getHelpFromCommand(c);
+		ICommand command = getCommand(s);
+		if(command != null) {
+			return getHelpFromCommand(command);
 		}
 		return null;
 	}
@@ -90,11 +91,11 @@ public class BasicCommandRegistry implements ICommandRegistry {
 
 		String[] h = a.helpCommand();
 		StringBuilder sb = new StringBuilder();
-		sb.append(a.getName()).append(":\n");
+		sb.append(a.getName()).append(":").append(System.lineSeparator());
 		for(String s : h) {
 			sb.append("\t- ");
 			sb.append(s);
-			sb.append("\n");
+			sb.append(System.lineSeparator());
 		}
 
 		return sb.toString();

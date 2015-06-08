@@ -1,14 +1,15 @@
 package bb.chat.command;
 
-import bb.chat.enums.Side;
+import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IConnectionHandler;
-import bb.chat.network.packet.Command.WhisperPacket;
+import bb.chat.network.packet.command.WhisperPacket;
+import bb.net.enums.Side;
 
 /**
  * @author BB20101997
  */
 
+@SuppressWarnings("HardcodedFileSeparator")
 public class Whisper implements ICommand {
 
 	@Override
@@ -22,20 +23,19 @@ public class Whisper implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IConnectionHandler imh) {
+	public void runCommand(String commandLine, IChat iChat) {
 
 		String[] c = commandLine.split(" ", 3);
 
-		if(imh.getSide() == Side.CLIENT) {
+		if(iChat.getIConnectionHandler().getSide() == Side.CLIENT) {
 			if(c.length <= 2) {
 				return;
 			}
-			imh.sendPackage(new WhisperPacket(imh.getActor().getActorName(), c[2], c[1]), IConnectionHandler.SERVER);
+			iChat.getIConnectionHandler().sendPackage(new WhisperPacket(iChat.getLocalActor().getActorName(), c[2], c[1]), iChat.getIConnectionHandler().SERVER());
 		} else {
 			String str[] = commandLine.split(" ", 3);
 			if(str.length > 2) {
-				System.out.println(str[1] + " : " + str[2]);
-				imh.sendPackage(new WhisperPacket(imh.getActor().getActorName(), str[2], c[1]),imh.getConnectionByName(str[1]));
+				iChat.getIConnectionHandler().sendPackage(new WhisperPacket(iChat.getLocalActor().getActorName(), str[2], c[1]), iChat.getActorByName(str[1]).getIIOHandler());
 			}
 		}
 	}
@@ -43,11 +43,12 @@ public class Whisper implements ICommand {
 	@Override
 	public String[] helpCommand() {
 
-		return new String[]{"Usage : /whisper <ToPlayer> <Message>"};
+		//noinspection StringConcatenationMissingWhitespace
+		return new String[]{"Usage :"+ICommand.COMMAND_INIT_CHAR +"whisper <ToPlayer> <Message>"};
 	}
 
 	@Override
-	public boolean debugModeOnly() {
+	public boolean isDebugModeOnly() {
 		return false;
 	}
 

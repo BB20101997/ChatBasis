@@ -1,8 +1,8 @@
-package bb.chat.network.packet.Handshake;
+package bb.chat.network.packet.handshake;
 
-import bb.chat.interfaces.APacket;
-import bb.chat.network.packet.DataIn;
-import bb.chat.network.packet.DataOut;
+import bb.net.interfaces.APacket;
+import bb.net.packets.DataIn;
+import bb.net.packets.DataOut;
 
 import java.io.IOException;
 

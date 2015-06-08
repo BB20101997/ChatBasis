@@ -5,7 +5,7 @@ package bb.chat.events;
  */
 public class Event {
 
-	public Event(){
+	public Event() {
 
 	}
 

@@ -1,8 +1,8 @@
-package bb.chat.command.Subcommands.Permission.User;
+package bb.chat.command.subcommands.permission.user;
 
-import bb.chat.command.Subcommands.Permission.SubPermission;
-import bb.chat.interfaces.IIOHandler;
-import bb.chat.interfaces.IConnectionHandler;
+import bb.chat.command.subcommands.permission.SubPermission;
+import bb.chat.interfaces.IChat;
+import bb.net.interfaces.IIOHandler;
 
 /**
  * Created by BB20101997 on 15.12.2014.
@@ -13,7 +13,7 @@ public class UserGroupRemove extends SubPermission {
 	}
 
 	@Override
-	public void executePermissionCommand(IConnectionHandler imh, IIOHandler executor, String cmd, String rest) {
+	public void executePermissionCommand(IChat iChat, IIOHandler executor, String cmd, String rest) {
 		//TODO
 	}
 }

@@ -1,9 +1,9 @@
 package bb.chat.command;
 
-import bb.chat.enums.Side;
+import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IConnectionHandler;
-import bb.chat.network.packet.Command.SavePacket;
+import bb.chat.network.packet.command.SavePacket;
+import bb.net.enums.Side;
 
 /**
  * Created by BB20101997 on 24.11.2014.
@@ -21,11 +21,11 @@ public class Save implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IConnectionHandler imh) {
-		if(imh.getSide() == Side.CLIENT) {
-			imh.sendPackage(new SavePacket(), IConnectionHandler.SERVER);
+	public void runCommand(String commandLine, IChat iChat) {
+		if(iChat.getIConnectionHandler().getSide() == Side.CLIENT) {
+			iChat.getIConnectionHandler().sendPackage(new SavePacket(), iChat.getIConnectionHandler().SERVER());
 		} else {
-			imh.getIChatInstance().save();
+			iChat.save();
 		}
 	}
 
@@ -35,7 +35,7 @@ public class Save implements ICommand {
 	}
 
 	@Override
-	public boolean debugModeOnly() {
+	public boolean isDebugModeOnly() {
 		return false;
 	}
 }

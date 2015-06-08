@@ -5,19 +5,22 @@ package bb.chat.interfaces;
  */
 public interface ICommand {
 
+	@SuppressWarnings("HardcodedFileSeparator")
+	char COMMAND_INIT_CHAR = '/';
+
+	@SuppressWarnings("HardcodedFileSeparator")
+	String COMMAND_INIT_STRING = "/";
+
 	String[] getAlias();
 
 	/**
-	 * @return Name of the Command
+	 * @return Name of the command
 	 */
 	String getName();
 
-	/**
-	 * Replacing the old runCommand you can get the IChatActor by calling : imh.getActor(); It should be the same!
-	 */
-	void runCommand(String commandLine, IConnectionHandler imh);
+	void runCommand(String commandLine, IChat iChat);
 
 	String[] helpCommand();
 
-	boolean debugModeOnly();
+	boolean isDebugModeOnly();
 }

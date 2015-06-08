@@ -1,7 +1,7 @@
 package bb.chat.gui;
 
 import bb.chat.interfaces.IBasicChatPanel;
-import bb.chat.interfaces.IConnectionHandler;
+import bb.chat.interfaces.IChat;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,11 +13,11 @@ import java.awt.event.ActionListener;
  */
 public class BasicChatPanel extends JPanel implements ActionListener, IBasicChatPanel {
 	/**
-	 * the Command send by the Send button
+	 * the command send by the Send button
 	 */
 	private static final String SEND_EVENT  = "BUTTON_SEND";
 	/**
-	 * the Command send when hitting Enter in the Text Field ,should be treated like SEND_EVENT
+	 * the command send when hitting Enter in the Text Field ,should be treated like SEND_EVENT
 	 */
 	private static final String ENTER_EVENT = "CSB_ENTER";
 
@@ -40,14 +40,14 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 
 	private final JScrollPane chatLogScroll = new JScrollPane(ChatLog);
 
-	public final IConnectionHandler IMH;
+	public final IChat iChat;
 
 	/**
 	 * The constructor to set up the JPanel
 	 */
-	public BasicChatPanel(IConnectionHandler imh) {
+	public BasicChatPanel(IChat ic) {
 		super();
-		IMH = imh;
+		iChat = ic;
 		Send.setActionCommand(SEND_EVENT);
 		ChatSendBar.setActionCommand(ENTER_EVENT);
 		addActionListener(this);
@@ -66,8 +66,8 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	 * can be used to disable the default processing of input
 	 */
 
-	void setUseStandardActionListener(boolean b) {
-		useStandardActionListener = b;
+	void setUseStandardActionListener(@SuppressWarnings("SameParameterValue") boolean useStandardActionListener) {
+		this.useStandardActionListener = useStandardActionListener;
 	}
 
 	/**
@@ -84,8 +84,8 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 
 		if(useStandardActionListener) {
 			String lastSend = ChatSendBar.getText();
-			if(!"".equals(lastSend)){
-				IMH.Message(lastSend);
+			if(!"".equals(lastSend)) {
+				iChat.Message(lastSend);
 			}
 			ChatSendBar.setText("");
 			setSize(getSize());
@@ -109,8 +109,11 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	 */
 	@Override
 	public void print(String s) {
-
 		ChatLog.append(s);
+	}
+
+	public void println(String s) {
+		print(s +System.lineSeparator());
 	}
 
 }

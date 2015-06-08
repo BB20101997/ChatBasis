@@ -1,8 +1,11 @@
 package bb.chat.interfaces;
 
 public interface IBasicChatPanel {
-	public void WipeLog();
 
-	public void print(String s);
+	void WipeLog();
+
+	void print(String s);
+
+	void println(String s);
 
 }

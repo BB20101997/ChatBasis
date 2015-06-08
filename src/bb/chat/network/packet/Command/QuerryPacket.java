@@ -1,10 +1,10 @@
-package bb.chat.network.packet.Command;
+package bb.chat.network.packet.command;
 
-import bb.chat.enums.NetworkState;
 import bb.chat.enums.QuerryType;
-import bb.chat.interfaces.APacket;
-import bb.chat.network.packet.DataIn;
-import bb.chat.network.packet.DataOut;
+import bb.net.enums.NetworkState;
+import bb.net.interfaces.APacket;
+import bb.net.packets.DataIn;
+import bb.net.packets.DataOut;
 
 import java.io.IOException;
 

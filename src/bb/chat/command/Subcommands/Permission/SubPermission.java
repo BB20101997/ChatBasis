@@ -1,47 +1,44 @@
-package bb.chat.command.Subcommands.Permission;
+package bb.chat.command.subcommands.permission;
 
-import bb.chat.enums.Side;
+import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IIOHandler;
-import bb.chat.interfaces.IConnectionHandler;
-import bb.chat.interfaces.APacket;
-import bb.chat.network.packet.Command.PermissionPacket;
+import bb.chat.network.packet.command.PermissionPacket;
+import bb.net.enums.Side;
+import bb.net.interfaces.APacket;
+import bb.net.interfaces.IIOHandler;
 
 /**
  * Created by BB20101997 on 15.12.2014.
  */
-public abstract class SubPermission implements ICommand{
+public abstract class SubPermission implements ICommand {
 
-	public final String name;
+	private final String name;
 	public String[] alias = new String[0];
-	public String[] help = new String[0];
-	public boolean debug = false;
+	public String[] help  = new String[0];
+	public boolean  debug = false;
 
-	public SubPermission(String name){
-		this.name = "permission-"+name;
+	public SubPermission(String name) {
+		this.name = "permission-" + name;
 	}
 
 	@Override
-	public final void runCommand(String commandLine, IConnectionHandler imh) {
-		if(imh.getSide() == Side.CLIENT){
-			runClient(commandLine,imh);
-		}
-		else {
-			runServer(commandLine, imh);
+	public final void runCommand(String commandLine, IChat iChat) {
+		if(iChat.getIConnectionHandler().getSide() == Side.CLIENT) {
+			runClient(commandLine, iChat);
+		} else {
+			runServer(commandLine, iChat);
 		}
 	}
 
-	protected void runServer(String cL, IConnectionHandler imh) {
+	protected void runServer(String cL, IChat iChat) {
 		String[] command = cL.split(" ", 2);
-		imh.getIChatInstance().getPermissionRegistry().executePermissionCommand(imh, IConnectionHandler.SERVER,command[0],command[1]);
-		System.out.println("Run permission Sub-Command " + cL + " on Side Server");
+		iChat.getPermissionRegistry().executePermissionCommand(iChat, iChat.getIConnectionHandler().SERVER(), command[0], command[1]);
 	}
 
-	protected void runClient(String cL, IConnectionHandler imh) {
+	protected void runClient(String cL, IChat iChat) {
 		String[] command = cL.split(" ", 2);
 		APacket p = new PermissionPacket(command[0], command[1]);
-		imh.sendPackage(p, IConnectionHandler.SERVER);
-		System.out.println("Run permission Sub-Command "+cL+" on Side Client");
+		iChat.getIConnectionHandler().sendPackage(p, iChat.getIConnectionHandler().SERVER());
 	}
 
 	@Override
@@ -54,7 +51,7 @@ public abstract class SubPermission implements ICommand{
 		return name;
 	}
 
-	public abstract void executePermissionCommand(IConnectionHandler imh,IIOHandler executor,String cmd,String rest);
+	public abstract void executePermissionCommand(IChat iChat, IIOHandler executor, String cmd, String rest);
 
 
 	@Override
@@ -63,7 +60,7 @@ public abstract class SubPermission implements ICommand{
 	}
 
 	@Override
-	public boolean debugModeOnly() {
+	public boolean isDebugModeOnly() {
 		return debug;
 	}
 }

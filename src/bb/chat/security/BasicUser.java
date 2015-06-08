@@ -136,25 +136,27 @@ public class BasicUser implements ISaveAble {
 		this.name = name;
 	}
 
+	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	@Override
 	public synchronized void writeToFileWriter(FileWriter fw) {
-		fw.add(name,"NAME");
-		fw.add(id,"ID");
-		fw.add(passwd,"PASSWORD");
-		fw.add(groups.size(),"GS");
-		fw.add(perm.size(),"PS");
-		fw.add(denied.size(),"DS");
-		for(int i = 0;i<groups.size();i++){
-			fw.add(groups.get(i),"G"+i);
+		fw.add(name, "NAME");
+		fw.add(id, "ID");
+		fw.add(passwd, "PASSWORD");
+		fw.add(groups.size(), "GS");
+		fw.add(perm.size(), "PS");
+		fw.add(denied.size(), "DS");
+		for(int i = 0; i < groups.size(); i++) {
+			fw.add(groups.get(i), "G" + i);
 		}
-		for(int i = 0;i<perm.size();i++){
-			fw.add(perm.get(i),"P"+i);
+		for(int i = 0; i < perm.size(); i++) {
+			fw.add(perm.get(i), "P" + i);
 		}
-		for(int i = 0;i<denied.size();i++){
-			fw.add(denied.get(i),"D"+i);
+		for(int i = 0; i < denied.size(); i++) {
+			fw.add(denied.get(i), "D" + i);
 		}
 	}
 
+	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	@Override
 	public synchronized void loadFromFileWriter(FileWriter fw) {
 		groups.clear();
@@ -167,14 +169,14 @@ public class BasicUser implements ISaveAble {
 		int gs = (int) fw.get("GS");
 		int ds = (int) fw.get("DS");
 		int ps = (int) fw.get("PS");
-		for(int i = 0;i<gs;i++){
-			groups.add((String) fw.get("G"+i));
+		for(int i = 0; i < gs; i++) {
+			groups.add((String) fw.get("G" + i));
 		}
-		for(int i = 0;i<ps;i++){
-			perm.add((String) fw.get("P"+i));
+		for(int i = 0; i < ps; i++) {
+			perm.add((String) fw.get("P" + i));
 		}
-		for(int i = 0;i<ds;i++){
-			denied.add((String) fw.get("D"+i));
+		for(int i = 0; i < ds; i++) {
+			denied.add((String) fw.get("D" + i));
 		}
 	}
 }

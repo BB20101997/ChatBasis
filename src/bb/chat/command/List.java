@@ -1,10 +1,10 @@
 package bb.chat.command;
 
 import bb.chat.enums.QuerryType;
-import bb.chat.enums.Side;
+import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IConnectionHandler;
-import bb.chat.network.packet.Command.QuerryPacket;
+import bb.chat.network.packet.command.QuerryPacket;
+import bb.net.enums.Side;
 
 /**
  * Created by BB20101997 on 25.01.2015.
@@ -21,15 +21,14 @@ public class List implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IConnectionHandler imh) {
-		if(imh.getSide() == Side.SERVER) {
-				String[] names = imh.getActiveUserList();
-				for(String name : names) {
-					imh.println(name);
+	public void runCommand(String commandLine, IChat iChat) {
+		if(iChat.getIConnectionHandler().getSide() == Side.SERVER) {
+			String[] names = iChat.getActiveUserList();
+			for(String name : names) {
+				iChat.getBasicChatPanel().println(name);
 			}
-		}
-		else{
-			imh.sendPackage(new QuerryPacket(QuerryType.ONLINEUSERSLIST), IConnectionHandler.SERVER);
+		} else {
+			iChat.getIConnectionHandler().sendPackage(new QuerryPacket(QuerryType.ONLINEUSERSLIST), iChat.getIConnectionHandler().SERVER());
 		}
 	}
 
@@ -39,7 +38,7 @@ public class List implements ICommand {
 	}
 
 	@Override
-	public boolean debugModeOnly() {
+	public boolean isDebugModeOnly() {
 		return false;
 	}
 }

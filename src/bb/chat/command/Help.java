@@ -1,9 +1,9 @@
 package bb.chat.command;
 
-import bb.chat.enums.Side;
+import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IConnectionHandler;
-import bb.chat.network.packet.Chatting.ChatPacket;
+import bb.chat.network.packet.chatting.ChatPacket;
+import bb.net.enums.Side;
 
 /**
  * @author BB20101997
@@ -24,36 +24,35 @@ public class Help implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IConnectionHandler imh) {
-		if(imh.getSide() == Side.CLIENT) {
-			String[] helps = imh.getIChatInstance().getCommandRegestry().getHelpForAllCommands();
+	public void runCommand(String commandLine, IChat iChat) {
+		if(iChat.getIConnectionHandler().getSide() == Side.CLIENT) {
+			String[] helps = iChat.getCommandRegistry().getHelpForAllCommands();
 			StringBuilder s = new StringBuilder();
 
 			s.append("Help for the server side commands:");
-			s.append("\n");
+			s.append(System.lineSeparator());
 
 			for(String str : helps) {
 				s.append(str);
-				s.append("\n");
+				s.append(System.lineSeparator());
 			}
 
 			String str = s.toString();
-			imh.sendPackage(new ChatPacket(str, imh.getActor().getActorName()),imh.getActor());
-			System.out.println("Executing Help Command");
+			iChat.getIConnectionHandler().sendPackage(new ChatPacket(str, iChat.getLocalActor().getActorName()), iChat.getLocalActor().getIIOHandler());
 		} else {
-			String[] helps = imh.getIChatInstance().getCommandRegestry().getHelpForAllCommands();
+			String[] helps = iChat.getCommandRegistry().getHelpForAllCommands();
 			StringBuilder s = new StringBuilder();
 
 			s.append("Help for the client side commands:");
-			s.append("\n");
+			s.append(System.lineSeparator());
 
 			for(String str : helps) {
 				s.append(str);
-				s.append("\n");
+				s.append(System.lineSeparator());
 			}
 
 			String str = s.toString();
-			imh.sendPackage(new ChatPacket(str, imh.getActor().getActorName()),imh.getActor());
+			iChat.getIConnectionHandler().sendPackage(new ChatPacket(str, iChat.getLocalActor().getActorName()), iChat.getLocalActor().getIIOHandler());
 		}
 	}
 
@@ -64,7 +63,7 @@ public class Help implements ICommand {
 	}
 
 	@Override
-	public boolean debugModeOnly() {
+	public boolean isDebugModeOnly() {
 		return false;
 	}
 

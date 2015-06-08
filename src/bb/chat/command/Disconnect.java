@@ -1,16 +1,16 @@
 package bb.chat.command;
 
-import bb.chat.enums.Side;
+import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IConnectionHandler;
-import bb.chat.network.packet.Command.DisconnectPacket;
+import bb.net.enums.Side;
+import bb.net.packets.connecting.DisconnectPacket;
 
 /**
  * @author BB20101997
  */
 public class Disconnect implements ICommand {
 
-	private static final String[] helpMessage = new String[]{"Disconnects the client from the Server,only executed Client Side"};
+	private static final String[] HELPMESSAGE = new String[]{"Disconnects the client from the Server,only executed Client Side"};
 
 	@Override
 	public String[] getAlias() {
@@ -24,23 +24,23 @@ public class Disconnect implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IConnectionHandler imh) {
-		if(imh.getSide() == Side.CLIENT) {
-			imh.sendPackage(new DisconnectPacket(), IConnectionHandler.SERVER);
-			imh.disconnect(imh.getActor());
-			imh.wipe();
-			imh.println("Successfully disconnected!");
+	public void runCommand(String commandLine, IChat iChat) {
+		if(iChat.getIConnectionHandler().getSide() == Side.CLIENT) {
+			iChat.getIConnectionHandler().sendPackage(new DisconnectPacket(), iChat.getIConnectionHandler().SERVER());
+			iChat.getIConnectionHandler().disconnect(iChat.getLocalActor().getIIOHandler());
+			iChat.getBasicChatPanel().WipeLog();
+			iChat.getBasicChatPanel().println("Successfully disconnected!");
 		}
 	}
 
 	@Override
 	public String[] helpCommand() {
 
-		return helpMessage;
+		return HELPMESSAGE;
 	}
 
 	@Override
-	public boolean debugModeOnly() {
+	public boolean isDebugModeOnly() {
 		return false;
 	}
 

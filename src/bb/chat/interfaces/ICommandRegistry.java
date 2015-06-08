@@ -1,6 +1,6 @@
 package bb.chat.interfaces;
 
-import bb.chat.enums.Side;
+import bb.net.enums.Side;
 
 /**
  * Created by BB20101997 on 30.01.2015.
@@ -16,7 +16,7 @@ public interface ICommandRegistry {
 	 */
 	ICommand getCommand(String text);
 
-	boolean runCommand(String commandLine,Side s,IConnectionHandler ich);
+	boolean runCommand(String commandLine, Side s, IChat ich);
 
 	String getHelpFromCommand(ICommand a);
 

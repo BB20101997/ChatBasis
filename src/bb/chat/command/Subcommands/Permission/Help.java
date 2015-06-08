@@ -1,8 +1,8 @@
-package bb.chat.command.Subcommands.Permission;
+package bb.chat.command.subcommands.permission;
 
 import bb.chat.command.Permission;
-import bb.chat.interfaces.IIOHandler;
-import bb.chat.interfaces.IConnectionHandler;
+import bb.chat.interfaces.IChat;
+import bb.net.interfaces.IIOHandler;
 
 import java.util.List;
 
@@ -11,13 +11,14 @@ import java.util.List;
  */
 public class Help extends SubPermission {
 	private final Permission perm;
+
 	public Help(Permission instance) {
 		super("help");
 		perm = instance;
 	}
 
 	@Override
-	public void executePermissionCommand(IConnectionHandler imh, IIOHandler executor, String cmd, String rest) {
+	public void executePermissionCommand(IChat iChat, IIOHandler executor, String cmd, String rest) {
 		@SuppressWarnings("UnusedAssignment") List<SubPermission> sp = perm.subCommandList;
 		//TODO
 	}

@@ -1,8 +1,8 @@
 package bb.chat.command;
 
-import bb.chat.enums.Side;
+import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IConnectionHandler;
+import bb.net.enums.Side;
 
 /**
  * @author BB20101997
@@ -20,16 +20,16 @@ public class Connect implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IConnectionHandler imh) {
-		if(imh.getSide() == Side.CLIENT) {
+	public void runCommand(String commandLine, IChat iChat) {
+		if(iChat.getIConnectionHandler().getSide() == Side.CLIENT) {
 			String[] strA = commandLine.split(" ");
-			imh.wipe();
+			iChat.getBasicChatPanel().WipeLog();
 			if(strA.length >= 3) {
-				imh.connect(strA[1], Integer.valueOf(strA[2]));
+				iChat.getIConnectionHandler().connect(strA[1], Integer.valueOf(strA[2]));
 			} else if(strA.length >= 2) {
-				imh.connect(strA[1], 256);
+				iChat.getIConnectionHandler().connect(strA[1], 256);
 			} else {
-				imh.connect("192.168.178.21", 256);
+				iChat.getIConnectionHandler().connect("192.168.178.21", 256);
 			}
 		}
 	}
@@ -40,7 +40,7 @@ public class Connect implements ICommand {
 	}
 
 	@Override
-	public boolean debugModeOnly() {
+	public boolean isDebugModeOnly() {
 		return false;
 	}
 }

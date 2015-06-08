@@ -1,11 +1,13 @@
 package bb.chat.command;
 
-import bb.chat.command.Subcommands.Permission.*;
-import bb.chat.command.Subcommands.Permission.Group.*;
-import bb.chat.command.Subcommands.Permission.Help;
-import bb.chat.command.Subcommands.Permission.User.*;
+import bb.chat.command.subcommands.permission.Create;
+import bb.chat.command.subcommands.permission.Delete;
+import bb.chat.command.subcommands.permission.group.*;
+import bb.chat.command.subcommands.permission.Help;
+import bb.chat.command.subcommands.permission.SubPermission;
+import bb.chat.command.subcommands.permission.user.*;
+import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
-import bb.chat.interfaces.IConnectionHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,13 +54,13 @@ public class Permission implements ICommand {
 	}
 
 	@Override
-	public void runCommand(String commandLine, IConnectionHandler imh) {
+	public void runCommand(String commandLine, IChat iChat) {
 		String[] command = commandLine.split(" ", 3);
 
 		if(!"permission".equals(command[0])) {
 			for(SubPermission sC : subCommandList) {
 				if(("permission-" + sC.getName()).equals(command[0])) {
-					sC.runCommand(commandLine, imh);
+					sC.runCommand(commandLine, iChat);
 					break;
 				}
 			}
@@ -71,7 +73,7 @@ public class Permission implements ICommand {
 	}
 
 	@Override
-	public boolean debugModeOnly() {
+	public boolean isDebugModeOnly() {
 		return false;
 	}
 }

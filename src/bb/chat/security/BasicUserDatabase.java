@@ -1,6 +1,5 @@
 package bb.chat.security;
 
-import bb.chat.interfaces.IConnectionHandler;
 import bb.util.file.database.FileWriter;
 import bb.util.file.database.ISaveAble;
 
@@ -42,12 +41,12 @@ public class BasicUserDatabase implements ISaveAble {
 		return false;
 	}
 
-	public BasicUser createAndAddNewUser(String name,String passwd) {
+	public BasicUser createAndAddNewUser(String name, String passwd) {
 		synchronized(bul) {
 			if(!doesUserExist(name)) {
 				BasicUser b = new BasicUser();
 				b.setUserName(name);
-				b.setPassword(passwd, IConnectionHandler.SERVER.getUser());
+				b.setPassword(passwd, null);
 				b.setUserID(nextFree);
 				nextFree++;
 				bul.add(b);
@@ -65,34 +64,36 @@ public class BasicUserDatabase implements ISaveAble {
 		}
 	}
 
-	public void removeUserFromDatabase(String name){
-		synchronized(bul){
-			if(doesUserExist(name)){
+	public void removeUserFromDatabase(String name) {
+		synchronized(bul) {
+			if(doesUserExist(name)) {
 				bul.remove(getUserByName(name));
 			}
 		}
 
 	}
 
+	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	@Override
 	public void writeToFileWriter(FileWriter fw) {
-			fw.add(nextFree, "next");
-			fw.add(bul.size(),"USIZE");
-		for(int i =0;i<bul.size();i++){
-			fw.add(bul.get(i),"U"+i);
+		fw.add(nextFree, "next");
+		fw.add(bul.size(), "USIZE");
+		for(int i = 0; i < bul.size(); i++) {
+			fw.add(bul.get(i), "U" + i);
 		}
 	}
 
+	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	@Override
 	public void loadFromFileWriter(FileWriter fw) {
-		nextFree = (int)fw.get("next");
-		int size = (int)fw.get("USIZE");
-		for(int i = 0;i<size;i++){
-			FileWriter f = (FileWriter) fw.get("U"+i);
+		nextFree = (int) fw.get("next");
+		int size = (int) fw.get("USIZE");
+		for(int i = 0; i < size; i++) {
+			FileWriter f = (FileWriter) fw.get("U" + i);
 			BasicUser b = new BasicUser();
 			b.loadFromFileWriter(f);
 			bul.add(b);
-			System.out.println("Loaded User with Name:"+b.getUserName());
+
 		}
 	}
 }
