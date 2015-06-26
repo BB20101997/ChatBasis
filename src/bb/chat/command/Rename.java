@@ -30,15 +30,15 @@ public class Rename implements ICommand {
 		if(dS.length <= 2 || "Client".equals(dS[2]) || "SERVER".equals(dS[2])) {
 			return;
 		}
-		if(iChat.getIConnectionHandler().getSide() == Side.CLIENT) {
-			iChat.getIConnectionHandler().sendPackage(new RenamePacket(dS[1], dS[2]), iChat.getIConnectionHandler().ALL());
+		if(iChat.getIConnectionManager().getSide() == Side.CLIENT) {
+			iChat.getIConnectionManager().sendPackage(new RenamePacket(dS[1], dS[2]), iChat.getIConnectionManager().ALL());
 		} else {
 			ChatActor ica = iChat.getActorByName(dS[1]);
 			if(ica != null) {
 				ica.setActorName(dS[2]);
 				iChat.getBasicChatPanel().println("[" + iChat.getLocalActor().getActorName() + "] " + dS[1] + " is now known as " + dS[2]);
-				iChat.getIConnectionHandler().sendPackage(new ChatPacket(dS[1] + " is now known as " + dS[2], iChat.getLocalActor().getActorName()), iChat.getIConnectionHandler().ALL());
-				iChat.getIConnectionHandler().sendPackage(new RenamePacket(dS[1], dS[2]), iChat.getActorByName(dS[2]).getIIOHandler());
+				iChat.getIConnectionManager().sendPackage(new ChatPacket(dS[1] + " is now known as " + dS[2], iChat.getLocalActor().getActorName()), iChat.getIConnectionManager().ALL());
+				iChat.getIConnectionManager().sendPackage(new RenamePacket(dS[1], dS[2]), iChat.getActorByName(dS[2]).getIIOHandler());
 			}
 		}
 	}

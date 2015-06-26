@@ -13,7 +13,7 @@ public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionR
 
 	IChatActor getLocalActor();
 
-	IConnectionManager getIConnectionHandler();
+	IConnectionManager getIConnectionManager();
 
 	PR getPermissionRegistry();
 

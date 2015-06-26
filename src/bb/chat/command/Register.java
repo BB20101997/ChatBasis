@@ -22,13 +22,13 @@ public class Register implements ICommand {
 
 	@Override
 	public void runCommand(String commandLine, IChat iChat) {
-		if(iChat.getIConnectionHandler().getSide() == Side.CLIENT) {
+		if(iChat.getIConnectionManager().getSide() == Side.CLIENT) {
 			String[] c = commandLine.split(" ", 4);
 			if(c.length == 4 && c[2].equals(c[3])) {
 				SignUpPacket p = new SignUpPacket();
 				p.setPassword(c[2]);
 				p.setUsername(c[1]);
-				iChat.getIConnectionHandler().sendPackage(p, iChat.getIConnectionHandler().SERVER());
+				iChat.getIConnectionManager().sendPackage(p, iChat.getIConnectionManager().SERVER());
 			} else if(c.length == 4) {
 				iChat.getBasicChatPanel().println("[Client] Password and Repeated Password did not match!");
 			}

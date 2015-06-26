@@ -22,8 +22,8 @@ public class Stop implements ICommand {
 
 	@Override
 	public void runCommand(String commandLine, IChat iChat) {
-		if(iChat.getIConnectionHandler().getSide() == Side.CLIENT) {
-			iChat.getIConnectionHandler().sendPackage(new StopPacket(), iChat.getIConnectionHandler().SERVER());
+		if(iChat.getIConnectionManager().getSide() == Side.CLIENT) {
+			iChat.getIConnectionManager().sendPackage(new StopPacket(), iChat.getIConnectionManager().SERVER());
 		} else {
 			iChat.shutdown();
 		}

@@ -68,7 +68,7 @@ public class WorkingThread {
 		}
 
 		public void run() {
-			Side side = iChat.getIConnectionHandler().getSide();
+			Side side = iChat.getIConnectionManager().getSide();
 			String s;
 			do {
 				if(!toProcess.isEmpty()) {
@@ -94,9 +94,9 @@ public class WorkingThread {
 					} else {
 
 						String aName = iChat.getLocalActor().getActorName();
-						IIOHandler iA = iChat.getIConnectionHandler().ALL();
+						IIOHandler iA = iChat.getIConnectionManager().ALL();
 
-						iChat.getIConnectionHandler().sendPackage(new ChatPacket(s, aName), iA);
+						iChat.getIConnectionManager().sendPackage(new ChatPacket(s, aName), iA);
 
 						if(side == Side.SERVER) {
 							iChat.getBasicChatPanel().println("[" + iChat.getLocalActor().getActorName() + "] " + s);

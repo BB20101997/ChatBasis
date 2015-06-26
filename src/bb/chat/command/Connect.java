@@ -21,15 +21,15 @@ public class Connect implements ICommand {
 
 	@Override
 	public void runCommand(String commandLine, IChat iChat) {
-		if(iChat.getIConnectionHandler().getSide() == Side.CLIENT) {
+		if(iChat.getIConnectionManager().getSide() == Side.CLIENT) {
 			String[] strA = commandLine.split(" ");
 			iChat.getBasicChatPanel().WipeLog();
 			if(strA.length >= 3) {
-				iChat.getIConnectionHandler().connect(strA[1], Integer.valueOf(strA[2]));
+				iChat.getIConnectionManager().connect(strA[1], Integer.valueOf(strA[2]));
 			} else if(strA.length >= 2) {
-				iChat.getIConnectionHandler().connect(strA[1], 256);
+				iChat.getIConnectionManager().connect(strA[1], 256);
 			} else {
-				iChat.getIConnectionHandler().connect("192.168.178.21", 256);
+				iChat.getIConnectionManager().connect("192.168.178.21", 256);
 			}
 		}
 	}

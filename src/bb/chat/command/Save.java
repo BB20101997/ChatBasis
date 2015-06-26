@@ -22,8 +22,8 @@ public class Save implements ICommand {
 
 	@Override
 	public void runCommand(String commandLine, IChat iChat) {
-		if(iChat.getIConnectionHandler().getSide() == Side.CLIENT) {
-			iChat.getIConnectionHandler().sendPackage(new SavePacket(), iChat.getIConnectionHandler().SERVER());
+		if(iChat.getIConnectionManager().getSide() == Side.CLIENT) {
+			iChat.getIConnectionManager().sendPackage(new SavePacket(), iChat.getIConnectionManager().SERVER());
 		} else {
 			iChat.save();
 		}

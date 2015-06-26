@@ -51,6 +51,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		basicUserDatabase = bud;
 		commandRegistry = icr;
 		load();
+		Logger.getLogger(InitLoggers.getInstance().BCL).exiting(this.getClass().toString(),this.getClass().getConstructors()[0].toString());
 	}
 
 	@Override
@@ -59,7 +60,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	}
 
 	@Override
-	public IConnectionManager getIConnectionHandler() {
+	public IConnectionManager getIConnectionManager() {
 		return imh;
 	}
 

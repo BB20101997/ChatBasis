@@ -22,13 +22,13 @@ public class List implements ICommand {
 
 	@Override
 	public void runCommand(String commandLine, IChat iChat) {
-		if(iChat.getIConnectionHandler().getSide() == Side.SERVER) {
+		if(iChat.getIConnectionManager().getSide() == Side.SERVER) {
 			String[] names = iChat.getActiveUserList();
 			for(String name : names) {
 				iChat.getBasicChatPanel().println(name);
 			}
 		} else {
-			iChat.getIConnectionHandler().sendPackage(new QuerryPacket(QuerryType.ONLINEUSERSLIST), iChat.getIConnectionHandler().SERVER());
+			iChat.getIConnectionManager().sendPackage(new QuerryPacket(QuerryType.ONLINEUSERSLIST), iChat.getIConnectionManager().SERVER());
 		}
 	}
 

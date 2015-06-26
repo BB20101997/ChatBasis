@@ -23,7 +23,7 @@ public abstract class SubPermission implements ICommand {
 
 	@Override
 	public final void runCommand(String commandLine, IChat iChat) {
-		if(iChat.getIConnectionHandler().getSide() == Side.CLIENT) {
+		if(iChat.getIConnectionManager().getSide() == Side.CLIENT) {
 			runClient(commandLine, iChat);
 		} else {
 			runServer(commandLine, iChat);
@@ -32,13 +32,13 @@ public abstract class SubPermission implements ICommand {
 
 	protected void runServer(String cL, IChat iChat) {
 		String[] command = cL.split(" ", 2);
-		iChat.getPermissionRegistry().executePermissionCommand(iChat, iChat.getIConnectionHandler().SERVER(), command[0], command[1]);
+		iChat.getPermissionRegistry().executePermissionCommand(iChat, iChat.getIConnectionManager().SERVER(), command[0], command[1]);
 	}
 
 	protected void runClient(String cL, IChat iChat) {
 		String[] command = cL.split(" ", 2);
 		APacket p = new PermissionPacket(command[0], command[1]);
-		iChat.getIConnectionHandler().sendPackage(p, iChat.getIConnectionHandler().SERVER());
+		iChat.getIConnectionManager().sendPackage(p, iChat.getIConnectionManager().SERVER());
 	}
 
 	@Override

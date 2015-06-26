@@ -54,7 +54,7 @@ public class ChatActor implements IChatActor {
 				RenamePacket rn = new RenamePacket();
 				rn.newName = s;
 				rn.oldName = oldName;
-				iChat.getIConnectionHandler().sendPackage(rn, iChat.getIConnectionHandler().ALL());
+				iChat.getIConnectionManager().sendPackage(rn, iChat.getIConnectionManager().ALL());
 
 				return true;
 			}

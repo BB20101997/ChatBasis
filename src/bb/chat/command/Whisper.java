@@ -27,15 +27,15 @@ public class Whisper implements ICommand {
 
 		String[] c = commandLine.split(" ", 3);
 
-		if(iChat.getIConnectionHandler().getSide() == Side.CLIENT) {
+		if(iChat.getIConnectionManager().getSide() == Side.CLIENT) {
 			if(c.length <= 2) {
 				return;
 			}
-			iChat.getIConnectionHandler().sendPackage(new WhisperPacket(iChat.getLocalActor().getActorName(), c[2], c[1]), iChat.getIConnectionHandler().SERVER());
+			iChat.getIConnectionManager().sendPackage(new WhisperPacket(iChat.getLocalActor().getActorName(), c[2], c[1]), iChat.getIConnectionManager().SERVER());
 		} else {
 			String str[] = commandLine.split(" ", 3);
 			if(str.length > 2) {
-				iChat.getIConnectionHandler().sendPackage(new WhisperPacket(iChat.getLocalActor().getActorName(), str[2], c[1]), iChat.getActorByName(str[1]).getIIOHandler());
+				iChat.getIConnectionManager().sendPackage(new WhisperPacket(iChat.getLocalActor().getActorName(), str[2], c[1]), iChat.getActorByName(str[1]).getIIOHandler());
 			}
 		}
 	}
