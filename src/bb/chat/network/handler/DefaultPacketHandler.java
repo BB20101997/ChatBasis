@@ -53,16 +53,18 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 			if(sender != ICHAT.getIConnectionManager().ALL() || sender != ICHAT.getIConnectionManager().SERVER()) {
 				ChatActor ca = ICHAT.getActorByIIOHandler(sender);
 				if(ca != null) {
-					if(!Objects.equals(cp.Sender, ca.getActorName())){
-						sender.sendPacket(new RenamePacket("Client",ca.getActorName()));
+					if(!Objects.equals(cp.Sender, ca.getActorName())) {
+						sender.sendPacket(new RenamePacket("Client", ca.getActorName()));
 					}
 					cp.Sender = ca.getActorName();
 				}
+				if(sender != ICHAT.getIConnectionManager().LOCAL()) {
+					System.out.println("Sending CP to ALL");
+					ICHAT.getIConnectionManager().sendPackage(cp, ICHAT.getIConnectionManager().ALL());
+				}
 			}
-			System.out.println("Sending CP to ALL");
-			ICHAT.getIConnectionManager().sendPackage(cp, ICHAT.getIConnectionManager().ALL());
 		}
-		ICHAT.getBasicChatPanel().println("[" + cp.Sender + "] " + cp.message);
+		ICHAT.getBasicChatPanel().println("[" + cp.Sender + "] " + cp.Message);
 
 	}
 
