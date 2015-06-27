@@ -20,7 +20,9 @@ public interface ICommand {
 
 	void runCommand(String commandLine, IChat iChat);
 
-	String[] helpCommand();
+	default String[] helpCommand(){
+		return new String[]{"No help given!"};
+	};
 
 	boolean isDebugModeOnly();
 }

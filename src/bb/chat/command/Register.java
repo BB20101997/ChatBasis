@@ -36,11 +36,6 @@ public class Register implements ICommand {
 	}
 
 	@Override
-	public String[] helpCommand() {
-		return new String[0];
-	}
-
-	@Override
 	public boolean isDebugModeOnly() {
 		return false;
 	}

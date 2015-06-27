@@ -68,11 +68,6 @@ public class Permission implements ICommand {
 	}
 
 	@Override
-	public String[] helpCommand() {
-		return new String[0];
-	}
-
-	@Override
 	public boolean isDebugModeOnly() {
 		return false;
 	}
