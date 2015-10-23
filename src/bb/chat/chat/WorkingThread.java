@@ -10,6 +10,7 @@ import java.util.LinkedList;
 
 /**
  * Created by BB20101997 on 26.03.2015.
+ * Handles outbound Messages
  */
 public class WorkingThread {
 
@@ -21,6 +22,7 @@ public class WorkingThread {
 		iChat = ic;
 	}
 
+	//starts the working thread if not running els restarts
 	final synchronized void start() {
 		if(workingRunnable == null) {
 			workingRunnable = new WorkingRunnable();
@@ -35,6 +37,7 @@ public class WorkingThread {
 		workingThread.start();
 	}
 
+	//if the workingthread is set stops it
 	final synchronized void stop() {
 		if(workingRunnable != null) {
 			workingRunnable.stop();
@@ -45,6 +48,7 @@ public class WorkingThread {
 
 
 	//adds the given string to the list of Strings to be processed
+	//should be thread safe
 	//pass down
 	void addLine(String s) {
 		workingRunnable.addInput(s);
@@ -56,14 +60,16 @@ public class WorkingThread {
 
 		private boolean keepGoing = true;
 
+		//makes the thread stop next iteration
 		public void stop() {
 			keepGoing = false;
 		}
 
+		//the list of strings to process
 		private final LinkedList<String> toProcess = new LinkedList<>();
 
 		//adds the given string to the list of Strings to be processed
-		public void addInput(String s) {
+		public synchronized void addInput(String s) {
 			toProcess.add(s);
 		}
 

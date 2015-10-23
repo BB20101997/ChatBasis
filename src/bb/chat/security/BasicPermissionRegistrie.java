@@ -15,7 +15,7 @@ import java.util.List;
  * Created by BB20101997 on 07.09.2014.
  */
 public class BasicPermissionRegistrie implements ISaveAble {
-
+//TODO clean up - editing groups can be done by retriving goup and editing the group
 	private final List<String> registeredPermissions = new ArrayList<>();
 	private final List<Group>  registeredGroups      = new ArrayList<>();
 

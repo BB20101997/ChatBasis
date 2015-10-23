@@ -54,41 +54,49 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		Logger.getLogger(InitLoggers.getInstance().BCL).exiting(this.getClass().toString(),this.getClass().getConstructors()[0].toString());
 	}
 
+	//gets the actor assimilated with this side
 	@Override
 	public IChatActor getLocalActor() {
 		return localActor;
 	}
 
+	//returns the IConnectionManager
 	@Override
 	public IConnectionManager getIConnectionManager() {
 		return imh;
 	}
 
+	//returns the Permission Registry
 	@Override
 	public BasicPermissionRegistrie getPermissionRegistry() {
 		return basicPermissionRegistrie;
 	}
 
+	//returns the UserDatabase
 	@Override
 	public BasicUserDatabase getUserDatabase() {
 		return basicUserDatabase;
 	}
 
+	//returns the BasicChatPanel may be null
 	@Override
 	public IBasicChatPanel getBasicChatPanel() {
 		return basicChatPanel;
 	}
 
-	@Override
-	public ICommandRegistry getCommandRegistry() {
-		return commandRegistry;
-	}
-
+	//sets the BasicChatPanel
 	@Override
 	public void setBasicChatPanel(IBasicChatPanel bcp) {
 		basicChatPanel = bcp;
 	}
 
+	//returns the CommendRegistry
+	@Override
+	public ICommandRegistry getCommandRegistry() {
+		return commandRegistry;
+	}
+
+	//saves everything to file
 	@Override
 	public void save() {
 		if(!CONFIGFILE.exists()) {
@@ -113,6 +121,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 
 	}
 
+	//loads from file
 	@Override
 	public void load() {
 
@@ -145,63 +154,76 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 
 	}
 
+	//shutdown the programm cleanly
 	@Override
 	public void shutdown() {
 		imh.disconnect(imh.ALL());
 		workingThread.stop();
 	}
 
+	//adds a line to the working threads to process list
+	//if necessary starting it
 	@Override
 	public final void Message(String s) {
 		workingThread.start();
 		workingThread.addLine(s);
 	}
 
+	//max users allowed to connect
 	@Override
 	public final int getMaxUsers() {
 		return maxOnlineUser;
 	}
 
+	//change the maximal number of users allowed to connect
 	@Override
 	public final void setMaxUsers(int i) {
 		maxOnlineUser = i;
 	}
 
+	//returns the amount of connected Users
 	@Override
 	public final int getOnlineUsers() {
 		return onlineUserNr;
 	}
 
+	//updates the amount of connected users
 	@Override
 	public final void setOnlineUsers(int i) {
 		onlineUserNr = i;
 	}
 
+	//returns the Server Message
 	@Override
 	public final String getServerMessage() {
 		return serverMessage;
 	}
 
+	//sets the servers Message
 	@Override
 	public final void setServerMessage(String msg) {
 		serverMessage = msg;
 	}
 
+	//returns the servers name
 	@Override
 	public final String getServerName() {
 		return serverName;
 	}
 
+	//sets the servers name
 	@Override
 	public final void setServerName(String s) {
 		serverName = s;
 	}
 
+	//get a list of xonnected users
 	@Override
 	public final String[] getActiveUserList() {
 		return activeUsers.toArray(new String[activeUsers.size()]);
 	}
 
+	//set the list of connected users
 	@Override
 	public final void setActiveUsers(String[] sArgs) {
 		synchronized(activeUsers) {
@@ -210,6 +232,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		}
 	}
 
+	//add a user to connected user list
 	@Override
 	public final void addActiveUser(String name) {
 		synchronized(activeUsers) {
@@ -219,6 +242,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		}
 	}
 
+	//remove a user from connected user list
 	@Override
 	public final void removeActiveUser(String name) {
 		synchronized(activeUsers) {
@@ -233,6 +257,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	* like e.g. the LOCAL(),ALL(),SERVER() from IConnectionHandler
 	**/
 
+	//returns the actor given its string name
 	@Override
 	public ChatActor getActorByName(String oldName) {
 		ChatActor ret = null;
@@ -245,6 +270,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		return ret;
 	}
 
+	//gets the actor connected to the iioHandler
 	@Override
 	public ChatActor getActorByIIOHandler(IIOHandler iioHandler) {
 		ChatActor ret = null;
@@ -257,6 +283,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		return ret;
 	}
 
+	//class to handle ConnectEvent & DisconnectEvent
 	public class ConnectionEventHandler extends AIConnectionEventHandler {
 
 		public int i = 1;

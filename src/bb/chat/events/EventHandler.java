@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * Created by BB20101997 on 30.01.2015.
  */
+//a dummy eventHandler
 public class EventHandler {
 
 	List<Method> mList = new ArrayList<>();

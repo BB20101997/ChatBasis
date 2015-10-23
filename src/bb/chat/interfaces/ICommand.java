@@ -24,5 +24,6 @@ public interface ICommand {
 		return new String[]{"No help given!"};
 	};
 
+	//should this only be available in debug Mode
 	boolean isDebugModeOnly();
 }

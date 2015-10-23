@@ -12,15 +12,19 @@ public interface ICommandRegistry {
 	/**
 	 * @param text the text entered
 	 *
-	 * @return the command instance matching the text
+	 * @return the command instance matching name or alias to the text
 	 */
 	ICommand getCommand(String text);
 
+	//evaluated in put and run ggf. command
 	boolean runCommand(String commandLine, Side s, IChat ich);
 
+	//get the Halp Message from the command
 	String getHelpFromCommand(ICommand a);
 
+	//get Helpmessage from command by alias or name
 	String getHelpFromCommandName(String s);
 
+	//get Helpmessage for all commands
 	String[] getHelpForAllCommands();
 }

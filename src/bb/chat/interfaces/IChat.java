@@ -25,10 +25,13 @@ public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionR
 
 	void setBasicChatPanel(IBasicChatPanel bcp);
 
+	//save to files
 	void save();
 
+	//load form files
 	void load();
 
+	//shutdown cleanly
 	void shutdown();
 
 	// messages entered by the user should land here

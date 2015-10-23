@@ -24,7 +24,7 @@ import java.util.Objects;
 /**
  * Created by BB20101997 on 05.09.2014.
  */
-
+//the default packet handler
 public final class DefaultPacketHandler extends BasicPacketHandler {
 
 	IChat ICHAT;
@@ -75,12 +75,15 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 				ICHAT.getLocalActor().setActorName(rp.newName);
 				ICHAT.getBasicChatPanel().println("[SERVER]:You are now known as " + rp.newName + "!");
 			} else {
-				ICHAT.getBasicChatPanel().println("[SERVER]:user:" + rp.oldName + " is now known as " + rp.newName + "!");
+				if("Client".equals(rp.oldName)) {
+					ICHAT.getBasicChatPanel().println("[SERVER]:"+rp.newName+" joined the Chat!");
+				} else {
+					ICHAT.getBasicChatPanel().println("[SERVER]:" + rp.oldName + " is now known as " + rp.newName + "!");
+				}
 			}
-
 		} else {
-			ChatActor io;
-			if((io = ICHAT.getActorByName(rp.oldName)) != null && io.setActorName(rp.newName)) {
+			ChatActor io = ICHAT.getActorByName(rp.oldName);
+			if(io != null && io.setActorName(rp.newName)) {
 				handlePacket(new ChatPacket(rp.oldName + " is now known as " + rp.newName, ICHAT.getLocalActor().getActorName()), ICHAT.getIConnectionManager().ALL());
 				ICHAT.getIConnectionManager().sendPackage(new RenamePacket(rp.oldName, rp.newName), io.getIIOHandler());
 			} else {
@@ -234,7 +237,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 					try {
 						FileWriter fw = new FileWriter();
 						ByteArrayInputStream bais = new ByteArrayInputStream(qp.getResponse().getBytes());
-						fw.readFromStream(bais);
+						fw.readFromStream(bais, true);
 						int size = (int) fw.get("SIZE");
 						String[] names = new String[size];
 						for(int i = 0; i < size; i++) {

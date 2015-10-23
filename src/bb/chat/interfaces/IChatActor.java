@@ -10,6 +10,7 @@ public interface IChatActor {
 
 	IIOHandler getIIOHandler();
 
+	//return if this is not a real connection
 	boolean isDummy();
 
 	String getActorName();

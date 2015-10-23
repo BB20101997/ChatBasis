@@ -65,7 +65,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	/**
 	 * can be used to disable the default processing of input
 	 */
-
+	//sets if the Standard actionListener should be used
 	void setUseStandardActionListener(@SuppressWarnings("SameParameterValue") boolean useStandardActionListener) {
 		this.useStandardActionListener = useStandardActionListener;
 	}
@@ -73,6 +73,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	/**
 	 * @param a adds an ActionListener to the Send Button and the ChatSendBar
 	 */
+	//adds an actionListener
 	void addActionListener(ActionListener a) {
 
 		Send.addActionListener(a);
@@ -80,6 +81,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	}
 
 	@Override
+	//the standard actionListener
 	public void actionPerformed(ActionEvent arg0) {
 
 		if(useStandardActionListener) {
@@ -98,6 +100,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	/**
 	 * Clears the ChatLog
 	 */
+	//wipes the logs displayed
 	@Override
 	public void WipeLog() {
 
@@ -107,11 +110,12 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	/**
 	 * @param s prints to the ChatLog
 	 */
+	//adds a string to the log displayed
 	@Override
 	public void print(String s) {
 		ChatLog.append(s);
 	}
-
+	//adds a string to the log followed by a new line
 	public void println(String s) {
 		print(s +System.lineSeparator());
 	}

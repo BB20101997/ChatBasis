@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * Created by BB20101997 on 06.12.2014.
  */
+//assume permission check already passed when arriving here
 public class BasicUser implements ISaveAble {
 
 	private String name;
@@ -127,7 +128,7 @@ public class BasicUser implements ISaveAble {
 		}
 	}
 
-
+	//TODO add hash
 	public boolean checkPassword(String s) {
 		return passwd.equals(s);
 	}

@@ -10,7 +10,7 @@ import java.io.IOException;
  * Created by BB20101997 on 28.11.2014.
  */
 public class PermissionPacket extends APacket {
-
+//TODO just send complet command
 	public String cmd;
 	public String restCmd;
 
