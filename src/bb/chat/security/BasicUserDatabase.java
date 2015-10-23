@@ -32,7 +32,7 @@ public class BasicUserDatabase implements ISaveAble {
 		return null;
 	}
 
-	public boolean doesUserExist(String name) {
+	public synchronized boolean doesUserExist(String name) {
 		for(BasicUser b : bul) {
 			if(b.getUserName().equals(name)) {
 				return true;
@@ -41,41 +41,37 @@ public class BasicUserDatabase implements ISaveAble {
 		return false;
 	}
 
-	public BasicUser createAndAddNewUser(String name, String passwd) {
-		synchronized(bul) {
-			if(!doesUserExist(name)) {
-				BasicUser b = new BasicUser();
-				b.setUserName(name);
-				b.setPassword(passwd, null);
-				b.setUserID(nextFree);
-				nextFree++;
-				bul.add(b);
-				return b;
-			}
+	public synchronized BasicUser createAndAddNewUser(String name, String passwd) {
+		if(!doesUserExist(name)) {
+			BasicUser b = new BasicUser();
+			b.setUserName(name);
+			b.setPassword(passwd, null);
+			b.setUserID(nextFree);
+			nextFree++;
+			bul.add(b);
+			return b;
 		}
+
 		return null;
 	}
 
-	public void removeUserFromDatabase(BasicUser u) {
-		synchronized(bul) {
-			if(bul.contains(u)) {
-				bul.remove(u);
-			}
+	public synchronized void removeUserFromDatabase(BasicUser u) {
+		if(bul.contains(u)) {
+			bul.remove(u);
 		}
+
 	}
 
-	public void removeUserFromDatabase(String name) {
-		synchronized(bul) {
-			if(doesUserExist(name)) {
-				bul.remove(getUserByName(name));
-			}
+	public synchronized void removeUserFromDatabase(String name) {
+		if(doesUserExist(name)) {
+			bul.remove(getUserByName(name));
 		}
 
 	}
 
 	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	@Override
-	public void writeToFileWriter(FileWriter fw) {
+	public synchronized void writeToFileWriter(FileWriter fw) {
 		fw.add(nextFree, "next");
 		fw.add(bul.size(), "USIZE");
 		for(int i = 0; i < bul.size(); i++) {
@@ -85,7 +81,7 @@ public class BasicUserDatabase implements ISaveAble {
 
 	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	@Override
-	public void loadFromFileWriter(FileWriter fw) {
+	public synchronized void loadFromFileWriter(FileWriter fw) {
 		nextFree = (int) fw.get("next");
 		int size = (int) fw.get("USIZE");
 		for(int i = 0; i < size; i++) {
