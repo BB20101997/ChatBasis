@@ -15,26 +15,26 @@ public class BasicUserDatabase implements ISaveAble {
 	private       int             nextFree = 0;
 
 	public BasicUser getUserByID(int i) {
-		for(BasicUser b : bul) {
-			if(b.getUserID() == i) {
-				return b;
+		for(BasicUser bu : bul) {
+			if(bu.getUserID() == i) {
+				return bu;
 			}
 		}
 		return null;
 	}
 
 	public BasicUser getUserByName(String s) {
-		for(BasicUser b : bul) {
-			if(b.getUserName().equals(s)) {
-				return b;
+		for(BasicUser bu : bul) {
+			if(bu.getUserName().equals(s)) {
+				return bu;
 			}
 		}
 		return null;
 	}
 
 	public synchronized boolean doesUserExist(String name) {
-		for(BasicUser b : bul) {
-			if(b.getUserName().equals(name)) {
+		for(BasicUser bu : bul) {
+			if(bu.getUserName().equals(name)) {
 				return true;
 			}
 		}
@@ -43,13 +43,13 @@ public class BasicUserDatabase implements ISaveAble {
 
 	public synchronized BasicUser createAndAddNewUser(String name, String passwd) {
 		if(!doesUserExist(name)) {
-			BasicUser b = new BasicUser();
-			b.setUserName(name);
-			b.setPassword(passwd, null);
-			b.setUserID(nextFree);
+			BasicUser bu = new BasicUser();
+			bu.setUserName(name);
+			bu.setPassword(passwd);
+			bu.setUserID(nextFree);
 			nextFree++;
-			bul.add(b);
-			return b;
+			bul.add(bu);
+			return bu;
 		}
 
 		return null;
@@ -85,10 +85,10 @@ public class BasicUserDatabase implements ISaveAble {
 		nextFree = (int) fw.get("next");
 		int size = (int) fw.get("USIZE");
 		for(int i = 0; i < size; i++) {
-			FileWriter f = (FileWriter) fw.get("U" + i);
-			BasicUser b = new BasicUser();
-			b.loadFromFileWriter(f);
-			bul.add(b);
+			FileWriter fw2 = (FileWriter) fw.get("U" + i);
+			BasicUser bu = new BasicUser();
+			bu.loadFromFileWriter(fw2);
+			bul.add(bu);
 
 		}
 	}
