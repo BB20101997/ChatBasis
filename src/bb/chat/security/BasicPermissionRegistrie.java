@@ -15,7 +15,7 @@ import java.util.List;
  * Created by BB20101997 on 07.09.2014.
  */
 public class BasicPermissionRegistrie implements ISaveAble {
-//TODO clean up - editing groups can be done by retriving goup and editing the group
+//TODO clean up - editing groups can be done by retrieving group and editing the group
 	private final List<String> registeredPermissions = new ArrayList<>();
 	private final List<Group>  registeredGroups      = new ArrayList<>();
 
@@ -69,12 +69,10 @@ public class BasicPermissionRegistrie implements ISaveAble {
 
 	public void addGroupPermission(String nameGroup, String perm) {
 		Group g;
-		synchronized(registeredGroups) {
 			if((g = getGroup(nameGroup)) != null) {
 				if(!g.groupPerm.contains(perm)) {
 					g.groupPerm.add(perm);
 				}
-			}
 		}
 	}
 
@@ -107,11 +105,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		Group g;
 		for(String s : groups) {
 			if((g = getGroup(s)) != null) {
-				for(String perm : g.groupDeniedPerm) {
-					if(!perms.contains(perm)) {
-						perms.add(perm);
-					}
-				}
+				g.groupDeniedPerm.stream().filter(perm -> !perms.contains(perm)).forEach(perms::add);
 			}
 		}
 
@@ -132,11 +126,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		Group g;
 		for(String s : groups) {
 			if((g = getGroup(s)) != null) {
-				for(String perm : g.groupPerm) {
-					if(!perms.contains(perm)) {
-						perms.add(perm);
-					}
-				}
+				g.groupPerm.stream().filter(perm -> !perms.contains(perm)).forEach(perms::add);
 			}
 		}
 
@@ -171,7 +161,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		permissions.addAll(getGroupsPermission(groups));
 		permissions.addAll(iup.getUserPermission());
 
-		return hasPermission(permissions, new ArrayList<String>(), neededPermission);
+		return hasPermission(permissions, new ArrayList<>(), neededPermission);
 
 	}
 
@@ -215,6 +205,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		return false;
 	}
 
+	@SuppressWarnings("BooleanMethodNameMustStartWithQuestion")
 	private boolean includesPermission(String Permission, String perm) {
 		if(Permission == null || perm == null) {
 			return false;
