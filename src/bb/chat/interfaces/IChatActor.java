@@ -15,6 +15,7 @@ public interface IChatActor {
 
 	String getActorName();
 
+	@SuppressWarnings("BooleanMethodNameMustStartWithQuestion")
 	boolean setActorName(String name);
 
 	boolean isLoggedIn();
