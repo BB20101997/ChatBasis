@@ -13,6 +13,8 @@ import bb.net.handler.AIConnectionEventHandler;
 import bb.net.interfaces.IConnectionManager;
 import bb.net.interfaces.IIOHandler;
 import bb.util.file.database.FileWriter;
+import bb.util.file.log.BBLogHandler;
+import bb.util.file.log.Constants;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,37 +29,62 @@ import java.util.logging.Logger;
 
 public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegistrie> {
 
-	private static final   File   CONFIGFILE = new File("config.fw").getAbsoluteFile();
-	protected static final String LOGNAME    = "bb.chat.chat.BasicChat";
+	private static final File CONFIGFILE = new File("config.fw").getAbsoluteFile();
+
+	@SuppressWarnings("ConstantNamingConvention")
+	private static final Logger log;
+
+	static {
+		log = Logger.getLogger(BasicChat.class.getName());
+		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
+	}
 
 	private final IConnectionManager       imh;
 	private final BasicPermissionRegistrie basicPermissionRegistrie;
 	private final BasicUserDatabase        basicUserDatabase;
 	private final ICommandRegistry         commandRegistry;
 	private IBasicChatPanel basicChatPanel = null;
-	protected volatile IChatActor localActor;
-	private final List<ChatActor> actorList     = new ArrayList<>();
-	private final WorkingThread   workingThread = new WorkingThread(this);
+	protected IChatActor LOCAL;
+	private   IChatActor ALL;
+	private   IChatActor SERVER;
+
+	private final List<IChatActor> actorList     = new ArrayList<>();
+	private final WorkingThread    workingThread = new WorkingThread(this);
 
 
-	protected String serverMessage = "", serverName = "";
-	protected int onlineUserNr = 0, maxOnlineUser = 0;
-	protected final List<String> activeUsers = new ArrayList<>();
+	private String serverMessage = "", serverName = "";
+	private int onlineUserNr = 0, maxOnlineUser = 0;
+	private final List<String> activeUsers = new ArrayList<>();
 
-	public BasicChat(IConnectionManager imessagehandler, BasicPermissionRegistrie bpr, BasicUserDatabase bud, ICommandRegistry icr) {
+	protected BasicChat(IConnectionManager imessagehandler, BasicPermissionRegistrie bpr, BasicUserDatabase bud, ICommandRegistry icr) {
 		this.imh = imessagehandler;
 		imh.addConnectionEventHandler(new ConnectionEventHandler());
 		basicPermissionRegistrie = bpr;
 		basicUserDatabase = bud;
 		commandRegistry = icr;
 		load();
-		Logger.getLogger(InitLoggers.getInstance().BCL).exiting(this.getClass().toString(),this.getClass().getConstructors()[0].toString());
+		log.exiting(this.getClass().toString(), this.getClass().getConstructors()[0].toString());
+	}
+
+	@SuppressWarnings("PublicMethodWithoutLogging")
+	public IChatActor getALLActor() {
+		if(ALL == null) {
+			ALL = new ChatActor(getIConnectionManager().ALL(), this, true);
+		}
+		return ALL;
+	}
+
+	@SuppressWarnings("PublicMethodWithoutLogging")
+	public IChatActor getSERVERActor() {
+		if(SERVER == null) {
+			SERVER = new ChatActor(getIConnectionManager().ALL(), this, true);
+		}
+		return SERVER;
 	}
 
 	//gets the actor assimilated with this side
-	@Override
-	public IChatActor getLocalActor() {
-		return localActor;
+	public IChatActor getLOCAL() {
+		return LOCAL;
 	}
 
 	//returns the IConnectionManager
@@ -99,11 +126,11 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	//saves everything to file
 	@Override
 	public void save() {
+		log.info("Saving to File!");
 		if(!CONFIGFILE.exists()) {
 			try {
 				if(!CONFIGFILE.createNewFile()) {
-					//TODO
-					imh.sendPackage(new ChatPacket("Save file doesn't exist and couldn't be created,changes not saved!", "SYSTEM"), imh.SERVER());
+					imh.sendPackage(new ChatPacket("Save file doesn't exist and couldn't be created,changes probably not saved!", "SYSTEM"), imh.SERVER());
 				}
 
 			} catch(IOException e) {
@@ -117,6 +144,9 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 			fileWriter.writeToFile(CONFIGFILE);
 		} catch(IOException e) {
 			e.printStackTrace();
+			log.warning("Error while saving!");
+			//noinspection HardcodedFileSeparator
+			imh.sendPackage(new ChatPacket("Couldn't write saves to file! I/OException", "SYSTEM"), imh.SERVER());
 		}
 
 	}
@@ -124,7 +154,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	//loads from file
 	@Override
 	public void load() {
-
+		log.fine("Loading from File");
 		if(CONFIGFILE.exists()) {
 			FileWriter fileWriter = new FileWriter();
 			try {
@@ -140,23 +170,24 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 			}
 		} else {
 
-			boolean dir;
-			dir = CONFIGFILE.getParentFile().exists() || CONFIGFILE.getParentFile().mkdirs();
-			boolean file = false;
+			if(!CONFIGFILE.getParentFile().exists()) {
+				//noinspection ResultOfMethodCallIgnored
+				CONFIGFILE.getParentFile().mkdirs();
+			}
 			try {
-				file = CONFIGFILE.createNewFile();
+				//noinspection ResultOfMethodCallIgnored
+				CONFIGFILE.createNewFile();
 			} catch(IOException e) {
 				e.printStackTrace();
-			}
-			if(!(file & dir)) {
 			}
 		}
 
 	}
 
-	//shutdown the programm cleanly
+	//shutdown the program cleanly
 	@Override
 	public void shutdown() {
+		log.info("Shutdown initiated");
 		imh.disconnect(imh.ALL());
 		workingThread.stop();
 	}
@@ -165,6 +196,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	//if necessary starting it
 	@Override
 	public final void Message(String s) {
+		log.fine("Adding Message to queue");
 		workingThread.start();
 		workingThread.addLine(s);
 	}
@@ -217,13 +249,16 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		serverName = s;
 	}
 
-	//get a list of xonnected users
+	//get a list of connected users
+	@SuppressWarnings("PublicMethodWithoutLogging")
 	@Override
 	public final String[] getActiveUserList() {
 		return activeUsers.toArray(new String[activeUsers.size()]);
 	}
 
 	//set the list of connected users
+	//not sure if useful
+	@SuppressWarnings("PublicMethodWithoutLogging")
 	@Override
 	public final void setActiveUsers(String[] sArgs) {
 		synchronized(activeUsers) {
@@ -233,6 +268,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	}
 
 	//add a user to connected user list
+	@SuppressWarnings("PublicMethodWithoutLogging")
 	@Override
 	public final void addActiveUser(String name) {
 		synchronized(activeUsers) {
@@ -243,6 +279,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	}
 
 	//remove a user from connected user list
+	@SuppressWarnings("PublicMethodWithoutLogging")
 	@Override
 	public final void removeActiveUser(String name) {
 		synchronized(activeUsers) {
@@ -252,18 +289,23 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		}
 	}
 
-	/**
-	 * TODO:the following two methods do not by the time of writing this handel Dummy IIOHandler
-	* like e.g. the LOCAL(),ALL(),SERVER() from IConnectionHandler
-	**/
-
 	//returns the actor given its string name
+	@SuppressWarnings("PublicMethodWithoutLogging")
 	@Override
-	public ChatActor getActorByName(String oldName) {
-		ChatActor ret = null;
-		for(ChatActor ca : actorList) {
+	public IChatActor getActorByName(String oldName) {
+		IChatActor ret = null;
+		if("ALL".equals(oldName)) {
+			ret = getALLActor();
+		}
+		if("LOCAL".equals(oldName)) {
+			ret = getLOCAL();
+		}
+		if("SERVER".equals(oldName)) {
+			ret = getSERVERActor();
+		}
+		for(IChatActor ca : actorList) {
 			if(ca.getActorName().equals(oldName)) {
-				ret =  ca;
+				ret = ca;
 				break;
 			}
 		}
@@ -271,12 +313,22 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	}
 
 	//gets the actor connected to the iioHandler
+	@SuppressWarnings("PublicMethodWithoutLogging")
 	@Override
-	public ChatActor getActorByIIOHandler(IIOHandler iioHandler) {
-		ChatActor ret = null;
-		for(ChatActor ca : actorList) {
+	public IChatActor getActorByIIOHandler(IIOHandler iioHandler) {
+		IChatActor ret = null;
+		if(iioHandler==getIConnectionManager().ALL()) {
+			ret = getALLActor();
+		}
+		if(iioHandler==getIConnectionManager().LOCAL()) {
+			ret = getLOCAL();
+		}
+		if(iioHandler==getIConnectionManager().SERVER()) {
+			ret = getSERVERActor();
+		}
+		for(IChatActor ca : actorList) {
 			if(ca.getIIOHandler() == iioHandler) {
-				ret =  ca;
+				ret = ca;
 				break;
 			}
 		}
@@ -284,20 +336,25 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	}
 
 	//class to handle ConnectEvent & DisconnectEvent
+	//must be public to be accessible by the event handler
+	@SuppressWarnings("WeakerAccess")
 	public class ConnectionEventHandler extends AIConnectionEventHandler {
 
 		public int i = 1;
 
+		@SuppressWarnings("unused")
 		public void handleEvent(ConnectEvent ce) {
-			Logger.getLogger(LOGNAME).info("Received ConnectEvent");
+			log.info("Received ConnectEvent");
 			ChatActor ca = new ChatActor(ce.getIIOHandler(), BasicChat.this);
 			ca.setActorName("User#" + i++);
+			getBasicChatPanel().println("["+getLOCAL().getActorName()+"] "+ca.getActorName()+" joined the Chat!");
 			actorList.add(ca);
 
 		}
 
+		@SuppressWarnings("unused")
 		public void handleEvent(DisconnectEvent de) {
-			Logger.getLogger(LOGNAME).info("Received DisconnectEvent");
+			log.info("Received DisconnectEvent");
 			actorList.remove(getActorByIIOHandler(de.getIIOHandler()));
 		}
 
