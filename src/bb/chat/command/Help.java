@@ -24,23 +24,26 @@ public class Help implements ICommand {
 
 	@Override
 	public void runCommand(String commandLine, IChat iChat) {
-			//TODO: add a possibility to get server side commands on the client, also needs changes to the commad registry to allow execution of server side commands
+			//TODO: add a possibility to get server side commands on the client, also needs changes to the command registry to allow execution of server side commands
 
 			String[] helps = iChat.getCommandRegistry().getHelpForAllCommands();
-			StringBuilder s = new StringBuilder();
+			StringBuilder sb = new StringBuilder();
 
-			s.append("Help for the "+iChat.getIConnectionManager().getSide().toString().toLowerCase()+" side commands:"+System.lineSeparator());
-			s.append(System.lineSeparator());
+		sb.append("Help for the ");
+		sb.append(iChat.getIConnectionManager().getSide().toString().toLowerCase());
+		sb.append(" side commands:");
+		sb.append(System.lineSeparator());
+		sb.append(System.lineSeparator());
 
 
-			for(String str : helps) {
-				s.append(str);
-				s.append(System.lineSeparator());
+		for(String str : helps) {
+				sb.append(str);
+				sb.append(System.lineSeparator());
 			}
 
-			String str = s.toString();
-			ChatPacket cp = new ChatPacket(str,iChat.getLocalActor().getActorName());
-			iChat.getIConnectionManager().sendPackage(cp, iChat.getLocalActor().getIIOHandler());
+			String str = sb.toString();
+			ChatPacket cp = new ChatPacket(str,iChat.getLOCAL().getActorName());
+			iChat.getIConnectionManager().sendPackage(cp, iChat.getLOCAL().getIIOHandler());
 
 	}
 
