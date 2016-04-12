@@ -9,6 +9,7 @@ import java.io.IOException;
 /**
  * Created by BB20101997 on 19.02.2015.
  */
+@SuppressWarnings("ClassIndependentOfModule")
 public class GuestPacket extends APacket {
 
 	public int number = 0;
