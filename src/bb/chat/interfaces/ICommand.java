@@ -7,11 +7,14 @@ public interface ICommand {
 
 	@SuppressWarnings("HardcodedFileSeparator")
 	char COMMAND_INIT_CHAR = '/';
-
 	@SuppressWarnings("HardcodedFileSeparator")
 	String COMMAND_INIT_STRING = "/";
+	String[] NO_ALIAS = new String[0];
+	String[] DEFAULT_HELP = new String[]{"No help given!"};
 
-	String[] getAlias();
+	default String[] getAlias(){
+		return NO_ALIAS;
+	}
 
 	/**
 	 * @return Name of the command
@@ -21,9 +24,11 @@ public interface ICommand {
 	void runCommand(String commandLine, IChat iChat);
 
 	default String[] helpCommand(){
-		return new String[]{"No help given!"};
-	};
+		return DEFAULT_HELP;
+	}
 
 	//should this only be available in debug Mode
-	boolean isDebugModeOnly();
+	default boolean isDebugModeOnly(){
+		return false;
+	}
 }
