@@ -22,11 +22,11 @@ public class Login implements ICommand {
 	@Override
 	public void runCommand(String commandLine, IChat iChat) {
 		if(iChat.getIConnectionManager().getSide() == Side.CLIENT) {
-			String[] c = commandLine.split(" ", 3);
-			if(c.length == 3) {
+			String[] com = commandLine.split(" ", 3);
+			if(com.length == 3) {
 				LoginPacket p = new LoginPacket();
-				p.setPassword(c[2]);
-				p.setUsername(c[1]);
+				p.setPassword(com[2]);
+				p.setUsername(com[1]);
 				iChat.getIConnectionManager().sendPackage(p, iChat.getIConnectionManager().SERVER());
 			}
 		}

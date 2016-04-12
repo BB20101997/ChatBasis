@@ -7,7 +7,7 @@ import bb.net.enums.Side;
  */
 public interface ICommandRegistry {
 
-	void addCommand(Class<? extends ICommand> c);
+	void addCommand(Class<? extends ICommand> com);
 
 	/**
 	 * @param text the text entered
@@ -17,9 +17,10 @@ public interface ICommandRegistry {
 	ICommand getCommand(String text);
 
 	//evaluated in put and run ggf. command
-	boolean runCommand(String commandLine, Side s, IChat ich);
+	@SuppressWarnings("BooleanMethodNameMustStartWithQuestion")
+	boolean runCommand(String commandLine, Side side, IChat ich);
 
-	//get the Halp Message from the command
+	//get the Help Message from the command
 	String getHelpFromCommand(ICommand a);
 
 	//get Helpmessage from command by alias or name
