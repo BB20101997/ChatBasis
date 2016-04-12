@@ -10,32 +10,22 @@ import bb.chat.network.packet.handshake.SignUpPacket;
 public class Register implements ICommand {
 
 	@Override
-	public String[] getAlias() {
-		return new String[0];
-	}
-
-	@Override
 	public String getName() {
 		return "register";
 	}
 
 	@Override
 	public void runCommand(String commandLine, IChat iChat) {
-			String[] c = commandLine.split(" ", 4);
-			if(c.length == 4 && c[2].equals(c[3])) {
+			String[] com = commandLine.split(" ", 4);
+			if(com.length == 4 && com[2].equals(com[3])) {
 				SignUpPacket p = new SignUpPacket();
-				p.setPassword(c[2]);
-				p.setUsername(c[1]);
+				p.setPassword(com[2]);
+				p.setUsername(com[1]);
 				iChat.getIConnectionManager().sendPackage(p, iChat.getIConnectionManager().SERVER());
 				iChat.getBasicChatPanel().println("["+iChat.getIConnectionManager().getSide().toString().toUpperCase()+"] Sending Register Request!");
-			} else if(c.length == 4) {
+			} else if(com.length == 4) {
 				iChat.getBasicChatPanel().println("["+iChat.getIConnectionManager().getSide().toString().toUpperCase()+"] Password and Repeated Password did not match!");
 			}
-	}
-
-	@Override
-	public boolean isDebugModeOnly() {
-		return false;
 	}
 
 }
