@@ -1,6 +1,5 @@
 package bb.chat.interfaces;
 
-import bb.chat.chat.ChatActor;
 import bb.chat.security.BasicPermissionRegistrie;
 import bb.chat.security.BasicUserDatabase;
 import bb.net.interfaces.IConnectionManager;
@@ -11,7 +10,7 @@ import bb.net.interfaces.IIOHandler;
  */
 public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionRegistrie> {
 
-	IChatActor getLocalActor();
+	IChatActor getLOCAL();
 
 	IConnectionManager getIConnectionManager();
 
@@ -61,8 +60,8 @@ public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionR
 
 	void removeActiveUser(String name);
 
-	ChatActor getActorByName(String oldName);
+	IChatActor getActorByName(String oldName);
 
-	ChatActor getActorByIIOHandler(IIOHandler iioHandler);
+	IChatActor getActorByIIOHandler(IIOHandler iioHandler);
 
 }
