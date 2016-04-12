@@ -1,7 +1,6 @@
 package bb.chat.network.packet.command;
 
 import bb.chat.enums.QuerryType;
-import bb.net.enums.NetworkState;
 import bb.net.interfaces.APacket;
 import bb.net.packets.DataIn;
 import bb.net.packets.DataOut;
@@ -19,7 +18,6 @@ public class QuerryPacket extends APacket {
 	private String response = "";
 
 	public QuerryPacket() {
-		minNetworkState = NetworkState.POST_HANDSHAKE;
 	}
 
 	public QuerryPacket(QuerryType qt) {
