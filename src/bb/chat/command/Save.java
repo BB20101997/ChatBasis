@@ -11,11 +11,6 @@ import bb.net.enums.Side;
 public class Save implements ICommand {
 
 	@Override
-	public String[] getAlias() {
-		return new String[0];
-	}
-
-	@Override
 	public String getName() {
 		return "save";
 	}
@@ -29,8 +24,4 @@ public class Save implements ICommand {
 		}
 	}
 
-	@Override
-	public boolean isDebugModeOnly() {
-		return false;
-	}
 }

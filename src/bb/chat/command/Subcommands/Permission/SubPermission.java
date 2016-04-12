@@ -13,9 +13,6 @@ import bb.net.interfaces.IIOHandler;
 public abstract class SubPermission implements ICommand {
 
 	private final String name;
-	public String[] alias = new String[0];
-	public String[] help  = new String[0];
-	public boolean  debug = false;
 
 	public SubPermission(String name) {
 		this.name = "permission-" + name;
@@ -42,25 +39,9 @@ public abstract class SubPermission implements ICommand {
 	}
 
 	@Override
-	public String[] getAlias() {
-		return alias;
-	}
-
-	@Override
 	public String getName() {
 		return name;
 	}
 
 	public abstract void executePermissionCommand(IChat iChat, IIOHandler executor, String cmd, String rest);
-
-
-	@Override
-	public String[] helpCommand() {
-		return help;
-	}
-
-	@Override
-	public boolean isDebugModeOnly() {
-		return debug;
-	}
 }

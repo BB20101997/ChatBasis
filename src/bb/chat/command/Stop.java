@@ -12,7 +12,7 @@ public class Stop implements ICommand {
 
 	@Override
 	public String[] getAlias() {
-		return new String[0];
+		return new String[]{"stopp"};
 	}
 
 	@Override
@@ -27,11 +27,6 @@ public class Stop implements ICommand {
 		} else {
 			iChat.shutdown();
 		}
-	}
-
-	@Override
-	public boolean isDebugModeOnly() {
-		return false;
 	}
 
 }
