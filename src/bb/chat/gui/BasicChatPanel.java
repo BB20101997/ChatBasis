@@ -40,7 +40,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 
 	private final JScrollPane chatLogScroll = new JScrollPane(ChatLog);
 
-	public final IChat iChat;
+	private final IChat iChat;
 
 	/**
 	 * The constructor to set up the JPanel
@@ -75,7 +75,6 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	 */
 	//adds an actionListener
 	void addActionListener(ActionListener a) {
-
 		Send.addActionListener(a);
 		ChatSendBar.addActionListener(a);
 	}
@@ -103,7 +102,6 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	//wipes the logs displayed
 	@Override
 	public void WipeLog() {
-
 		ChatLog.setText("");
 	}
 
@@ -116,8 +114,9 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 		ChatLog.append(s);
 	}
 	//adds a string to the log followed by a new line
+	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	public void println(String s) {
-		print(s +System.lineSeparator());
+		print(s+System.lineSeparator());
 	}
 
 }
