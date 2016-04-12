@@ -35,7 +35,8 @@ public class BasicUser implements ISaveAble {
 	}
 
 
-	public boolean changePassword(String old, String wen, BasicUser user) {
+	@SuppressWarnings("BooleanMethodNameMustStartWithQuestion")
+	public boolean changePassword(String old, String wen) {
 		//TODO: add PermissionCheck not Possible no access to permission registrie!?
 		if(passwd.equals(old)) {
 			passwd = wen;
@@ -44,21 +45,13 @@ public class BasicUser implements ISaveAble {
 		return false;
 	}
 
-
-	public boolean setPassword(String s, BasicUser user) {
-		//TODO: add PermissionCheck not Possible no access to permission registrie!?
+	public void setPassword(String s) {
 		passwd = s;
-		return false;
 	}
 
-
-	public boolean changeUsername(String s, BasicUser user) {
-		//TODO: add PermissionCheck not Possible no access to permission registrie!?
-		//check for username occupied not possible no access to IMassageHandler instance!?
+	public void changeUsername(String s) {
 		name = s;
-		return false;
 	}
-
 
 	public List<String> getUserPermission() {
 		return new ArrayList<>(perm);
