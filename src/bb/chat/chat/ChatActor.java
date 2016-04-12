@@ -5,21 +5,38 @@ import bb.chat.interfaces.IChatActor;
 import bb.chat.network.packet.command.RenamePacket;
 import bb.chat.security.BasicUser;
 import bb.net.interfaces.IIOHandler;
+import bb.util.file.log.BBLogHandler;
+import bb.util.file.log.Constants;
+
+import java.util.logging.Logger;
 
 /**
  * Created by BB20101997 on 27.03.2015.
  */
 public class ChatActor implements IChatActor {
 
-	final   IIOHandler iioHandler;
-	final   IChat      iChat;
-	private BasicUser  user;
+	@SuppressWarnings("ConstantNamingConvention")
+	private static final Logger log;
+
+	static {
+		log = Logger.getLogger(ChatActor.class.getName());
+		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
+	}
+
+	private final IIOHandler iioHandler;
+	final         IChat      iChat;
+	private       BasicUser  user;
 	private         String  name    = "Client";
-	protected final boolean isDummy = false;
+	private final boolean isDummy;
 
 	public ChatActor(IIOHandler io, IChat ic) {
+		this(io, ic,false);
+	}
+
+	public ChatActor(IIOHandler io,IChat ic,boolean isDummy){
 		iioHandler = io;
 		iChat = ic;
+		this.isDummy = isDummy;
 	}
 
 	//gets the IIOHandler that handles the ChatActors connection
@@ -35,15 +52,16 @@ public class ChatActor implements IChatActor {
 	}
 
 	//returns the Actors name
+	@SuppressWarnings("PublicMethodWithoutLogging")
 	@Override
 	public String getActorName() {
-
 		return user == null ? name : user.getUserName();
 	}
 
-	//checks if the Actors name is valid and if sets it returns if true if successful
+	//checks if the Actors new name is valid and if sets it, returns true if successful
 	@Override
 	public boolean setActorName(String s) {
+		log.fine("Setting Actor's name previous "+getActorName()+" new name "+s+".");
 		synchronized(iChat.getUserDatabase()) {
 			if(iChat.getUserDatabase() == null || !iChat.getUserDatabase().doesUserExist(s)) {
 
@@ -52,7 +70,6 @@ public class ChatActor implements IChatActor {
 				if(user == null) {
 					name = s;
 				} else {
-					//TODO:if server send Packet to Client
 					user.setUserName(s);
 				}
 
@@ -68,6 +85,7 @@ public class ChatActor implements IChatActor {
 	}
 
 	//returns true if user is logged in
+	@SuppressWarnings("PublicMethodWithoutLogging")
 	@Override
 	public boolean isLoggedIn() {
 		return user != null;
