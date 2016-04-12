@@ -14,9 +14,9 @@ import java.util.LinkedList;
  */
 public class WorkingThread {
 
-	final IChat iChat;
-	WorkingRunnable workingRunnable;
-	Thread          workingThread;
+	final   IChat           iChat;
+	private WorkingRunnable workingRunnable;
+	private Thread          workingThread;
 
 	public WorkingThread(IChat ic) {
 		iChat = ic;
@@ -29,7 +29,8 @@ public class WorkingThread {
 		}
 		if(workingThread != null) {
 			workingRunnable.stop();
-			while(workingThread.isAlive()) ;
+			//noinspection StatementWithEmptyBody
+			while(workingThread.isAlive()){}
 		}
 		workingThread = new Thread(workingRunnable);
 		workingThread.setName("WorkingThread");
@@ -37,7 +38,7 @@ public class WorkingThread {
 		workingThread.start();
 	}
 
-	//if the workingthread is set stops it
+	//if the working thread is set stops it
 	final synchronized void stop() {
 		if(workingRunnable != null) {
 			workingRunnable.stop();
@@ -94,18 +95,18 @@ public class WorkingThread {
 								ic.runCommand(s, iChat);
 							}
 						} else {
-							iChat.getBasicChatPanel().println("[" + iChat.getLocalActor().getActorName() + "]Please enter a valid command!");
+							iChat.getBasicChatPanel().println("[" + iChat.getLOCAL().getActorName() + "]Please enter a valid command!");
 						}
 
 					} else {
 
-						String aName = iChat.getLocalActor().getActorName();
+						String aName = iChat.getLOCAL().getActorName();
 						IIOHandler iA = iChat.getIConnectionManager().ALL();
 
 						iChat.getIConnectionManager().sendPackage(new ChatPacket(s, aName), iA);
 
 						if(side == Side.SERVER) {
-							iChat.getBasicChatPanel().println("[" + iChat.getLocalActor().getActorName() + "] " + s);
+							iChat.getBasicChatPanel().println("[" + iChat.getLOCAL().getActorName() + "] " + s);
 						}
 
 					}
