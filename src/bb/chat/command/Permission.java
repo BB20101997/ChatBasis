@@ -2,15 +2,18 @@ package bb.chat.command;
 
 import bb.chat.command.subcommands.permission.Create;
 import bb.chat.command.subcommands.permission.Delete;
-import bb.chat.command.subcommands.permission.group.*;
 import bb.chat.command.subcommands.permission.Help;
 import bb.chat.command.subcommands.permission.SubPermission;
+import bb.chat.command.subcommands.permission.group.*;
 import bb.chat.command.subcommands.permission.user.*;
 import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
+import bb.util.file.log.BBLogHandler;
+import bb.util.file.log.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by BB20101997 on 28.11.2014.
@@ -19,6 +22,15 @@ public class Permission implements ICommand {
 
 	public final List<SubPermission> subCommandList = new ArrayList<>();
 
+	private static final Logger log;
+
+	static {
+		log = Logger.getLogger(Permission.class.getName());
+		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
+	}
+
+
+	
 	public Permission() {
 		subCommandList.add(new Help(this));
 		subCommandList.add(new Create());
@@ -41,11 +53,11 @@ public class Permission implements ICommand {
 
 	@Override
 	public String[] getAlias() {
-		String[] s = new String[subCommandList.size()];
-		for(int i = 0; i < s.length; i++) {
-			s[i] = subCommandList.get(i).getName();
+		String[] sA = new String[subCommandList.size()];
+		for(int i = 0; i < sA.length; i++) {
+			sA[i] = subCommandList.get(i).getName();
 		}
-		return s;
+		return sA;
 	}
 
 	@Override
