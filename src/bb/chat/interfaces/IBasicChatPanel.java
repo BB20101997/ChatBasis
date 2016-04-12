@@ -9,6 +9,9 @@ public interface IBasicChatPanel {
 	void print(String s);
 
 	//ad the string to log followed by a new line
-	void println(String s);
+	default void println(String s){
+		//noinspection StringConcatenationMissingWhitespace
+		print(s+System.lineSeparator());
+	}
 
 }
