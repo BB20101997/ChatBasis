@@ -27,7 +27,7 @@ public class Whisper implements ICommand {
 		if(com.length <= 2) {
 			return;
 		}
-		iChat.getIConnectionManager().sendPackage(new WhisperPacket(iChat.getLOCAL().getActorName(), com[2], com[1]), iChat.getIConnectionManager().SERVER());
+		iChat.getIConnectionManager().sendPackage(new WhisperPacket(iChat.getLOCALActor().getActorName(), com[2], com[1]), iChat.getIConnectionManager().SERVER());
 	}
 
 	@Override

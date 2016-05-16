@@ -69,7 +69,12 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	@SuppressWarnings("PublicMethodWithoutLogging")
 	public IChatActor getALLActor() {
 		if(ALL == null) {
-			ALL = new ChatActor(getIConnectionManager().ALL(), this, true);
+			ALL = new ChatActor(getIConnectionManager().ALL(), this, true){
+				@Override
+				public String getActorName() {
+					return "ALL";
+				}
+			};
 		}
 		return ALL;
 	}
@@ -77,13 +82,18 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	@SuppressWarnings("PublicMethodWithoutLogging")
 	public IChatActor getSERVERActor() {
 		if(SERVER == null) {
-			SERVER = new ChatActor(getIConnectionManager().ALL(), this, true);
+			SERVER = new ChatActor(getIConnectionManager().SERVER(), this, true){
+				@Override
+				public String getActorName() {
+					return "SERVER";
+				}
+			};
 		}
 		return SERVER;
 	}
 
 	//gets the actor assimilated with this side
-	public IChatActor getLOCAL() {
+	public IChatActor getLOCALActor() {
 		return LOCAL;
 	}
 
@@ -298,7 +308,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 			ret = getALLActor();
 		}
 		if("LOCAL".equals(oldName)) {
-			ret = getLOCAL();
+			ret = getLOCALActor();
 		}
 		if("SERVER".equals(oldName)) {
 			ret = getSERVERActor();
@@ -321,7 +331,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 			ret = getALLActor();
 		}
 		if(iioHandler==getIConnectionManager().LOCAL()) {
-			ret = getLOCAL();
+			ret = getLOCALActor();
 		}
 		if(iioHandler==getIConnectionManager().SERVER()) {
 			ret = getSERVERActor();
@@ -347,7 +357,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 			log.info("Received ConnectEvent");
 			ChatActor ca = new ChatActor(ce.getIIOHandler(), BasicChat.this);
 			ca.setActorName("User#" + i++);
-			getBasicChatPanel().println("["+getLOCAL().getActorName()+"] "+ca.getActorName()+" joined the Chat!");
+			getBasicChatPanel().println("["+ getLOCALActor().getActorName()+"] "+ca.getActorName()+" joined the Chat!");
 			actorList.add(ca);
 
 		}

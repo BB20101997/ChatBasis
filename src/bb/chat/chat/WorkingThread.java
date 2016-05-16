@@ -95,18 +95,18 @@ public class WorkingThread {
 								ic.runCommand(s, iChat);
 							}
 						} else {
-							iChat.getBasicChatPanel().println("[" + iChat.getLOCAL().getActorName() + "]Please enter a valid command!");
+							iChat.getBasicChatPanel().println("[" + iChat.getLOCALActor().getActorName() + "]Please enter a valid command!");
 						}
 
 					} else {
 
-						String aName = iChat.getLOCAL().getActorName();
+						String aName = iChat.getLOCALActor().getActorName();
 						IIOHandler iA = iChat.getIConnectionManager().ALL();
 
 						iChat.getIConnectionManager().sendPackage(new ChatPacket(s, aName), iA);
 
 						if(side == Side.SERVER) {
-							iChat.getBasicChatPanel().println("[" + iChat.getLOCAL().getActorName() + "] " + s);
+							iChat.getBasicChatPanel().println("[" + iChat.getLOCALActor().getActorName() + "] " + s);
 						}
 
 					}

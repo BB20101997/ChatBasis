@@ -30,7 +30,7 @@ public class Rename implements ICommand {
 			IChatActor ica = iChat.getActorByName(dS[1]);
 			if(ica != null) {
 				ica.setActorName(dS[2]);
-				iChat.getBasicChatPanel().println("[" + iChat.getLOCAL().getActorName() + "] " + dS[1] + " is now known as " + dS[2]);
+				iChat.getBasicChatPanel().println("[" + iChat.getLOCALActor().getActorName() + "] " + dS[1] + " is now known as " + dS[2]);
 				iChat.getIConnectionManager().sendPackage(new RenamePacket(dS[1], dS[2]), iChat.getIConnectionManager().ALL());
 			}
 		}

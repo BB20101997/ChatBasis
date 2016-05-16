@@ -10,7 +10,7 @@ import bb.net.interfaces.IIOHandler;
  */
 public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionRegistrie> {
 
-	IChatActor getLOCAL();
+	IChatActor getLOCALActor();
 
 	IConnectionManager getIConnectionManager();
 

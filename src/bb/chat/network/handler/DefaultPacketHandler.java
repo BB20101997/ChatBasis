@@ -67,7 +67,8 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 				IChatActor ca = ICHAT.getActorByIIOHandler(sender);
 				if(ca != null) {
 					if(!Objects.equals(cp.Sender, ca.getActorName())) {
-						sender.sendPacket(new RenamePacket("Client", ca.getActorName()));
+						log.warning("Sender not as expected received:"+cp.Sender+" Expected:"+ca.getActorName());
+						sender.sendPacket(new RenamePacket(cp.Sender,ca.getActorName()));
 					}
 					cp.Sender = ca.getActorName();
 				}
@@ -85,9 +86,9 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 	public void handlePacket(RenamePacket rp, IIOHandler sender) {
 		log.finer("Handling RenamePacket");
 		if(ICHAT.getIConnectionManager().getSide() == Side.CLIENT) {
-			if(ICHAT.getLOCAL().getActorName().equals(rp.oldName)) {
+			if(ICHAT.getLOCALActor().getActorName().equals(rp.oldName)) {
 				log.finer("RenamePacket renames Me");
-				ICHAT.getLOCAL().setActorName(rp.newName);
+				ICHAT.getLOCALActor().setActorName(rp.newName);
 				ICHAT.getBasicChatPanel().println("[SERVER]:You are now known as " + rp.newName + "!");
 			} else {
 				if("Client".equals(rp.oldName)) {
@@ -101,10 +102,10 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 		} else {
 			IChatActor io = ICHAT.getActorByName(rp.oldName);
 			if(io != null && io.setActorName(rp.newName)) {
-				ICHAT.getBasicChatPanel().println("["+ICHAT.getLOCAL().getActorName()+"] "+rp.oldName+" is now known as "+rp.newName+".");
+				ICHAT.getBasicChatPanel().println("["+ICHAT.getLOCALActor().getActorName()+"] "+rp.oldName+" is now known as "+rp.newName+".");
 				ICHAT.getIConnectionManager().sendPackage(new RenamePacket(rp.oldName, rp.newName), ICHAT.getIConnectionManager().ALL());
 			} else {
-				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("Couldn't rename user!", ICHAT.getLOCAL().getActorName()), sender);
+				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("Couldn't rename user!", ICHAT.getLOCALActor().getActorName()), sender);
 			}
 		}
 	}
@@ -131,10 +132,10 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 
 	@SuppressWarnings("UnusedParameters")
 	public void handlePacket(WhisperPacket wp, IIOHandler sender) {
-		if(ICHAT.getIConnectionManager().getSide() == Side.SERVER && !wp.getReceiver().equals(ICHAT.getLOCAL().getActorName())) {
+		if(ICHAT.getIConnectionManager().getSide() == Side.SERVER && !wp.getReceiver().equals(ICHAT.getLOCALActor().getActorName())) {
 			ICHAT.getIConnectionManager().sendPackage(wp, ICHAT.getActorByName(wp.getReceiver()).getIIOHandler());
 		} else {
-			if(ICHAT.getLOCAL().getActorName().equals(wp.getReceiver())) {
+			if(ICHAT.getLOCALActor().getActorName().equals(wp.getReceiver())) {
 				ICHAT.getBasicChatPanel().println("[" + wp.getSender() + " whispered to you: ] \"" + wp.getMessage() + "\"");
 			}
 		}
@@ -160,10 +161,10 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 				String nameNew = ca.getActorName();
 				ICHAT.getIConnectionManager().sendPackage(new RenamePacket(nameOld, nameNew), sender);
 				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("You have successfully logged in as " + lp.getUsername(), "LOGIN"), sender);
-				handlePacket(new ChatPacket(ca.getActorName() + " joined the Chat!", ICHAT.getLOCAL().getActorName()), ICHAT.getIConnectionManager().ALL());
+				handlePacket(new ChatPacket(ca.getActorName() + " joined the Chat!", ICHAT.getLOCALActor().getActorName()), ICHAT.getIConnectionManager().ALL());
 
 			} else {
-				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("Your login has failed the password or username(maybe both?) was wrong, please try again!", ICHAT.getLOCAL().getActorName()), sender);
+				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("Your login has failed the password or username(maybe both?) was wrong, please try again!", ICHAT.getLOCALActor().getActorName()), sender);
 			}
 		}
 
@@ -178,10 +179,10 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 			BasicUserDatabase bud = ICHAT.getUserDatabase();
 			if(bud.createAndAddNewUser(sup.getUsername(), sup.getPassword()) != null) {
 				ICHAT.getBasicChatPanel().println("[SERVER] : An Account with username " + sup.getUsername() + " was created!");
-				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("user-Account successfully created!", ICHAT.getLOCAL().getActorName()), sender);
+				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("user-Account successfully created!", ICHAT.getLOCALActor().getActorName()), sender);
 			} else {
 				ICHAT.getBasicChatPanel().println("[SERVER] : Tried to create an Account with username " + sup.getUsername() + " already existed!");
-				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("Could not create user-Account,already existed!", ICHAT.getLOCAL().getActorName()), sender);
+				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("Could not create user-Account,already existed!", ICHAT.getLOCALActor().getActorName()), sender);
 			}
 		}
 	}

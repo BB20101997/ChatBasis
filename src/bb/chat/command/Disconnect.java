@@ -27,7 +27,7 @@ public class Disconnect implements ICommand {
 	public void runCommand(String commandLine, IChat iChat) {
 		if(iChat.getIConnectionManager().getSide() == Side.CLIENT) {
 			iChat.getIConnectionManager().sendPackage(new DisconnectPacket(), iChat.getIConnectionManager().SERVER());
-			iChat.getIConnectionManager().disconnect(iChat.getLOCAL().getIIOHandler());
+			iChat.getIConnectionManager().disconnect(iChat.getLOCALActor().getIIOHandler());
 			iChat.getBasicChatPanel().WipeLog();
 			iChat.getBasicChatPanel().println("Successfully disconnected!");
 		}

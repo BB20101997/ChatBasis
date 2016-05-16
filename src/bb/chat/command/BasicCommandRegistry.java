@@ -78,7 +78,7 @@ public class BasicCommandRegistry implements ICommandRegistry {
 			return true;
 		}
 		log.fine(strA[0]+" is not a valid command!");
-		ich.getBasicChatPanel().println("[" + ich.getLOCAL().getActorName() + "]Please enter a valid command!");
+		ich.getBasicChatPanel().println("[" + ich.getLOCALActor().getActorName() + "]Please enter a valid command!");
 		return false;
 
 	}

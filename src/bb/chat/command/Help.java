@@ -24,10 +24,10 @@ public class Help implements ICommand {
 
 	@Override
 	public void runCommand(String commandLine, IChat iChat) {
-			//TODO: add a possibility to get server side commands on the client, also needs changes to the command registry to allow execution of server side commands
+		//TODO: add a possibility to get server side commands on the client, also needs changes to the command registry to allow execution of server side commands
 
-			String[] helps = iChat.getCommandRegistry().getHelpForAllCommands();
-			StringBuilder sb = new StringBuilder();
+		String[] helps = iChat.getCommandRegistry().getHelpForAllCommands();
+		StringBuilder sb = new StringBuilder();
 
 		sb.append("Help for the ");
 		sb.append(iChat.getIConnectionManager().getSide().toString().toLowerCase());
@@ -37,13 +37,13 @@ public class Help implements ICommand {
 
 
 		for(String str : helps) {
-				sb.append(str);
-				sb.append(System.lineSeparator());
-			}
+			sb.append(str);
+			sb.append(System.lineSeparator());
+		}
 
 			String str = sb.toString();
-			ChatPacket cp = new ChatPacket(str,iChat.getLOCAL().getActorName());
-			iChat.getIConnectionManager().sendPackage(cp, iChat.getLOCAL().getIIOHandler());
+			ChatPacket cp = new ChatPacket(str,iChat.getLOCALActor().getActorName());
+			iChat.getIConnectionManager().sendPackage(cp, iChat.getLOCALActor().getIIOHandler());
 
 	}
 
