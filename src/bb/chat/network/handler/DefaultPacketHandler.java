@@ -13,7 +13,6 @@ import bb.net.enums.ServerStatus;
 import bb.net.enums.Side;
 import bb.net.handler.BasicPacketHandler;
 import bb.net.interfaces.IIOHandler;
-import bb.net.packets.connecting.DisconnectPacket;
 import bb.util.file.database.FileWriter;
 import bb.util.file.log.BBLogHandler;
 import bb.util.file.log.Constants;
@@ -49,7 +48,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 
 		addAssociatedPacket(ChatPacket.class);
 		addAssociatedPacket(RenamePacket.class);
-		addAssociatedPacket(DisconnectPacket.class);
+		//addAssociatedPacket(DisconnectPacket.class);
 		addAssociatedPacket(StopPacket.class);
 		addAssociatedPacket(WhisperPacket.class);
 		addAssociatedPacket(SavePacket.class);
@@ -110,8 +109,9 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 		}
 	}
 
-	@SuppressWarnings("UnusedParameters")
+	/*@SuppressWarnings("UnusedParameters")
 	public void handlePacket(DisconnectPacket dp, IIOHandler sender) {
+		log.finer("Received DisconnectPacket!");
 		if(ICHAT.getIConnectionManager().getSide() == Side.SERVER) {
 			IChatActor ca = ICHAT.getActorByIIOHandler(sender);
 			if(ca != null) {
@@ -120,7 +120,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 				handlePacket(new ChatPacket("Unknown disconnected!", "LOGOUT"), ICHAT.getIConnectionManager().ALL());
 			}
 		}
-	}
+	}*/
 
 	@SuppressWarnings("UnusedParameters")
 	public void handlePacket(StopPacket sp, IIOHandler sender) {

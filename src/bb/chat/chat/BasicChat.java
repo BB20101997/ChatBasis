@@ -365,7 +365,11 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		@SuppressWarnings("unused")
 		public void handleEvent(DisconnectEvent de) {
 			log.info("Received DisconnectEvent");
-			actorList.remove(getActorByIIOHandler(de.getIIOHandler()));
+			IChatActor chatActor = getActorByIIOHandler(de.getIIOHandler());
+			ChatPacket p = new ChatPacket(chatActor.getActorName() + " disconnected!", "LOGOUT");
+			getIConnectionManager().sendPackage(p,getIConnectionManager().ALL());
+			getBasicChatPanel().println("[LOGOUT] "+chatActor.getActorName()+ " disconnected!");
+			actorList.remove(chatActor);
 		}
 
 	}
