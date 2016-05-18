@@ -2,16 +2,28 @@ package bb.chat.gui;
 
 import bb.chat.interfaces.IBasicChatPanel;
 import bb.chat.interfaces.IChat;
+import bb.util.file.log.BBLogHandler;
+import bb.util.file.log.Constants;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Logger;
 
 /**
  * @author BB20101997
  */
 public class BasicChatPanel extends JPanel implements ActionListener, IBasicChatPanel {
+
+	@SuppressWarnings("ConstantNamingConvention")
+	private static final Logger log;
+
+	static {
+		log = Logger.getLogger(BasicChatPanel.class.getName());
+		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
+	}
+
 	/**
 	 * the command send by the Send button
 	 */
@@ -116,6 +128,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	//adds a string to the log followed by a new line
 	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	public void println(String s) {
+		log.finest("Println:"+s);
 		print(s+System.lineSeparator());
 	}
 

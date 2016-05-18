@@ -60,12 +60,17 @@ public class ChatActor implements IChatActor {
 
 	//checks if the Actors new name is valid and if sets it, returns true if successful
 	@Override
-	public boolean setActorName(String s) {
+	public boolean setActorName(final String s,final boolean noty) {
 		log.fine("Setting Actor's name previous "+getActorName()+" new name "+s+".");
 		synchronized(iChat.getUserDatabase()) {
 			if(iChat.getUserDatabase() == null || !iChat.getUserDatabase().doesUserExist(s)) {
 
-				String oldName = name;
+				//check if user allready exists outside of database
+				if(iChat.isActorPresent(s)){
+					return false;
+				}
+
+				final String oldName = name;
 
 				if(user == null) {
 					name = s;
@@ -73,10 +78,11 @@ public class ChatActor implements IChatActor {
 					user.setUserName(s);
 				}
 
-				RenamePacket rn = new RenamePacket();
-				rn.newName = s;
-				rn.oldName = oldName;
-				iChat.getIConnectionManager().sendPackage(rn, iChat.getIConnectionManager().ALL());
+				RenamePacket rn = new RenamePacket(oldName,s);
+
+				if(noty) {
+					iChat.getIConnectionManager().sendPackage(rn, iChat.getIConnectionManager().ALL());
+				}
 
 				return true;
 			}

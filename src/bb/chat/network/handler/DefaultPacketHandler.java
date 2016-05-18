@@ -103,7 +103,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 			IChatActor io = ICHAT.getActorByName(rp.oldName);
 			if(io != null && io.setActorName(rp.newName)) {
 				ICHAT.getBasicChatPanel().println("["+ICHAT.getLOCALActor().getActorName()+"] "+rp.oldName+" is now known as "+rp.newName+".");
-				ICHAT.getIConnectionManager().sendPackage(new RenamePacket(rp.oldName, rp.newName), ICHAT.getIConnectionManager().ALL());
+				//ICHAT.getIConnectionManager().sendPackage(new RenamePacket(rp.oldName, rp.newName), ICHAT.getIConnectionManager().ALL());
 			} else {
 				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("Couldn't rename user!", ICHAT.getLOCALActor().getActorName()), sender);
 			}

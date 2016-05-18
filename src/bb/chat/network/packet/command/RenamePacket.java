@@ -16,8 +16,7 @@ public class RenamePacket extends APacket {
 	public String oldName;
 
 	public RenamePacket() {
-		newName = "";
-		oldName = "";
+		this("","");
 	}
 
 	public RenamePacket(String old, String newN) {

@@ -31,6 +31,7 @@ public class Connect implements ICommand {
 
 	@Override
 	public String[] helpCommand() {
+		//noinspection StringConcatenationMissingWhitespace
 		return new String[]{"Usage:"+COMMAND_INIT_STRING+"connect <host> <port>"};
 	}
 }

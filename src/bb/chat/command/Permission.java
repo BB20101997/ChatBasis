@@ -22,6 +22,7 @@ public class Permission implements ICommand {
 
 	public final List<SubPermission> subCommandList = new ArrayList<>();
 
+	@SuppressWarnings("ConstantNamingConvention")
 	private static final Logger log;
 
 	static {

@@ -93,6 +93,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	}
 
 	//gets the actor assimilated with this side
+	@Override
 	public IChatActor getLOCALActor() {
 		return LOCAL;
 	}
@@ -326,23 +327,22 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	@SuppressWarnings("PublicMethodWithoutLogging")
 	@Override
 	public IChatActor getActorByIIOHandler(IIOHandler iioHandler) {
-		IChatActor ret = null;
+
 		if(iioHandler==getIConnectionManager().ALL()) {
-			ret = getALLActor();
+			return getALLActor();
 		}
 		if(iioHandler==getIConnectionManager().LOCAL()) {
-			ret = getLOCALActor();
+			return getLOCALActor();
 		}
 		if(iioHandler==getIConnectionManager().SERVER()) {
-			ret = getSERVERActor();
+			return getSERVERActor();
 		}
 		for(IChatActor ca : actorList) {
 			if(ca.getIIOHandler() == iioHandler) {
-				ret = ca;
-				break;
+				return ca;
 			}
 		}
-		return ret;
+		return null;
 	}
 
 	//class to handle ConnectEvent & DisconnectEvent
@@ -356,7 +356,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		public void handleEvent(ConnectEvent ce) {
 			log.info("Received ConnectEvent");
 			ChatActor ca = new ChatActor(ce.getIIOHandler(), BasicChat.this);
-			ca.setActorName("User#" + i++);
+			ca.setActorName("User#" + i++,true);
 			getBasicChatPanel().println("["+ getLOCALActor().getActorName()+"] "+ca.getActorName()+" joined the Chat!");
 			actorList.add(ca);
 
