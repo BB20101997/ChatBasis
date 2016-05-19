@@ -1,5 +1,6 @@
 package bb.chat.events;
 
+import bb.util.event.IEvent;
 import bb.util.file.log.BBLogHandler;
 import bb.util.file.log.Constants;
 
@@ -28,18 +29,18 @@ public class EventHandler {
 
 
 	public void subscribeEvent(Method method) {
-		log.finer("Subscribing to an Event");
-		if(method.getParameterTypes().length == 1 && method.getParameterTypes()[0].isAssignableFrom(Event.class)) {
+		log.finer("Subscribing to an IEvent");
+		if(method.getParameterTypes().length == 1 && method.getParameterTypes()[0].isAssignableFrom(IEvent.class)) {
 			if(!mList.contains(method)) {
 				mList.add(method);
 			}
 		} else {
-			throw new IllegalArgumentException("Method has to have one Parameter,either of type Event.class or a Subtype!");
+			throw new IllegalArgumentException("Method has to have one Parameter,either of type IEvent.class or a Subtype!");
 		}
 	}
 
-	public void distributeEvent(Event event) {
-		log.finer("Distributing an Event");
+	public void distributeEvent(IEvent event) {
+		log.finer("Distributing an IEvent");
 		mList.stream().filter(me -> me.getParameterTypes()[0].isAssignableFrom(event.getClass())).forEach(me -> {
 			try {
 				me.invoke(event);

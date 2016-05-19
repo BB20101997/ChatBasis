@@ -87,7 +87,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 		if(ICHAT.getIConnectionManager().getSide() == Side.CLIENT) {
 			if(ICHAT.getLOCALActor().getActorName().equals(rp.oldName)) {
 				log.finer("RenamePacket renames Me");
-				ICHAT.getLOCALActor().setActorName(rp.newName);
+				ICHAT.getLOCALActor().setActorName(rp.newName,false);
 				ICHAT.getBasicChatPanel().println("[SERVER]:You are now known as " + rp.newName + "!");
 			} else {
 				if("Client".equals(rp.oldName)) {
@@ -100,27 +100,13 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 			}
 		} else {
 			IChatActor io = ICHAT.getActorByName(rp.oldName);
-			if(io != null && io.setActorName(rp.newName)) {
+			if(io != null && io.setActorName(rp.newName,true)) {
 				ICHAT.getBasicChatPanel().println("["+ICHAT.getLOCALActor().getActorName()+"] "+rp.oldName+" is now known as "+rp.newName+".");
-				//ICHAT.getIConnectionManager().sendPackage(new RenamePacket(rp.oldName, rp.newName), ICHAT.getIConnectionManager().ALL());
 			} else {
 				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("Couldn't rename user!", ICHAT.getLOCALActor().getActorName()), sender);
 			}
 		}
 	}
-
-	/*@SuppressWarnings("UnusedParameters")
-	public void handlePacket(DisconnectPacket dp, IIOHandler sender) {
-		log.finer("Received DisconnectPacket!");
-		if(ICHAT.getIConnectionManager().getSide() == Side.SERVER) {
-			IChatActor ca = ICHAT.getActorByIIOHandler(sender);
-			if(ca != null) {
-				handlePacket(new ChatPacket(ca.getActorName() + " disconnected!", "LOGOUT"), ICHAT.getIConnectionManager().ALL());
-			} else {
-				handlePacket(new ChatPacket("Unknown disconnected!", "LOGOUT"), ICHAT.getIConnectionManager().ALL());
-			}
-		}
-	}*/
 
 	@SuppressWarnings("UnusedParameters")
 	public void handlePacket(StopPacket sp, IIOHandler sender) {

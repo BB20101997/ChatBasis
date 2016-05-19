@@ -9,15 +9,17 @@ import bb.chat.security.BasicPermissionRegistrie;
 import bb.chat.security.BasicUserDatabase;
 import bb.net.event.ConnectEvent;
 import bb.net.event.DisconnectEvent;
-import bb.net.handler.AIConnectionEventHandler;
+import bb.net.interfaces.IConnectionEvent;
 import bb.net.interfaces.IConnectionManager;
 import bb.net.interfaces.IIOHandler;
+import bb.util.event.EventHandler;
 import bb.util.file.database.FileWriter;
 import bb.util.file.log.BBLogHandler;
 import bb.util.file.log.Constants;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -348,9 +350,22 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	//class to handle ConnectEvent & DisconnectEvent
 	//must be public to be accessible by the event handler
 	@SuppressWarnings("WeakerAccess")
-	public class ConnectionEventHandler extends AIConnectionEventHandler {
+	public class ConnectionEventHandler extends EventHandler<IConnectionEvent> {
 
 		public int i = 1;
+
+		@Override
+		public void HandleEvent(IConnectionEvent event) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+			if(event instanceof ConnectEvent||event instanceof DisconnectEvent){
+				try {
+					super.HandleEvent(event);
+				} catch(Exception e) {
+					//noinspection StringConcatenationMissingWhitespace
+					log.severe("WTF whent wrong here?"+System.lineSeparator()+"This should not even be possible!");
+					throw e;
+				}
+			}
+		}
 
 		@SuppressWarnings("unused")
 		public void handleEvent(ConnectEvent ce) {
