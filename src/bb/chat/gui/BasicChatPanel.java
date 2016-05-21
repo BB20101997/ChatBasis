@@ -78,7 +78,8 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	 * can be used to disable the default processing of input
 	 */
 	//sets if the Standard actionListener should be used
-	void setUseStandardActionListener(@SuppressWarnings("SameParameterValue") boolean useStandardActionListener) {
+	@SuppressWarnings("SameParameterValue")
+	void setUseStandardActionListener(boolean useStandardActionListener) {
 		this.useStandardActionListener = useStandardActionListener;
 	}
 
@@ -130,6 +131,11 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	public void println(String s) {
 		log.finest("Println:"+s);
 		print(s+System.lineSeparator());
+	}
+
+	@Override
+	public void stop() {
+		println("Stopping...");
 	}
 
 }
