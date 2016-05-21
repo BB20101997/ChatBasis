@@ -206,6 +206,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 	}
 
 	@SuppressWarnings("BooleanMethodNameMustStartWithQuestion")
+	//is checked included in present
 	private boolean includesPermission(String Permission, String perm) {
 		if(Permission == null || perm == null) {
 			return false;
@@ -263,12 +264,12 @@ public class BasicPermissionRegistrie implements ISaveAble {
 
 	}
 
-	public void executePermissionCommand(IChat iChat, IIOHandler userRunningCommand, String command, String restOfCommand) {
-		ICommand cmd = iChat.getCommandRegistry().getCommand("permission");
-		if(cmd instanceof Permission) {
-			for(SubPermission sp : ((Permission) cmd).subCommandList) {
-				if(sp.getName().equals(command)) {
-					sp.executePermissionCommand(iChat, userRunningCommand, command, restOfCommand);
+	public void executePermissionCommand(IChat iChat,IIOHandler uRC,String cmd){
+		ICommand command = iChat.getCommandRegistry().getCommand("permission");
+		if(command instanceof Permission) {
+			for(SubPermission sp : ((Permission) command).subCommandList) {
+				if(sp.getName().equals(cmd.split(" ",2)[0].replace("/",""))) {
+					sp.executePermissionCommand(iChat,uRC,cmd);
 					return;
 				}
 			}
@@ -277,6 +278,12 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		}
 	}
 
+	@Deprecated
+	public void executePermissionCommand(IChat iChat, IIOHandler userRunningCommand, String command, String restOfCommand) {
+		executePermissionCommand(iChat,userRunningCommand,command+" "+restOfCommand);
+	}
+
+	@SuppressWarnings("ClassNamingConvention")
 	private static class Group implements ISaveAble {
 
 		public List<String> groupPerm;
