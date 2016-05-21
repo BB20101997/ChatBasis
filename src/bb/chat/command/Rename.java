@@ -9,7 +9,7 @@ import bb.net.enums.Side;
 /**
  * @author BB20101997
  */
-@SuppressWarnings("HardcodedFileSeparator")
+@SuppressWarnings({"ClassNamingConvention"})
 public class Rename implements ICommand {
 
 	@Override

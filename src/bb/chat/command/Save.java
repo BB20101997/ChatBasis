@@ -8,6 +8,7 @@ import bb.net.enums.Side;
 /**
  * Created by BB20101997 on 24.11.2014.
  */
+@SuppressWarnings("ClassNamingConvention")
 public class Save implements ICommand {
 
 	@Override

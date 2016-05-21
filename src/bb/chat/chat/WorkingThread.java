@@ -55,7 +55,6 @@ public class WorkingThread {
 		workingRunnable.addInput(s);
 	}
 
-	@SuppressWarnings("HardcodedFileSeparator")
 	private class WorkingRunnable implements Runnable {
 
 

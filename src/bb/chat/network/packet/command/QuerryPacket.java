@@ -23,6 +23,7 @@ public class QuerryPacket extends APacket {
 		this(QuerryType.NOTDEFINED,"",false);
 	}
 
+	@SuppressWarnings("SameParameterValue")
 	public QuerryPacket(QuerryType qt) {
 		this(qt,"",true);
 	}

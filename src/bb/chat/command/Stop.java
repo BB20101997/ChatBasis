@@ -8,6 +8,7 @@ import bb.net.enums.Side;
 /**
  * Created by BB20101997 on 30.08.2014.
  */
+@SuppressWarnings("ClassNamingConvention")
 public class Stop implements ICommand {
 
 	@Override

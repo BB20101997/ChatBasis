@@ -7,6 +7,7 @@ import bb.chat.network.packet.chatting.ChatPacket;
 /**
  * @author BB20101997
  */
+@SuppressWarnings("ClassNamingConvention")
 public class Help implements ICommand {
 
 	//TODO:FIX runCommand

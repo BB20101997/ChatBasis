@@ -4,6 +4,7 @@ import bb.chat.security.BasicPermissionRegistrie;
 import bb.chat.security.BasicUserDatabase;
 import bb.net.interfaces.IConnectionManager;
 import bb.net.interfaces.IIOHandler;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Created by BB20101997 on 30.01.2015.
@@ -62,6 +63,7 @@ public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionR
 
 	IChatActor getActorByName(String oldName);
 
+	@Nullable
 	IChatActor getActorByIIOHandler(IIOHandler iioHandler);
 
 	@SuppressWarnings("PublicMethodWithoutLogging")
