@@ -7,13 +7,14 @@ import bb.net.interfaces.IIOHandler;
 /**
  * Created by BB20101997 on 15.12.2014.
  */
+@SuppressWarnings("ClassNamePrefixedWithPackageName")
 public class GroupDenyRemove extends SubPermission {
 	public GroupDenyRemove() {
 		super("group-deny-remove");
 	}
 
 	@Override
-	public void executePermissionCommand(IChat iChat, IIOHandler executor, String cmd, String rest) {
+	public void executePermissionCommand(IChat iChat, IIOHandler executor, String cmd) {
 		//TODO
 	}
 }
