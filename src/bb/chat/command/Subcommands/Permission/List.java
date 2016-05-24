@@ -9,7 +9,7 @@ import bb.net.interfaces.IIOHandler;
 @SuppressWarnings("ClassNamingConvention")
 public class List extends SubPermission {
 
-	private static final String PERMISSON = "permission.create";
+	private static final String PERMISSON = "permission.list";
 
 	public List(){
 		super("list",PERMISSON);
@@ -17,6 +17,13 @@ public class List extends SubPermission {
 
 	@Override
 	public void executePermissionCommand(IChat iChat, IIOHandler executor, String cmd) {
-
+		if(checkPerm(executor,iChat)){
+			String[] perms = iChat.getPermissionRegistry().getPermissionsRegistered();
+			iChat.getBasicChatPanel().println("The following Permissions are registered:");
+			for(String s:perms){
+				iChat.getBasicChatPanel().println(" - "+s);
+			}
+			iChat.getBasicChatPanel().println("End of Permission List!");
+		}
 	}
 }

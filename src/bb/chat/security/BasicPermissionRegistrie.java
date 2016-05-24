@@ -19,6 +19,10 @@ public class BasicPermissionRegistrie implements ISaveAble {
 	private final List<String> registeredPermissions = new ArrayList<>();
 	private final List<Group>  registeredGroups      = new ArrayList<>();
 
+	public String[] getPermissionsRegistered(){
+		return registeredPermissions.toArray(new String[registeredPermissions.size()]);
+	}
+
 	public boolean isPermissionRegistered(String p) {
 		for(String s : registeredPermissions) {
 			if(s.equals(p)) {
@@ -85,27 +89,24 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		}
 	}
 
-	public boolean hasPermission(BasicUser iup, List<String> permission) {
-		List<String> groups = getGroups(iup);
-
-		List<String> permissions = new ArrayList<>();
-		permissions.addAll(getGroupsPermission(groups));
-		permissions.addAll(iup.getUserPermission());
-
-		List<String> deniedPermissions = new ArrayList<>();
-		deniedPermissions.addAll(getGroupsDeniedPermission(groups));
-		deniedPermissions.addAll(iup.getUserDeniedPermission());
-
-		return hasPermission(permissions, deniedPermissions, permission);
-
-	}
-
 	private List<String> getGroupsDeniedPermission(List<String> groups) {
 		List<String> perms = new ArrayList<>();
 		Group g;
 		for(String s : groups) {
 			if((g = getGroup(s)) != null) {
 				g.groupDeniedPerm.stream().filter(perm -> !perms.contains(perm)).forEach(perms::add);
+			}
+		}
+
+		return perms;
+	}
+
+	private List<String> getGroupsPermission(List<String> groups) {
+		List<String> perms = new ArrayList<>();
+		Group g;
+		for(String s : groups) {
+			if((g = getGroup(s)) != null) {
+				g.groupPerm.stream().filter(perm -> !perms.contains(perm)).forEach(perms::add);
 			}
 		}
 
@@ -119,18 +120,6 @@ public class BasicPermissionRegistrie implements ISaveAble {
 			}
 		}
 		return null;
-	}
-
-	private List<String> getGroupsPermission(List<String> groups) {
-		List<String> perms = new ArrayList<>();
-		Group g;
-		for(String s : groups) {
-			if((g = getGroup(s)) != null) {
-				g.groupPerm.stream().filter(perm -> !perms.contains(perm)).forEach(perms::add);
-			}
-		}
-
-		return perms;
 	}
 
 	private List<String> getGroups(BasicUser iup) {
@@ -152,6 +141,21 @@ public class BasicPermissionRegistrie implements ISaveAble {
 			gr.add(g.name);
 			getSubGroups(g.name, gr);
 		}
+	}
+
+	public boolean hasPermission(BasicUser iup, List<String> permission) {
+		List<String> groups = getGroups(iup);
+
+		List<String> permissions = new ArrayList<>();
+		permissions.addAll(getGroupsPermission(groups));
+		permissions.addAll(iup.getUserPermission());
+
+		List<String> deniedPermissions = new ArrayList<>();
+		deniedPermissions.addAll(getGroupsDeniedPermission(groups));
+		deniedPermissions.addAll(iup.getUserDeniedPermission());
+
+		return hasPermission(permissions, deniedPermissions, permission);
+
 	}
 
 	public boolean hasPositivePermission(BasicUser iup, List<String> neededPermission) {
@@ -177,6 +181,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 
 	}
 
+	//check each needed Perm if pressent and not denied
 	boolean hasPermission(List<String> presentPermissions, List<String> deniedPermission, List<String> neededPermissions) {
 		for(String p : neededPermissions) {
 			if(!hasPermission(presentPermissions, deniedPermission, p)) {
@@ -188,6 +193,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 
 
 	@SuppressWarnings("unchecked")
+	//ckeck if permission is present and not denied
 	boolean hasPermission(List<String> presentPermissions, List<String> deniedPermission, String permission) {
 
 		for(String p : deniedPermission) {
@@ -207,26 +213,47 @@ public class BasicPermissionRegistrie implements ISaveAble {
 
 	@SuppressWarnings("BooleanMethodNameMustStartWithQuestion")
 	//is checked included in present
-	private boolean includesPermission(String Permission, String perm) {
-		if(Permission == null || perm == null) {
+	private boolean includesPermission(String present, String checked) {
+		//null will never match
+		if(present == null || checked == null) {
 			return false;
 		}
 
-		if(Permission.equals(perm)) {
+		//equivalent match
+		if(present.equals(checked)) {
 			return true;
 		}
-		String[] PermissionArray = Permission.split(".");
-		String[] permArray = Permission.split(".");
+		//if it does't contain a wild card an didn't already match it does not fit
+		if(!present.contains("*")){
+			return false;
+		}
+
+		String[] PermissionArray = present.split(".");
+		String[] permArray = checked.split(".");
+
+		//if present is shorter than checked and presents last sub-permission is not a wild card it does not match
+		if((PermissionArray.length<permArray.length)&&!PermissionArray[present.length()-1].equals("*")){
+			return false;
+		}
+
+		//present is more specific tah checked therfore no match
+		if(PermissionArray.length>permArray.length){
+			return false;
+		}
 
 		for(int i = 0; i < PermissionArray.length && i < permArray.length; i++) {
+			//wildcard on present always matches skipp compare
 			if(PermissionArray[i].equals("*")) {
 				continue;
 			}
+
+			//no match -> no match
 			if(!PermissionArray[i].equals(permArray[i])) {
 				return false;
 			}
 
 		}
+		//you made it till here even thou are you not an exact match congratulations you match as well
 		return true;
 	}
 
@@ -276,11 +303,6 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		} else {
 			throw new RuntimeException("Did not get Permission command as requested!");
 		}
-	}
-
-	@Deprecated
-	public void executePermissionCommand(IChat iChat, IIOHandler userRunningCommand, String command, String restOfCommand) {
-		executePermissionCommand(iChat,userRunningCommand,command+" "+restOfCommand);
 	}
 
 	@SuppressWarnings("ClassNamingConvention")
