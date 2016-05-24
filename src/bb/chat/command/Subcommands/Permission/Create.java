@@ -1,8 +1,6 @@
 package bb.chat.command.subcommands.permission;
 
 import bb.chat.interfaces.IChat;
-import bb.chat.interfaces.IChatActor;
-import bb.chat.security.BasicUser;
 import bb.net.interfaces.IIOHandler;
 import bb.util.file.log.BBLogHandler;
 import bb.util.file.log.Constants;
@@ -33,14 +31,7 @@ public class Create extends SubPermission {
 	@Override
 	public void executePermissionCommand(IChat iChat, IIOHandler executor, String cmd) {
 		log.fine("Executing Command!");
-		IChatActor iChatActor = iChat.getActorByIIOHandler(executor);
-		if(iChatActor == null) {
-			log.fine("Couldn't get Actor!");
-			return;
-		}
-		BasicUser basicUser = iChatActor.getUser();
-
-		if(iChat.getPermissionRegistry().hasPermission(basicUser, perms)) {
+		if(checkPerm(executor,iChat)) {
 			iChat.getPermissionRegistry().createPermission(cmd.split(" ",2)[1]);
 		} else {
 			log.fine("Missing Permissions!");

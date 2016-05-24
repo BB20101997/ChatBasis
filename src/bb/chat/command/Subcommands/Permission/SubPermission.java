@@ -1,6 +1,7 @@
 package bb.chat.command.subcommands.permission;
 
 import bb.chat.interfaces.IChat;
+import bb.chat.interfaces.IChatActor;
 import bb.chat.interfaces.ICommand;
 import bb.chat.network.packet.chatting.ChatPacket;
 import bb.chat.network.packet.command.PermissionPacket;
@@ -66,6 +67,16 @@ public abstract class SubPermission implements ICommand {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	protected boolean checkPerm(IIOHandler iioHandler, IChat iChat){
+		IChatActor iChatActor = iChat.getActorByIIOHandler(iioHandler);
+		if(iChatActor == null) {
+			log.fine("Couldn't get Actor!");
+			return false;
+		}
+		BasicUser basicUser = iChatActor.getUser();
+		return iChat.getPermissionRegistry().hasPermission(basicUser,perms);
 	}
 
 	protected boolean checkPerm(BasicUser bu,IChat iChat){

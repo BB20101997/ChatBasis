@@ -2,7 +2,6 @@ package bb.chat.command.subcommands.permission;
 
 import bb.chat.command.Permission;
 import bb.chat.interfaces.IChat;
-import bb.chat.security.BasicUser;
 import bb.net.interfaces.IIOHandler;
 
 import java.util.List;
@@ -23,20 +22,16 @@ public class Help extends SubPermission {
 	@Override
 	public void executePermissionCommand(IChat iChat, IIOHandler executor, String cmd) {
 		List<SubPermission> sp = perm.subCommandList;
-		try {
-			BasicUser basicUser = iChat.getActorByIIOHandler(executor).getUser();
-			if(!checkPerm(basicUser,iChat)){
-				executor.sendPacket(missingPermsPacket(iChat));
-				return;
+		//stop if user can't use help
+		if(!checkPerm(executor, iChat)) {
+			executor.sendPacket(missingPermsPacket(iChat));
+			return;
+		}
+		for(SubPermission subPermission : sp) {
+			//only print help for command that the user can use
+			if(subPermission.checkPerm(executor, iChat)) {
+				//TODO print help info
 			}
-			for(SubPermission subPermission : sp) {
-				//only print help for command that the user can use
-				if(subPermission.checkPerm(basicUser,iChat)) {
-					//TODO print help info
-				}
-			}
-		}catch(NullPointerException e){
-			//TODO error
 		}
 	}
 }
