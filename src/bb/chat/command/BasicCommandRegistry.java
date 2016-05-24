@@ -97,6 +97,11 @@ public class BasicCommandRegistry implements ICommandRegistry {
 	}
 
 	@Override
+	public List<ICommand> getAllCommands() {
+		return new ArrayList<>(commandList);
+	}
+
+	@Override
 	public final String getHelpFromCommandName(String s) {
 		ICommand command = getCommand(s);
 		if(command != null) {
@@ -120,4 +125,5 @@ public class BasicCommandRegistry implements ICommandRegistry {
 		return sb.toString();
 
 	}
+
 }

@@ -27,6 +27,15 @@ public interface ICommand {
 		return DEFAULT_HELP;
 	}
 
+
+	default String complete(String s,int caret,int tabs){
+		//noinspection HardcodedFileSeparator
+		if(s.substring(0,caret).equals("/"+getName()+" test")){
+			return s.substring(0,caret)+"-"+tabs;
+		}
+		return s;
+	}
+
 	//should this only be available in debug Mode
 	default boolean isDebugModeOnly(){
 		return false;

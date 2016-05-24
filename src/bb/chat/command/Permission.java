@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 /**
  * Created by BB20101997 on 28.11.2014.
@@ -32,11 +33,11 @@ public class Permission implements ICommand {
 	}
 
 
-	
 	public Permission() {
 		subCommandList.add(new Help(this));
 		subCommandList.add(new Create());
 		subCommandList.add(new Delete());
+		subCommandList.add(new bb.chat.command.subcommands.permission.List());
 		subCommandList.add(new UserPermAdd());
 		subCommandList.add(new UserPermRemove());
 		subCommandList.add(new UserDenyAdd());
@@ -59,7 +60,7 @@ public class Permission implements ICommand {
 		for(int i = 0; i < sA.length; i++) {
 			sA[i] = subCommandList.get(i).getName();
 		}
-		log.fine("Returning Alias List:"+ Arrays.toString(sA));
+		log.fine("Returning Alias List:" + Arrays.toString(sA));
 		return sA;
 	}
 
@@ -69,20 +70,33 @@ public class Permission implements ICommand {
 	}
 
 	@Override
+	public String complete(String s, int caret, int tabs) {
+		String preCaret = s.substring(1, caret);
+		String[] preCaretArgs = preCaret.split(" ");
+		if(preCaretArgs.length == 1) {
+			Stream<String> stream = subCommandList.stream().map(SubPermission::getName).filter(e -> e.startsWith(preCaret));
+			String[] strings = stream.toArray(String[]::new);
+			if(strings.length > 0) {
+				return "/" + strings[(tabs - 1) % strings.length];
+			}
+		}
+		return s;
+	}
+
+	@Override
 	public void runCommand(String commandLine, IChat iChat) {
 		String[] command = commandLine.split(" ", 2);
-		log.fine("Received command:"+command[0]);
+		log.fine("Received command:" + command[0]);
 
-		if(!"permission".replace(COMMAND_INIT_STRING,"").equals(command[0])) {
+		if(!"permission".replace(COMMAND_INIT_STRING, "").equals(command[0])) {
 			for(SubPermission sC : subCommandList) {
-				if(sC.getName().equals(command[0].replace(COMMAND_INIT_STRING,""))) {
+				if(sC.getName().equals(command[0].replace(COMMAND_INIT_STRING, ""))) {
 					log.fine("Found matching subcommand!");
 					sC.runCommand(commandLine, iChat);
 					break;
 				}
 			}
-		}
-		else{
+		} else {
 
 		}
 	}
