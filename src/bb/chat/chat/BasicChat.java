@@ -41,11 +41,12 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
 	}
 
-	private final IConnectionManager       imh;
-	private final BasicPermissionRegistrie basicPermissionRegistrie;
-	private final BasicUserDatabase        basicUserDatabase;
-	private final ICommandRegistry         commandRegistry;
+	private IConnectionManager       imh;
+	private BasicPermissionRegistrie basicPermissionRegistrie;
+	private ICommandRegistry         commandRegistry;
+	private BasicUserDatabase        basicUserDatabase;
 	private IBasicChatPanel basicChatPanel = null;
+	private boolean debugMode;
 	protected IChatActor LOCAL;
 	private   IChatActor ALL;
 	private   IChatActor SERVER;
@@ -59,13 +60,18 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	private final List<String> activeUsers = new ArrayList<>();
 
 	protected BasicChat(IConnectionManager imessagehandler, BasicPermissionRegistrie bpr, BasicUserDatabase bud, ICommandRegistry icr) {
-		this.imh = imessagehandler;
+		this(imessagehandler,bpr,bud,icr,false);
+	}
+
+	protected BasicChat(IConnectionManager icm,BasicPermissionRegistrie bpr,BasicUserDatabase bud,ICommandRegistry icr,boolean debug){
+		this.imh = icm;
 		imh.addConnectionEventHandler(new ConnectionEventHandler());
 		basicPermissionRegistrie = bpr;
 		basicUserDatabase = bud;
 		commandRegistry = icr;
 		load();
 		log.exiting(this.getClass().toString(), this.getClass().getConstructors()[0].toString());
+		debugMode = debug;
 	}
 
 	@SuppressWarnings("PublicMethodWithoutLogging")
