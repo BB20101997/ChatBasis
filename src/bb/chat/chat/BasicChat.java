@@ -41,11 +41,12 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
 	}
 
-	private final IConnectionManager       imh;
-	private final BasicPermissionRegistrie basicPermissionRegistrie;
-	private final BasicUserDatabase        basicUserDatabase;
-	private final ICommandRegistry         commandRegistry;
+	private IConnectionManager       imh;
+	private BasicPermissionRegistrie basicPermissionRegistrie;
+	private ICommandRegistry         commandRegistry;
+	private BasicUserDatabase        basicUserDatabase;
 	private IBasicChatPanel basicChatPanel = null;
+	private boolean debugMode;
 	protected IChatActor LOCAL;
 	private   IChatActor ALL;
 	private   IChatActor SERVER;
@@ -59,19 +60,24 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	private final List<String> activeUsers = new ArrayList<>();
 
 	protected BasicChat(IConnectionManager imessagehandler, BasicPermissionRegistrie bpr, BasicUserDatabase bud, ICommandRegistry icr) {
-		this.imh = imessagehandler;
+		this(imessagehandler,bpr,bud,icr,false);
+	}
+
+	protected BasicChat(IConnectionManager icm,BasicPermissionRegistrie bpr,BasicUserDatabase bud,ICommandRegistry icr,boolean debug){
+		this.imh = icm;
 		imh.addConnectionEventHandler(new ConnectionEventHandler());
 		basicPermissionRegistrie = bpr;
 		basicUserDatabase = bud;
 		commandRegistry = icr;
 		load();
 		log.exiting(this.getClass().toString(), this.getClass().getConstructors()[0].toString());
+		debugMode = debug;
 	}
 
 	@SuppressWarnings("PublicMethodWithoutLogging")
 	public IChatActor getALLActor() {
 		if(ALL == null) {
-			ALL = new ChatActor(getIConnectionManager().ALL(), this, true){
+			ALL = new ChatActor(getIConnectionManager().ALL(), this, true) {
 				@Override
 				public String getActorName() {
 					return "ALL";
@@ -84,7 +90,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	@SuppressWarnings("PublicMethodWithoutLogging")
 	public IChatActor getSERVERActor() {
 		if(SERVER == null) {
-			SERVER = new ChatActor(getIConnectionManager().SERVER(), this, true){
+			SERVER = new ChatActor(getIConnectionManager().SERVER(), this, true) {
 				@Override
 				public String getActorName() {
 					return "SERVER";
@@ -330,13 +336,13 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	@Override
 	public IChatActor getActorByIIOHandler(IIOHandler iioHandler) {
 
-		if(iioHandler==getIConnectionManager().ALL()) {
+		if(iioHandler == getIConnectionManager().ALL()) {
 			return getALLActor();
 		}
-		if(iioHandler==getIConnectionManager().LOCAL()) {
+		if(iioHandler == getIConnectionManager().LOCAL()) {
 			return getLOCALActor();
 		}
-		if(iioHandler==getIConnectionManager().SERVER()) {
+		if(iioHandler == getIConnectionManager().SERVER()) {
 			return getSERVERActor();
 		}
 		for(IChatActor ca : actorList) {
@@ -356,12 +362,12 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 
 		@Override
 		public void HandleEvent(IConnectionEvent event) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-			if(event instanceof ConnectEvent||event instanceof DisconnectEvent){
+			if(event instanceof ConnectEvent || event instanceof DisconnectEvent) {
 				try {
 					super.HandleEvent(event);
 				} catch(Exception e) {
 					//noinspection StringConcatenationMissingWhitespace
-					log.severe("WTF whent wrong here?"+System.lineSeparator()+"This should not even be possible!");
+					log.severe("WTF whent wrong here?" + System.lineSeparator() + "This should not even be possible!");
 					throw e;
 				}
 			}
@@ -371,8 +377,8 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		public void handleEvent(ConnectEvent ce) {
 			log.info("Received ConnectEvent");
 			ChatActor ca = new ChatActor(ce.getIIOHandler(), BasicChat.this);
-			ca.setActorName("User#" + i++,true);
-			getBasicChatPanel().println("["+ getLOCALActor().getActorName()+"] "+ca.getActorName()+" joined the Chat!");
+			ca.setActorName("User#" + i++, true);
+			getBasicChatPanel().println("[" + getLOCALActor().getActorName() + "] " + ca.getActorName() + " joined the Chat!");
 			actorList.add(ca);
 
 		}
@@ -382,8 +388,8 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 			log.info("Received DisconnectEvent");
 			IChatActor chatActor = getActorByIIOHandler(de.getIIOHandler());
 			ChatPacket p = new ChatPacket(chatActor.getActorName() + " disconnected!", "LOGOUT");
-			getIConnectionManager().sendPackage(p,getIConnectionManager().ALL());
-			getBasicChatPanel().println("[LOGOUT] "+chatActor.getActorName()+ " disconnected!");
+			getIConnectionManager().sendPackage(p, getIConnectionManager().ALL());
+			getBasicChatPanel().println("[LOGOUT] " + chatActor.getActorName() + " disconnected!");
 			actorList.remove(chatActor);
 		}
 

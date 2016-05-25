@@ -6,6 +6,7 @@ import bb.chat.interfaces.ICommand;
 /**
  * Created by BB20101997 on 19. Mai. 2016.
  */
+@SuppressWarnings("ClassNamingConvention")
 public class Debug implements ICommand {
 	@Override
 	public String getName() {
@@ -15,6 +16,8 @@ public class Debug implements ICommand {
 	@Override
 	public void runCommand(String commandLine, IChat iChat) {
 		iChat.getBasicChatPanel().println("This is Debug!");
+		String p = commandLine.split(" ")[1];
+		iChat.getBasicChatPanel().println(String.valueOf(iChat.getPermissionRegistry().isPermissionRegistered(p)));
 	}
 
 	@Override

@@ -84,25 +84,15 @@ public class BasicCommandRegistry implements ICommandRegistry {
 	}
 
 	@Override
-	public final String[] getHelpForAllCommands() {
+	public final List<String> getHelpForAllCommands() {
 
-		List<String> sList = commandList.stream().map(this::getHelpFromCommand).collect(Collectors.toList());
+		return commandList.stream().map(this::getHelpFromCommand).collect(Collectors.toList());
 
-		String[] sArr = new String[sList.size()];
-		for(int i = 0; i < sList.size(); i++) {
-			sArr[i] = sList.get(i);
-		}
-
-		return sArr;
 	}
 
 	@Override
-	public final String getHelpFromCommandName(String s) {
-		ICommand command = getCommand(s);
-		if(command != null) {
-			return getHelpFromCommand(command);
-		}
-		return null;
+	public List<ICommand> getAllCommands() {
+		return new ArrayList<>(commandList);
 	}
 
 	@Override
@@ -120,4 +110,5 @@ public class BasicCommandRegistry implements ICommandRegistry {
 		return sb.toString();
 
 	}
+
 }

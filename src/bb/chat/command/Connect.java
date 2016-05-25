@@ -7,6 +7,7 @@ import bb.net.enums.Side;
 /**
  * @author BB20101997
  */
+@SuppressWarnings("ClassNamingConvention")
 public class Connect implements ICommand {
 
 	@Override

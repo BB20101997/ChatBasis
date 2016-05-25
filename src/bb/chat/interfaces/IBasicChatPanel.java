@@ -14,4 +14,5 @@ public interface IBasicChatPanel {
 		print(s+System.lineSeparator());
 	}
 
+	void stop();
 }

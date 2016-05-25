@@ -11,27 +11,18 @@ import java.io.IOException;
  */
 public class PermissionPacket extends APacket {
 	//TODO remove partial commands
-	public  String cmd;
-	public  String restCmd;
 	private String completeCommand;
 
 	public PermissionPacket() {}
 
-	public PermissionPacket(String commandType, String restOfCommand) {
-		cmd = commandType;
-		restCmd = restOfCommand;
-		completeCommand = cmd + " " + restCmd;
+	@Deprecated
+	public PermissionPacket(final String commandType,final String restOfCommand) {
+		this(commandType+" "+restOfCommand);
+		completeCommand = commandType + " " + restOfCommand;
 	}
 
 	public PermissionPacket(String command){
 		completeCommand = command;
-		String[] sA = completeCommand.split(" ", 1);
-		if(sA.length > 0) {
-			cmd = sA[0];
-			if(sA.length > 1) {
-				restCmd = sA[1];
-			}
-		}
 	}
 
 	public String getCommand(){
@@ -46,12 +37,5 @@ public class PermissionPacket extends APacket {
 	@Override
 	public void readFromData(DataIn dataIn) throws IOException {
 		completeCommand = dataIn.readUTF();
-		String[] sA = completeCommand.split(" ", 1);
-		if(sA.length > 0) {
-			cmd = sA[0];
-			if(sA.length >= 2) {
-				restCmd = sA[1];
-			}
-		}
 	}
 }

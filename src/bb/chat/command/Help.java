@@ -7,6 +7,7 @@ import bb.chat.network.packet.chatting.ChatPacket;
 /**
  * @author BB20101997
  */
+@SuppressWarnings("ClassNamingConvention")
 public class Help implements ICommand {
 
 	//TODO:FIX runCommand
@@ -24,9 +25,10 @@ public class Help implements ICommand {
 
 	@Override
 	public void runCommand(String commandLine, IChat iChat) {
-		//TODO: add a possibility to get server side commands on the client, also needs changes to the command registry to allow execution of server side commands
 
-		String[] helps = iChat.getCommandRegistry().getHelpForAllCommands();
+		//TODO: add a possibility to get server side commands on the client, also maybe needs changes to the command registry to allow execution of server side commands
+
+		java.util.List<String> helps = iChat.getCommandRegistry().getHelpForAllCommands();
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("Help for the ");
@@ -49,7 +51,6 @@ public class Help implements ICommand {
 
 	@Override
 	public String[] helpCommand() {
-
 		return new String[]{"This will Display the help messages!"};
 	}
 

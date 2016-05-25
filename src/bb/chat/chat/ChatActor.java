@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 /**
  * Created by BB20101997 on 27.03.2015.
  */
+@SuppressWarnings("ClassNamePrefixedWithPackageName")
 public class ChatActor implements IChatActor {
 
 	@SuppressWarnings("ConstantNamingConvention")

@@ -9,6 +9,7 @@ import bb.net.enums.Side;
 /**
  * Created by BB20101997 on 25.01.2015.
  */
+@SuppressWarnings("ClassNamingConvention")
 public class List implements ICommand {
 	@Override
 	public String[] getAlias() {

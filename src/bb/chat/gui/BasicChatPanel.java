@@ -9,12 +9,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.logging.Logger;
 
 /**
  * @author BB20101997
  */
-public class BasicChatPanel extends JPanel implements ActionListener, IBasicChatPanel {
+public class BasicChatPanel extends JPanel implements ActionListener, KeyListener, IBasicChatPanel {
 
 	@SuppressWarnings("ConstantNamingConvention")
 	private static final Logger log;
@@ -37,6 +39,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 	 * if the Standard ActionListener Should be used
 	 */
 	private       boolean    useStandardActionListener = true;
+	private       boolean    useStandardKeyListener = true;
 	/**
 	 * The Button to send the Text of the ChatSendBar
 	 */
@@ -62,6 +65,8 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 		iChat = ic;
 		Send.setActionCommand(SEND_EVENT);
 		ChatSendBar.setActionCommand(ENTER_EVENT);
+		ChatSendBar.addKeyListener(this);
+		ChatSendBar.setFocusTraversalKeysEnabled(false);
 		addActionListener(this);
 		ChatLog.setEditable(false);
 		setLayout(new BorderLayout());
@@ -71,15 +76,22 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 		boxBar.add(Send);
 		add(BorderLayout.SOUTH, boxBar);
 		invalidate();
+
 		setUseStandardActionListener(true);
+		setUseStandardKeyListener(true);
 	}
 
 	/**
 	 * can be used to disable the default processing of input
 	 */
 	//sets if the Standard actionListener should be used
-	void setUseStandardActionListener(@SuppressWarnings("SameParameterValue") boolean useStandardActionListener) {
+	@SuppressWarnings("SameParameterValue")
+	void setUseStandardActionListener(boolean useStandardActionListener) {
 		this.useStandardActionListener = useStandardActionListener;
+	}
+
+	public void setUseStandardKeyListener(boolean useStandardKeyListener) {
+		this.useStandardKeyListener = useStandardKeyListener;
 	}
 
 	/**
@@ -131,5 +143,64 @@ public class BasicChatPanel extends JPanel implements ActionListener, IBasicChat
 		log.finest("Println:"+s);
 		print(s+System.lineSeparator());
 	}
+
+	@Override
+	public void stop() {
+		println("Stopping...");
+	}
+
+	private int tabCount = 0;
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		if(useStandardKeyListener){
+			if(e.getKeyChar()=='\t'){
+				//increase tab count by one
+				tabCount++;
+				//save the caret position
+				int cp = ChatSendBar.getCaretPosition();
+				//get the auto-completed text
+				String s = iChat.getCommandRegistry().complete(ChatSendBar.getText(),cp,tabCount);
+				if(s!=null) {
+					//set the auto-comleted text
+					ChatSendBar.setText(s);
+				}
+				//restore caret position
+				ChatSendBar.setCaretPosition(cp);
+				e.consume();
+			}
+		}else{
+			tabCount = 0;
+		}
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if(useStandardKeyListener) {
+			//if the right arrow key is pressed
+			if(e.getKeyCode()==KeyEvent.VK_RIGHT){
+				//and there have been tabs
+				if(tabCount > 0) {
+					//move the caret to the and of the line
+					ChatSendBar.setCaretPosition(ChatSendBar.getText().length());
+					//and consume the event so it won't be proccesed twich
+					e.consume();
+				}
+			}
+
+			//reset tab counter if a key but tab is pressed
+			if(e.getKeyCode()!=KeyEvent.VK_TAB){
+				tabCount = 0;
+			}
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		if(useStandardKeyListener) {
+
+		}
+	}
+
 
 }

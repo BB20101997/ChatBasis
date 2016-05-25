@@ -41,7 +41,6 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 
 
 
-	@SuppressWarnings("unchecked")
 	public DefaultPacketHandler(IChat ic) {
 		super(ic.getIConnectionManager().getPacketRegistrie());
 		ICHAT = ic;
@@ -58,7 +57,6 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 		addAssociatedPacket(QuerryPacket.class);
 	}
 
-	@SuppressWarnings("UnusedParameters")
 	public void handlePacket(ChatPacket cp, IIOHandler sender) {
 		log.finer("Handling ChatPacket on side "+ICHAT.getIConnectionManager().getSide()+" with the Message:"+cp.Message);
 		if(ICHAT.getIConnectionManager().getSide() == Side.SERVER) {
@@ -81,7 +79,6 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 
 	}
 
-	@SuppressWarnings("UnusedParameters")
 	public void handlePacket(RenamePacket rp, IIOHandler sender) {
 		log.finer("Handling RenamePacket");
 		if(ICHAT.getIConnectionManager().getSide() == Side.CLIENT) {
@@ -134,7 +131,6 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public void handlePacket(LoginPacket lp, IIOHandler sender) {
 
 		IChatActor ca = ICHAT.getActorByIIOHandler(sender);
@@ -157,7 +153,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 	}
 
 	public void handlePacket(PermissionPacket pp, IIOHandler sender) {
-		ICHAT.getPermissionRegistry().executePermissionCommand(ICHAT, sender, pp.cmd, pp.restCmd);
+		ICHAT.getPermissionRegistry().executePermissionCommand(ICHAT, sender, pp.getCommand());
 	}
 
 	public void handlePacket(SignUpPacket sup, IIOHandler sender) {
