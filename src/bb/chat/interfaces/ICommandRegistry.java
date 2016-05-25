@@ -1,7 +1,7 @@
 package bb.chat.interfaces;
 
-import bb.chat.command.subcommands.permission.SubPermission;
 import bb.net.enums.Side;
+import com.sun.istack.internal.Nullable;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -28,10 +28,17 @@ public interface ICommandRegistry {
 	String getHelpFromCommand(ICommand a);
 
 	//get Helpmessage from command by alias or name
-	String getHelpFromCommandName(String s);
+	@Nullable
+	default String getHelpFromCommandName(String s){
+		ICommand command = getCommand(s);
+		if(command != null) {
+			return getHelpFromCommand(command);
+		}
+		return null;
+	}
 
 	//get Helpmessage for all commands
-	String[] getHelpForAllCommands();
+	List<String> getHelpForAllCommands();
 
 	List<ICommand> getAllCommands();
 
