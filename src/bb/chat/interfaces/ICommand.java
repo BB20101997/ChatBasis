@@ -21,7 +21,9 @@ public interface ICommand {
 	 */
 	String getName();
 
-	void runCommand(String commandLine, IChat iChat);
+	default void runCommand(String commandLine, IChat iChat){
+		iChat.getBasicChatPanel().println("Sorry NYI");
+	}
 
 	default String[] helpCommand(){
 		return DEFAULT_HELP;
