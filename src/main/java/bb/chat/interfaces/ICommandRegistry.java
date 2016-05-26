@@ -1,7 +1,6 @@
 package bb.chat.interfaces;
 
 import bb.net.enums.Side;
-import com.sun.istack.internal.Nullable;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -22,13 +21,12 @@ public interface ICommandRegistry {
 
 	//evaluated in put and run ggf. command
 	@SuppressWarnings("BooleanMethodNameMustStartWithQuestion")
-	boolean runCommand(String commandLine, Side side, IChat ich);
+	boolean runCommand(String commandLine,Side side, IChat ich);
 
 	//get the Help Message from the command
 	String getHelpFromCommand(ICommand a);
 
 	//get Helpmessage from command by alias or name
-	@Nullable
 	default String getHelpFromCommandName(String s){
 		ICommand command = getCommand(s);
 		if(command != null) {
