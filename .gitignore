@@ -1,1 +1,8 @@
+/bin
+/*.project
+/*.classpath
+/.idea/
+/*.iml
+/META-INF/
+/test/
 /build/
