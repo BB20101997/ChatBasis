@@ -4,6 +4,9 @@ import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
 import bb.net.enums.Side;
 
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
+
 /**
  * @author BB20101997
  */
@@ -33,6 +36,6 @@ public class Connect implements ICommand {
 	@Override
 	public String[] helpCommand() {
 		//noinspection StringConcatenationMissingWhitespace
-		return new String[]{"Usage:"+COMMAND_INIT_STRING+"connect <host> <port>"};
+		return new String[]{MessageFormat.format( ResourceBundle.getBundle(RES_NAME).getString("connectHelp"), COMMAND_INIT_STRING)};
 	}
 }

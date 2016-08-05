@@ -4,6 +4,8 @@ import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
 import bb.chat.network.packet.chatting.ChatPacket;
 
+import java.util.ResourceBundle;
+
 /**
  * @author BB20101997
  */
@@ -51,7 +53,7 @@ public class Help implements ICommand {
 
 	@Override
 	public String[] helpCommand() {
-		return new String[]{"This will Display the help messages!"};
+		return new String[]{ResourceBundle.getBundle(RES_NAME).getString("helpHelp")};
 	}
 
 	@Override

@@ -6,6 +6,8 @@ import bb.chat.interfaces.ICommand;
 import bb.chat.network.packet.command.QuerryPacket;
 import bb.net.enums.Side;
 
+import java.util.ResourceBundle;
+
 /**
  * Created by BB20101997 on 25.01.2015.
  */
@@ -35,7 +37,7 @@ public class List implements ICommand {
 
 	@Override
 	public String[] helpCommand() {
-		return new String[]{"Displays all online Users!"};
+		return new String[]{ResourceBundle.getBundle("bb.chat.lang.Command").getString("listHelp")};
 	}
 
 	@Override
