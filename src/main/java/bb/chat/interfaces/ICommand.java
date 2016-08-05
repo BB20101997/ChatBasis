@@ -11,6 +11,7 @@ public interface ICommand {
 	String COMMAND_INIT_STRING = "/";
 	String[] NO_ALIAS = new String[0];
 	String[] DEFAULT_HELP = new String[]{"No help given!"};
+	String RES_NAME = "bb.chat.lang.Command";
 
 	default String[] getAlias(){
 		return NO_ALIAS;
