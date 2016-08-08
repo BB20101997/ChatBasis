@@ -1,5 +1,6 @@
 package bb.chat.command;
 
+import bb.chat.enums.Bundles;
 import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
 import bb.chat.interfaces.ICommandRegistry;
@@ -7,6 +8,7 @@ import bb.net.enums.Side;
 import bb.util.file.log.BBLogHandler;
 import bb.util.file.log.Constants;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -25,6 +27,7 @@ public class BasicCommandRegistry implements ICommandRegistry {
 
 	static {
 		log = Logger.getLogger(BasicCommandRegistry.class.getName());
+		//noinspection DuplicateStringLiteralInspection
 		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
 	}
 	
@@ -78,7 +81,7 @@ public class BasicCommandRegistry implements ICommandRegistry {
 			return true;
 		}
 		log.fine(strA[0]+" is not a valid command!");
-		ich.getBasicChatPanel().println("[" + ich.getLOCALActor().getActorName() + "]Please enter a valid command!");
+		ich.getBasicChatPanel().println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("invalid.command"),ich.getLOCALActor().getActorName()));
 		return false;
 
 	}

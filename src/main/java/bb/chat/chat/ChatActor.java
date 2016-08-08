@@ -21,13 +21,14 @@ public class ChatActor implements IChatActor {
 
 	static {
 		log = Logger.getLogger(ChatActor.class.getName());
+		//noinspection DuplicateStringLiteralInspection
 		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
 	}
 
 	private final IIOHandler iioHandler;
 	final         IChat      iChat;
 	private       BasicUser  user;
-	private         String  name    = "Client";
+	private String name = "Client";
 	private final boolean isDummy;
 
 	public ChatActor(IIOHandler io, IChat ic) {
@@ -61,12 +62,12 @@ public class ChatActor implements IChatActor {
 
 	//checks if the Actors new name is valid and if sets it, returns true if successful
 	@Override
-	public boolean setActorName(final String s,final boolean noty) {
+	public boolean setActorName(final String s,final boolean notify) {
 		log.fine("Setting Actor's name previous "+getActorName()+" new name "+s+".");
 		synchronized(iChat.getUserDatabase()) {
 			if(iChat.getUserDatabase() == null || !iChat.getUserDatabase().doesUserExist(s)) {
 
-				//check if user allready exists outside of database
+				//check if user already exists outside of database
 				if(iChat.isActorPresent(s)){
 					return false;
 				}
@@ -81,7 +82,7 @@ public class ChatActor implements IChatActor {
 
 				RenamePacket rn = new RenamePacket(oldName,s);
 
-				if(noty) {
+				if(notify) {
 					iChat.getIConnectionManager().sendPackage(rn, iChat.getIConnectionManager().ALL());
 				}
 

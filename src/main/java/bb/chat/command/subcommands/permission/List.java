@@ -9,10 +9,10 @@ import bb.net.interfaces.IIOHandler;
 @SuppressWarnings("ClassNamingConvention")
 public class List extends SubPermission {
 
-	private static final String PERMISSON = "permission.list";
+	private static final String PERMISSION = "permission.list";
 
 	public List(){
-		super("list",PERMISSON);
+		super("list", PERMISSION);
 	}
 
 	@Override

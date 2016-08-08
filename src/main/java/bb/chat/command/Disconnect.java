@@ -1,5 +1,6 @@
 package bb.chat.command;
 
+import bb.chat.enums.Bundles;
 import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
 import bb.net.enums.Side;
@@ -9,8 +10,6 @@ import bb.net.packets.connecting.DisconnectPacket;
  * @author BB20101997
  */
 public class Disconnect implements ICommand {
-
-	private static final String[] HELPMESSAGE = new String[]{"Disconnects the client from the Server,only executed Client Side"};
 
 	@Override
 	public String[] getAlias() {
@@ -29,14 +28,13 @@ public class Disconnect implements ICommand {
 			iChat.getIConnectionManager().sendPackage(new DisconnectPacket(), iChat.getIConnectionManager().SERVER());
 			iChat.getIConnectionManager().disconnect(iChat.getLOCALActor().getIIOHandler());
 			iChat.getBasicChatPanel().WipeLog();
-			iChat.getBasicChatPanel().println("Successfully disconnected!");
+			iChat.getBasicChatPanel().println(Bundles.COMMAND.getResource().getString("disconnect.success"));
 		}
 	}
 
 	@Override
 	public String[] helpCommand() {
-
-		return HELPMESSAGE;
+		return new String[]{Bundles.COMMAND.getResource().getString("helptext.disconnect")};
 	}
 
 	@Override

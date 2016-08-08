@@ -1,5 +1,7 @@
 package bb.chat.interfaces;
 
+import bb.chat.enums.Bundles;
+
 /**
  * @author BB20101997
  */
@@ -10,8 +12,6 @@ public interface ICommand {
 	@SuppressWarnings("HardcodedFileSeparator")
 	String COMMAND_INIT_STRING = "/";
 	String[] NO_ALIAS = new String[0];
-	String[] DEFAULT_HELP = new String[]{"No help given!"};
-	String RES_NAME = "bb.chat.lang.Command";
 
 	default String[] getAlias(){
 		return NO_ALIAS;
@@ -23,15 +23,16 @@ public interface ICommand {
 	String getName();
 
 	default void runCommand(String commandLine, IChat iChat){
-		iChat.getBasicChatPanel().println("Sorry NYI");
+		iChat.getBasicChatPanel().println(Bundles.COMMAND.getResource().getString("default.NYI"));
 	}
 
 	default String[] helpCommand(){
-		return DEFAULT_HELP;
+		return new String[]{Bundles.COMMAND.getResource().getString("helptext.default")};
 	}
 
 
-	default String complete(String s,int caret,int tabs){
+	@SuppressWarnings("StringConcatenation")
+	default String complete(String s, int caret, int tabs){
 		//noinspection HardcodedFileSeparator
 		if(s.substring(0,caret).equals("/"+getName()+" test")){
 			return s.substring(0,caret)+"-"+tabs;
@@ -40,6 +41,7 @@ public interface ICommand {
 	}
 
 	//should this only be available in debug Mode
+	@SuppressWarnings("PublicMethodWithoutLogging")
 	default boolean isDebugModeOnly(){
 		return false;
 	}

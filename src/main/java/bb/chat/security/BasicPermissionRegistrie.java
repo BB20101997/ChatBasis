@@ -181,7 +181,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 
 	}
 
-	//check each needed Perm if pressent and not denied
+	//check each needed Perm if present and not denied
 	boolean hasPermission(List<String> presentPermissions, List<String> deniedPermission, List<String> neededPermissions) {
 		for(String p : neededPermissions) {
 			if(!hasPermission(presentPermissions, deniedPermission, p)) {
@@ -193,7 +193,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 
 
 	@SuppressWarnings("unchecked")
-	//ckeck if permission is present and not denied
+	//check if permission is present and not denied
 	boolean hasPermission(List<String> presentPermissions, List<String> deniedPermission, String permission) {
 
 		for(String p : deniedPermission) {
@@ -236,7 +236,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 			return false;
 		}
 
-		//present is more specific tah checked therfore no match
+		//present is more specific tah checked therefore no match
 		if(PermissionArray.length>permArray.length){
 			return false;
 		}
@@ -261,10 +261,12 @@ public class BasicPermissionRegistrie implements ISaveAble {
 	public synchronized void writeToFileWriter(FileWriter fw) {
 		fw.add(registeredPermissions.size(), "RPS");
 		for(int i = 0; i < registeredPermissions.size(); i++) {
+			//noinspection StringConcatenation
 			fw.add(registeredPermissions.get(i), "PR" + i);
 		}
 		fw.add(registeredGroups.size(), "RGS");
 		for(int i = 0; i < registeredGroups.size(); i++) {
+			//noinspection StringConcatenation
 			fw.add(registeredGroups.get(i), "RG" + i);
 		}
 	}
@@ -281,10 +283,12 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		int rgs = (int) fw.get("RGS");
 
 		for(int i = 0; i < rps; i++) {
+			//noinspection StringConcatenation
 			registeredPermissions.add((String) fw.get("PR" + i));
 		}
 		for(int i = 0; i < rgs; i++) {
 			Group g = new Group();
+			//noinspection StringConcatenation
 			g.loadFromFileWriter((FileWriter) fw.get("RG" + i));
 			registeredGroups.add(g);
 		}
@@ -292,10 +296,11 @@ public class BasicPermissionRegistrie implements ISaveAble {
 	}
 
 	public void executePermissionCommand(IChat iChat,IIOHandler uRC,String cmd){
+		//noinspection DuplicateStringLiteralInspection
 		ICommand command = iChat.getCommandRegistry().getCommand("permission");
 		if(command instanceof Permission) {
 			for(SubPermission sp : ((Permission) command).subCommandList) {
-				if(sp.getName().equals(cmd.split(" ",2)[0].replace("/",""))) {
+				if(sp.getName().equals(cmd.split(" ",2)[0].replace(ICommand.COMMAND_INIT_STRING,""))) {
 					sp.executePermissionCommand(iChat,uRC,cmd);
 					return;
 				}
@@ -308,10 +313,10 @@ public class BasicPermissionRegistrie implements ISaveAble {
 	@SuppressWarnings("ClassNamingConvention")
 	private static class Group implements ISaveAble {
 
-		public List<String> groupPerm;
-		public List<String> groupDeniedPerm;
-		public List<String> groups;
-		public String       name;
+		public final List<String> groupPerm = new ArrayList<>();
+		public final List<String> groupDeniedPerm = new ArrayList<>();
+		public final List<String> groups = new ArrayList<>();
+		public       String       name;
 
 		@SuppressWarnings("StringConcatenationMissingWhitespace")
 		@Override
@@ -319,14 +324,17 @@ public class BasicPermissionRegistrie implements ISaveAble {
 			fw.add(name, "NAME");
 			fw.add(groupPerm.size(), "GPS");
 			for(int i = 0; i < groupPerm.size(); i++) {
+				//noinspection StringConcatenation
 				fw.add(groupPerm.get(i), "GP" + i);
 			}
 			fw.add(groupDeniedPerm.size(), "GDPS");
 			for(int i = 0; i < groupDeniedPerm.size(); i++) {
+				//noinspection StringConcatenation
 				fw.add(groupDeniedPerm.get(i), "GDP" + i);
 			}
 			fw.add(groups.size(), "GS");
 			for(int i = 0; i < groups.size(); i++) {
+				//noinspection StringConcatenation
 				fw.add(groups.get(i), "G" + i);
 			}
 		}
@@ -343,12 +351,15 @@ public class BasicPermissionRegistrie implements ISaveAble {
 			int gdps = (int) fw.get("GDPS");
 			int gs = (int) fw.get("GS");
 			for(int i = 0; i < gps; i++) {
+				//noinspection StringConcatenation
 				groupPerm.add((String) fw.get("GP" + i));
 			}
 			for(int i = 0; i < gdps; i++) {
+				//noinspection StringConcatenation
 				groupDeniedPerm.add((String) fw.get("GDP" + i));
 			}
 			for(int i = 0; i < gs; i++) {
+				//noinspection StringConcatenation
 				groups.add((String) fw.get("G" + i));
 			}
 		}

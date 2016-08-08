@@ -27,6 +27,7 @@ public abstract class SubPermission implements ICommand {
 
 	static {
 		log = Logger.getLogger(SubPermission.class.getName());
+		//noinspection DuplicateStringLiteralInspection
 		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
 	}
 

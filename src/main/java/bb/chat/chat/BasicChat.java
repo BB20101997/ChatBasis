@@ -1,10 +1,11 @@
 package bb.chat.chat;
 
+import bb.chat.enums.Bundles;
 import bb.chat.interfaces.IBasicChatPanel;
 import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.IChatActor;
 import bb.chat.interfaces.ICommandRegistry;
-import bb.chat.network.packet.chatting.ChatPacket;
+import bb.chat.network.packet.chatting.MessagePacket;
 import bb.chat.security.BasicPermissionRegistrie;
 import bb.chat.security.BasicUserDatabase;
 import bb.net.event.ConnectEvent;
@@ -20,8 +21,10 @@ import bb.util.file.log.Constants;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -38,6 +41,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 
 	static {
 		log = Logger.getLogger(BasicChat.class.getName());
+		//noinspection DuplicateStringLiteralInspection
 		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
 	}
 
@@ -63,7 +67,9 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		this(imessagehandler,bpr,bud,icr,false);
 	}
 
-	protected BasicChat(IConnectionManager icm,BasicPermissionRegistrie bpr,BasicUserDatabase bud,ICommandRegistry icr,boolean debug){
+	@SuppressWarnings("SameParameterValue")
+	protected BasicChat(IConnectionManager icm, BasicPermissionRegistrie bpr, BasicUserDatabase bud, ICommandRegistry icr, boolean debug){
+		Runtime.getRuntime().addShutdownHook(new Thread(this::save));
 		this.imh = icm;
 		imh.addConnectionEventHandler(new ConnectionEventHandler());
 		basicPermissionRegistrie = bpr;
@@ -93,6 +99,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 			SERVER = new ChatActor(getIConnectionManager().SERVER(), this, true) {
 				@Override
 				public String getActorName() {
+					//noinspection DuplicateStringLiteralInspection
 					return "SERVER";
 				}
 			};
@@ -142,6 +149,9 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		return commandRegistry;
 	}
 
+
+	private final static String BPR_KEY = "permReg";
+	private final static String BUD_KEY = "bur";
 	//saves everything to file
 	@Override
 	public void save() {
@@ -149,7 +159,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		if(!CONFIGFILE.exists()) {
 			try {
 				if(!CONFIGFILE.createNewFile()) {
-					imh.sendPackage(new ChatPacket("Save file doesn't exist and couldn't be created,changes probably not saved!", "SYSTEM"), imh.SERVER());
+					imh.sendPackage(new MessagePacket("save.fail.create"), imh.SERVER());
 				}
 
 			} catch(IOException e) {
@@ -157,15 +167,15 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 			}
 		}
 		FileWriter fileWriter = new FileWriter();
-		fileWriter.add(basicPermissionRegistrie, "permReg");
-		fileWriter.add(basicUserDatabase, "bur");
+		fileWriter.add(basicPermissionRegistrie, BPR_KEY);
+		fileWriter.add(basicUserDatabase, BUD_KEY);
 		try {
 			fileWriter.writeToFile(CONFIGFILE);
 		} catch(IOException e) {
 			e.printStackTrace();
 			log.warning("Error while saving!");
 			//noinspection HardcodedFileSeparator
-			imh.sendPackage(new ChatPacket("Couldn't write saves to file! I/OException", "SYSTEM"), imh.SERVER());
+			imh.sendPackage(new MessagePacket("save.fail.write"), imh.SERVER());
 		}
 
 	}
@@ -178,17 +188,20 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 			FileWriter fileWriter = new FileWriter();
 			try {
 				fileWriter.readFromFile(CONFIGFILE);
-				if(fileWriter.containsObject("permReg")) {
-					basicPermissionRegistrie.loadFromFileWriter((FileWriter) fileWriter.get("permReg"));
+				if(fileWriter.containsObject(BPR_KEY)) {
+					basicPermissionRegistrie.loadFromFileWriter((FileWriter) fileWriter.get(BPR_KEY));
 				}
-				if(fileWriter.containsObject("bur")) {
-					basicUserDatabase.loadFromFileWriter((FileWriter) fileWriter.get("bur"));
+				if(fileWriter.containsObject(BUD_KEY)) {
+					basicUserDatabase.loadFromFileWriter((FileWriter) fileWriter.get(BUD_KEY));
 				}
 			} catch(IOException e) {
-				e.printStackTrace();
+				log.warning("Failed to load Save! Renaming old, creating new!");
+				//noinspection ResultOfMethodCallIgnored,StringConcatenationMissingWhitespace
+				CONFIGFILE.renameTo(new File(CONFIGFILE, "-load-error" + new Date().toString()));
 			}
-		} else {
+		}
 
+		if(!CONFIGFILE.exists()){
 			if(!CONFIGFILE.getParentFile().exists()) {
 				//noinspection ResultOfMethodCallIgnored
 				CONFIGFILE.getParentFile().mkdirs();
@@ -201,6 +214,13 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 			}
 		}
 
+	}
+
+
+	@Override
+	protected void finalize() throws Throwable {
+		save();
+		super.finalize();
 	}
 
 	//shutdown the program cleanly
@@ -311,19 +331,19 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	//returns the actor given its string name
 	@SuppressWarnings("PublicMethodWithoutLogging")
 	@Override
-	public IChatActor getActorByName(String oldName) {
+	public IChatActor getActorByName(String name) {
 		IChatActor ret = null;
-		if("ALL".equals(oldName)) {
+		if(getALLActor().getActorName().equals(name)) {
 			ret = getALLActor();
 		}
-		if("LOCAL".equals(oldName)) {
+		if("LOCAL".equals(name)) {
 			ret = getLOCALActor();
 		}
-		if("SERVER".equals(oldName)) {
+		if(getSERVERActor().getActorName().equals(name)) {
 			ret = getSERVERActor();
 		}
 		for(IChatActor ca : actorList) {
-			if(ca.getActorName().equals(oldName)) {
+			if(ca.getActorName().equals(name)) {
 				ret = ca;
 				break;
 			}
@@ -367,7 +387,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 					super.HandleEvent(event);
 				} catch(Exception e) {
 					//noinspection StringConcatenationMissingWhitespace
-					log.severe("WTF whent wrong here?" + System.lineSeparator() + "This should not even be possible!");
+					log.severe("WTF went wrong here?" + System.lineSeparator() + "This should not even be possible!");
 					throw e;
 				}
 			}
@@ -378,7 +398,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 			log.info("Received ConnectEvent");
 			ChatActor ca = new ChatActor(ce.getIIOHandler(), BasicChat.this);
 			ca.setActorName("User#" + i++, true);
-			getBasicChatPanel().println("[" + getLOCALActor().getActorName() + "] " + ca.getActorName() + " joined the Chat!");
+			getBasicChatPanel().println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("rename.join"),getLOCALActor().getActorName(),ca.getActorName()));
 			actorList.add(ca);
 
 		}
@@ -387,9 +407,11 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		public void handleEvent(DisconnectEvent de) {
 			log.info("Received DisconnectEvent");
 			IChatActor chatActor = getActorByIIOHandler(de.getIIOHandler());
-			ChatPacket p = new ChatPacket(chatActor.getActorName() + " disconnected!", "LOGOUT");
-			getIConnectionManager().sendPackage(p, getIConnectionManager().ALL());
-			getBasicChatPanel().println("[LOGOUT] " + chatActor.getActorName() + " disconnected!");
+			//noinspection DuplicateStringLiteralInspection
+			MessagePacket mp = new MessagePacket("logout.disconnect",chatActor.getActorName());
+			getIConnectionManager().sendPackage(mp, getIConnectionManager().ALL());
+			//noinspection DuplicateStringLiteralInspection
+			getBasicChatPanel().println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("logout.disconnect"),chatActor.getActorName()));
 			actorList.remove(chatActor);
 		}
 

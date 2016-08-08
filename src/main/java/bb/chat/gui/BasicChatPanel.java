@@ -1,5 +1,6 @@
 package bb.chat.gui;
 
+import bb.chat.enums.Bundles;
 import bb.chat.interfaces.IBasicChatPanel;
 import bb.chat.interfaces.IChat;
 import bb.util.file.log.BBLogHandler;
@@ -23,6 +24,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 
 	static {
 		log = Logger.getLogger(BasicChatPanel.class.getName());
+		//noinspection DuplicateStringLiteralInspection
 		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
 	}
 
@@ -43,7 +45,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 	/**
 	 * The Button to send the Text of the ChatSendBar
 	 */
-	private final JButton    Send                      = new JButton("Send");
+	private final JButton    Send                      = new JButton();
 	/**
 	 * The ChatLog --Obvious--
 	 */
@@ -73,12 +75,18 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 		add(BorderLayout.CENTER, chatLogScroll);
 		Box boxBar = Box.createHorizontalBox();
 		boxBar.add(ChatSendBar);
+		setButtonLabel();
 		boxBar.add(Send);
 		add(BorderLayout.SOUTH, boxBar);
 		invalidate();
 
 		setUseStandardActionListener(true);
 		setUseStandardKeyListener(true);
+
+	}
+
+	private void setButtonLabel(){
+		Send.setText(Bundles.BUTTON_LABEL.getResource().getString("send"));
 	}
 
 	/**
@@ -90,6 +98,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 		this.useStandardActionListener = useStandardActionListener;
 	}
 
+	@SuppressWarnings("SameParameterValue")
 	public void setUseStandardKeyListener(boolean useStandardKeyListener) {
 		this.useStandardKeyListener = useStandardKeyListener;
 	}
@@ -109,7 +118,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 
 		if(useStandardActionListener) {
 			String lastSend = ChatSendBar.getText();
-			if(!"".equals(lastSend)) {
+			if(lastSend != null && !lastSend.isEmpty()) {
 				iChat.Message(lastSend);
 			}
 			ChatSendBar.setText("");
@@ -162,7 +171,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 				//get the auto-completed text
 				String s = iChat.getCommandRegistry().complete(ChatSendBar.getText(),cp,tabCount);
 				if(s!=null) {
-					//set the auto-comleted text
+					//set the auto-completed text
 					ChatSendBar.setText(s);
 				}
 				//restore caret position
@@ -183,7 +192,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 				if(tabCount > 0) {
 					//move the caret to the and of the line
 					ChatSendBar.setCaretPosition(ChatSendBar.getText().length());
-					//and consume the event so it won't be proccesed twich
+					//and consume the event so it won't be processed twice
 					e.consume();
 				}
 			}
@@ -197,9 +206,9 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if(useStandardKeyListener) {
-
-		}
+		//if(useStandardKeyListener) {
+		// atm not used
+		//}
 	}
 
 

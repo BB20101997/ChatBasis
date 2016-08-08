@@ -1,10 +1,11 @@
 package bb.chat.command;
 
+import bb.chat.enums.Bundles;
 import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
 import bb.chat.network.packet.chatting.ChatPacket;
 
-import java.util.ResourceBundle;
+import java.text.MessageFormat;
 
 /**
  * @author BB20101997
@@ -33,9 +34,7 @@ public class Help implements ICommand {
 		java.util.List<String> helps = iChat.getCommandRegistry().getHelpForAllCommands();
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("Help for the ");
-		sb.append(iChat.getIConnectionManager().getSide().toString().toLowerCase());
-		sb.append(" side commands:");
+		sb.append(MessageFormat.format(Bundles.COMMAND.getResource().getString("help.side"),iChat.getIConnectionManager().getSide().toString().toLowerCase()));
 		sb.append(System.lineSeparator());
 		sb.append(System.lineSeparator());
 
@@ -53,7 +52,7 @@ public class Help implements ICommand {
 
 	@Override
 	public String[] helpCommand() {
-		return new String[]{ResourceBundle.getBundle(RES_NAME).getString("helpHelp")};
+		return new String[]{Bundles.COMMAND.getResource().getString("helptext.help")};
 	}
 
 	@Override

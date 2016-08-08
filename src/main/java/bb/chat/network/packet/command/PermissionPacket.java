@@ -18,6 +18,7 @@ public class PermissionPacket extends APacket {
 	@Deprecated
 	public PermissionPacket(final String commandType,final String restOfCommand) {
 		this(commandType+" "+restOfCommand);
+		//noinspection StringConcatenation,StringConcatenation
 		completeCommand = commandType + " " + restOfCommand;
 	}
 

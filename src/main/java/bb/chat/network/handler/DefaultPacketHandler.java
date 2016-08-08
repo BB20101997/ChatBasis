@@ -1,9 +1,12 @@
 package bb.chat.network.handler;
 
+import bb.chat.enums.Bundles;
 import bb.chat.enums.QuerryType;
+import bb.chat.interfaces.IBasicChatPanel;
 import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.IChatActor;
 import bb.chat.network.packet.chatting.ChatPacket;
+import bb.chat.network.packet.chatting.MessagePacket;
 import bb.chat.network.packet.command.*;
 import bb.chat.network.packet.handshake.LoginPacket;
 import bb.chat.network.packet.handshake.SignUpPacket;
@@ -12,6 +15,7 @@ import bb.chat.security.BasicUserDatabase;
 import bb.net.enums.ServerStatus;
 import bb.net.enums.Side;
 import bb.net.handler.BasicPacketHandler;
+import bb.net.interfaces.IConnectionManager;
 import bb.net.interfaces.IIOHandler;
 import bb.util.file.database.FileWriter;
 import bb.util.file.log.BBLogHandler;
@@ -20,6 +24,7 @@ import bb.util.file.log.Constants;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -29,21 +34,25 @@ import java.util.logging.Logger;
 //the default packet handler
 public final class DefaultPacketHandler extends BasicPacketHandler {
 
-	private final IChat ICHAT;
+	private final IChat              ICHAT;
+	private final IConnectionManager ICM;
 
 	@SuppressWarnings("ConstantNamingConvention")
 	private static final Logger log;
 
 	static {
 		log = Logger.getLogger(DefaultPacketHandler.class.getName());
+		//noinspection DuplicateStringLiteralInspection
 		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
 	}
 
 
 
+	@SuppressWarnings("unused")
 	public DefaultPacketHandler(IChat ic) {
 		super(ic.getIConnectionManager().getPacketRegistrie());
 		ICHAT = ic;
+		ICM = ICHAT.getIConnectionManager();
 
 		addAssociatedPacket(ChatPacket.class);
 		addAssociatedPacket(RenamePacket.class);
@@ -55,12 +64,13 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 		addAssociatedPacket(PermissionPacket.class);
 		addAssociatedPacket(SignUpPacket.class);
 		addAssociatedPacket(QuerryPacket.class);
+		addAssociatedPacket(MessagePacket.class);
 	}
 
 	public void handlePacket(ChatPacket cp, IIOHandler sender) {
-		log.finer("Handling ChatPacket on side "+ICHAT.getIConnectionManager().getSide()+" with the Message:"+cp.Message);
-		if(ICHAT.getIConnectionManager().getSide() == Side.SERVER) {
-			if(sender != ICHAT.getIConnectionManager().ALL() || sender != ICHAT.getIConnectionManager().SERVER()) {
+		log.finer("Handling ChatPacket on side "+ICM.getSide()+" with the Message:"+cp.Message);
+		if(ICM.getSide() == Side.SERVER) {
+			if(sender != ICM.ALL() || sender != ICM.SERVER()) {
 				IChatActor ca = ICHAT.getActorByIIOHandler(sender);
 				if(ca != null) {
 					if(!Objects.equals(cp.Sender, ca.getActorName())) {
@@ -71,41 +81,48 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 				}
 				if(sender != ICHAT.getIConnectionManager().LOCAL()) {
 					log.fine("Sending CP to ALL");
-					ICHAT.getIConnectionManager().sendPackage(cp, ICHAT.getIConnectionManager().ALL());
+					ICM.sendPackage(cp, ICM.ALL());
 				}
 			}
 		}
-		ICHAT.getBasicChatPanel().println("[" + cp.Sender + "] " + cp.Message);
+		ICHAT.getBasicChatPanel().println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("msg"),cp.Sender,cp.Message));
 
 	}
 
+	@SuppressWarnings("UnusedParameters")
+	public void handlePacket(MessagePacket mp, IIOHandler sender){
+		ICHAT.getBasicChatPanel().println(MessageFormat.format(Bundles.MESSAGE.getResource().getString(mp.stringKey), (Object[]) mp.stringArgs));
+	}
+
+	@SuppressWarnings("unused")
 	public void handlePacket(RenamePacket rp, IIOHandler sender) {
+		final IBasicChatPanel BCP = ICHAT.getBasicChatPanel();
 		log.finer("Handling RenamePacket");
-		if(ICHAT.getIConnectionManager().getSide() == Side.CLIENT) {
+		if(ICM.getSide() == Side.CLIENT) {
 			if(ICHAT.getLOCALActor().getActorName().equals(rp.oldName)) {
 				log.finer("RenamePacket renames Me");
 				ICHAT.getLOCALActor().setActorName(rp.newName,false);
-				ICHAT.getBasicChatPanel().println("[SERVER]:You are now known as " + rp.newName + "!");
+				BCP.println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("rename.success"),"SERVER",rp.newName));
 			} else {
 				if("Client".equals(rp.oldName)) {
 					log.finer("RenamePacket is a join.");
-					ICHAT.getBasicChatPanel().println("[SERVER]:"+rp.newName+" joined the Chat!");
+					BCP.println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("rename.join"),"SERVER",rp.newName));
 				} else {
 					log.finer("RenamePacket is Renaming "+rp.oldName+" to "+rp.newName+".");
-					ICHAT.getBasicChatPanel().println("[SERVER]:" + rp.oldName + " is now known as " + rp.newName + "!");
+					BCP.println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("rename.announce"),"SERVER",rp.oldName,rp.newName));
 				}
 			}
 		} else {
 			IChatActor io = ICHAT.getActorByName(rp.oldName);
 			if(io != null && io.setActorName(rp.newName,true)) {
-				ICHAT.getBasicChatPanel().println("["+ICHAT.getLOCALActor().getActorName()+"] "+rp.oldName+" is now known as "+rp.newName+".");
+				BCP.println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("rename.announce"),ICHAT.getLOCALActor().getActorName(), rp.oldName, rp.newName));
 			} else {
-				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("Couldn't rename user!", ICHAT.getLOCALActor().getActorName()), sender);
+				ICM.sendPackage(new MessagePacket("rename.failed"),sender);
 			}
 		}
 	}
 
-	@SuppressWarnings("UnusedParameters")
+	@SuppressWarnings({"UnusedParameters", "unused"})
 	public void handlePacket(StopPacket sp, IIOHandler sender) {
 		if(ICHAT.getIConnectionManager().getSide() == Side.SERVER) {
 			ICHAT.getIConnectionManager().disconnect(ICHAT.getIConnectionManager().ALL());
@@ -113,24 +130,26 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 		}
 	}
 
-	@SuppressWarnings("UnusedParameters")
+	@SuppressWarnings({"UnusedParameters", "unused"})
 	public void handlePacket(WhisperPacket wp, IIOHandler sender) {
-		if(ICHAT.getIConnectionManager().getSide() == Side.SERVER && !wp.getReceiver().equals(ICHAT.getLOCALActor().getActorName())) {
-			ICHAT.getIConnectionManager().sendPackage(wp, ICHAT.getActorByName(wp.getReceiver()).getIIOHandler());
+		if(ICM.getSide() == Side.SERVER && !wp.getReceiver().equals(ICHAT.getLOCALActor().getActorName())) {
+			ICM.sendPackage(wp, ICHAT.getActorByName(wp.getReceiver()).getIIOHandler());
 		} else {
 			if(ICHAT.getLOCALActor().getActorName().equals(wp.getReceiver())) {
-				ICHAT.getBasicChatPanel().println("[" + wp.getSender() + " whispered to you: ] \"" + wp.getMessage() + "\"");
+				ICHAT.getBasicChatPanel().println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("whisper.receiver"),wp.getSender(),wp.getMessage()));
 			}
 		}
 	}
 
-	@SuppressWarnings("UnusedParameters")
+	@SuppressWarnings("unused")
 	public void handlePacket(SavePacket sp, IIOHandler sender) {
-		if(ICHAT.getIConnectionManager().getSide() == Side.SERVER) {
+		if(ICM.getSide() == Side.SERVER) {
 			ICHAT.save();
+			ICM.sendPackage(new MessagePacket("save.success"),sender);
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public void handlePacket(LoginPacket lp, IIOHandler sender) {
 
 		IChatActor ca = ICHAT.getActorByIIOHandler(sender);
@@ -141,37 +160,39 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 				String nameOld = ca.getActorName();
 				ca.setUser(u);
 				String nameNew = ca.getActorName();
-				ICHAT.getIConnectionManager().sendPackage(new RenamePacket(nameOld, nameNew), sender);
-				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("You have successfully logged in as " + lp.getUsername(), "LOGIN"), sender);
-				handlePacket(new ChatPacket(ca.getActorName() + " joined the Chat!", ICHAT.getLOCALActor().getActorName()), ICHAT.getIConnectionManager().ALL());
-
+				ICM.sendPackage(new RenamePacket(nameOld, nameNew), sender);
+				ICM.sendPackage(new MessagePacket("join.success",lp.getUsername()),sender);
+				handlePacket(new MessagePacket("rename.join",ICHAT.getLOCALActor().getActorName(),ca.getActorName()), ICM.ALL());
 			} else {
-				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("Your login has failed the password or username(maybe both?) was wrong, please try again!", ICHAT.getLOCALActor().getActorName()), sender);
+				ICM.sendPackage(new MessagePacket("login.fail"),sender);
 			}
 		}
 
 	}
 
+	@SuppressWarnings("unused")
 	public void handlePacket(PermissionPacket pp, IIOHandler sender) {
 		ICHAT.getPermissionRegistry().executePermissionCommand(ICHAT, sender, pp.getCommand());
 	}
 
+	@SuppressWarnings("unused")
 	public void handlePacket(SignUpPacket sup, IIOHandler sender) {
-		if(ICHAT.getIConnectionManager().getSide() == Side.SERVER) {
+		final IBasicChatPanel BCP = ICHAT.getBasicChatPanel();
+		if(ICM.getSide() == Side.SERVER) {
 			BasicUserDatabase bud = ICHAT.getUserDatabase();
 			if(bud.createAndAddNewUser(sup.getUsername(), sup.getPassword()) != null) {
-				ICHAT.getBasicChatPanel().println("[SERVER] : An Account with username " + sup.getUsername() + " was created!");
-				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("user-Account successfully created!", ICHAT.getLOCALActor().getActorName()), sender);
+				BCP.println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("register.success.server"),sup.getUsername()));
+				ICM.sendPackage(new MessagePacket("register.success.client"),sender);
 			} else {
-				ICHAT.getBasicChatPanel().println("[SERVER] : Tried to create an Account with username " + sup.getUsername() + " already existed!");
-				ICHAT.getIConnectionManager().sendPackage(new ChatPacket("Could not create user-Account,already existed!", ICHAT.getLOCALActor().getActorName()), sender);
+				BCP.println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("register.fail.server"),sup.getUsername()));
+				ICM.sendPackage(new MessagePacket("register.fail.client"),sender);
 			}
 		}
 	}
 
-	@SuppressWarnings("StringConcatenationMissingWhitespace")
+	@SuppressWarnings({"StringConcatenationMissingWhitespace", "unused"})
 	public void handlePacket(QuerryPacket qp, IIOHandler sender) {
-		boolean server = ICHAT.getIConnectionManager().getSide() == Side.SERVER;
+		boolean server = ICM.getSide() == Side.SERVER;
 		boolean request = qp.isRequest();
 		QuerryType querryType = qp.getQT();
 		if(request && server) {
@@ -184,7 +205,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 					break;
 				}
 				case SERVERSTATUS: {
-					querryPacket = new QuerryPacket(querryType, String.valueOf(ICHAT.getIConnectionManager().getServerStatus().ordinal()));
+					querryPacket = new QuerryPacket(querryType, String.valueOf(ICM.getServerStatus().ordinal()));
 					break;
 				}
 				case SERVERMESSAGE: {
@@ -216,7 +237,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 					break;
 				}
 			}
-			ICHAT.getIConnectionManager().sendPackage(querryPacket, sender);
+			ICM.sendPackage(querryPacket, sender);
 		}
 		if(!(request | server)) {
 			switch(querryType) {
@@ -225,7 +246,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 					ICHAT.setServerName(qp.getResponse());
 					break;
 				case SERVERSTATUS:
-					ICHAT.getIConnectionManager().setServerStatus(ServerStatus.values()[Integer.valueOf(qp.getResponse())]);
+					ICM.setServerStatus(ServerStatus.values()[Integer.valueOf(qp.getResponse())]);
 					break;
 				case SERVERMESSAGE:
 					ICHAT.setServerMessage(qp.getResponse());

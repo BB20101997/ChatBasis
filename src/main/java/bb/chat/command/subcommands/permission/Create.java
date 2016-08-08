@@ -18,6 +18,7 @@ public class Create extends SubPermission {
 
 	static {
 		log = Logger.getLogger(Create.class.getName());
+		//noinspection DuplicateStringLiteralInspection
 		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
 	}
 

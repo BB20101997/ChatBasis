@@ -37,7 +37,7 @@ public class List implements ICommand {
 
 	@Override
 	public String[] helpCommand() {
-		return new String[]{ResourceBundle.getBundle("bb.chat.lang.Command").getString("listHelp")};
+		return new String[]{ResourceBundle.getBundle("bb.chat.lang.Command").getString("helptext.list")};
 	}
 
 	@Override

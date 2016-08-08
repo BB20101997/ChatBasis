@@ -23,6 +23,7 @@ public class EventHandler {
 
 	static {
 		log = Logger.getLogger(EventHandler.class.getName());
+		//noinspection DuplicateStringLiteralInspection
 		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
 	}
 

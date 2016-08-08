@@ -1,10 +1,13 @@
 package bb.chat.command;
 
+import bb.chat.enums.Bundles;
 import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.IChatActor;
 import bb.chat.interfaces.ICommand;
 import bb.chat.network.packet.command.RenamePacket;
 import bb.net.enums.Side;
+
+import java.text.MessageFormat;
 
 /**
  * @author BB20101997
@@ -22,7 +25,7 @@ public class Rename implements ICommand {
 	public void runCommand(final String commandLine,final IChat iChat) {
 		String[] dS = commandLine.split(" ");
 		//Client, SERVER and ALL are reserved names
-		if(dS.length <= 2 || "Client".equals(dS[2]) || "SERVER".equals(dS[2]) || "ALL".equals(dS[2])) {
+		if(dS.length <= 2 || "Client".equals(dS[2]) || iChat.getSERVERActor().getActorName().equals(dS[2]) || iChat.getALLActor().getActorName().equals(dS[2])) {
 			return;
 		}
 		if(iChat.getIConnectionManager().getSide() == Side.CLIENT) {
@@ -33,7 +36,7 @@ public class Rename implements ICommand {
 			IChatActor ica = iChat.getActorByName(dS[1]);
 			if(ica != null) {
 				ica.setActorName(dS[2],true);
-				iChat.getBasicChatPanel().println("[" + iChat.getLOCALActor().getActorName() + "] " + dS[1] + " is now known as " + dS[2]);
+				iChat.getBasicChatPanel().println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("rename.announce"), iChat.getLOCALActor().getActorName(), dS[1], dS[2]));
 				//iChat.getIConnectionManager().sendPackage(new RenamePacket(dS[1], dS[2]), iChat.getIConnectionManager().ALL());
 			}
 		}
@@ -42,6 +45,6 @@ public class Rename implements ICommand {
 	@Override
 	public String[] helpCommand() {
 		//noinspection StringConcatenationMissingWhitespace
-		return new String[]{ICommand.COMMAND_INIT_CHAR +"rename <new Name>", "Used to rename you in Chat!"};
+		return new String[]{MessageFormat.format(Bundles.COMMAND.getResource().getString("helptext.rename"),ICommand.COMMAND_INIT_CHAR)};
 	}
 }

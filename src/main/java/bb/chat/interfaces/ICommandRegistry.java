@@ -42,7 +42,7 @@ public interface ICommandRegistry {
 
 	/**
 	 * @param s    The whole input text
-	 * @param pos  The caret position in the text
+	 * @param caret The caret position in the text
 	 * @param tabs How many times the auto-complete key has been pressed
 	 *
 	 * @return the new input-text already containing the auto-complete
@@ -62,7 +62,7 @@ public interface ICommandRegistry {
 
 			String preCaret = s.substring(1, caret);
 			String[] preCaretArgs = preCaret.split(" ");
-			System.err.println("Found no matching Command PreCaret:"+preCaret);
+			//System.err.println("Found no matching Command PreCaret:"+preCaret);
 			if(preCaretArgs.length == 1) {
 				Stream<String> stream = getAllCommands().stream().map(ICommand::getName).filter(e -> e.startsWith(preCaret));
 				String[] strings = stream.toArray(String[]::new);

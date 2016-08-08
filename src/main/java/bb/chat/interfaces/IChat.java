@@ -12,6 +12,10 @@ public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionR
 
 	IChatActor getLOCALActor();
 
+	IChatActor getSERVERActor();
+
+	IChatActor getALLActor();
+
 	IConnectionManager getIConnectionManager();
 
 	PR getPermissionRegistry();
@@ -65,8 +69,8 @@ public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionR
 	IChatActor getActorByIIOHandler(IIOHandler iioHandler);
 
 	@SuppressWarnings("PublicMethodWithoutLogging")
-	default boolean isActorPresent(String name){
-		return getActorByName(name)!=null;
+	default boolean isActorPresent(String name) {
+		return getActorByName(name) != null;
 	}
 
 }

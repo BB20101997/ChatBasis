@@ -18,14 +18,15 @@ public class Delete extends SubPermission {
 
 	static {
 		log = Logger.getLogger(Delete.class.getName());
+		//noinspection DuplicateStringLiteralInspection
 		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
 	}
 
-	private static final String PERMISSON = "permission.delete";
+	private static final String PERMISSION = "permission.delete";
 
 
 	public Delete() {
-		super("delete", PERMISSON);
+		super("delete", PERMISSION);
 	}
 
 	@Override

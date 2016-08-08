@@ -6,6 +6,7 @@ import bb.chat.command.subcommands.permission.Help;
 import bb.chat.command.subcommands.permission.SubPermission;
 import bb.chat.command.subcommands.permission.group.*;
 import bb.chat.command.subcommands.permission.user.*;
+import bb.chat.enums.Bundles;
 import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
 import bb.util.file.log.BBLogHandler;
@@ -29,6 +30,7 @@ public class Permission implements ICommand {
 
 	static {
 		log = Logger.getLogger(Permission.class.getName());
+		//noinspection DuplicateStringLiteralInspection
 		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
 	}
 
@@ -77,7 +79,8 @@ public class Permission implements ICommand {
 			Stream<String> stream = subCommandList.stream().map(SubPermission::getName).filter(e -> e.startsWith(preCaret));
 			String[] strings = stream.toArray(String[]::new);
 			if(strings.length > 0) {
-				return "/" + strings[(tabs - 1) % strings.length];
+				//noinspection StringConcatenationMissingWhitespace,StringConcatenation
+				return ICommand.COMMAND_INIT_STRING + strings[(tabs - 1) % strings.length];
 			}
 		}
 		return s;
@@ -88,7 +91,7 @@ public class Permission implements ICommand {
 		String[] command = commandLine.split(" ", 2);
 		log.fine("Received command:" + command[0]);
 
-		if(!"permission".replace(COMMAND_INIT_STRING, "").equals(command[0])) {
+		if(!getName().equals(command[0].replace(COMMAND_INIT_STRING, ""))) {
 			for(SubPermission sC : subCommandList) {
 				if(sC.getName().equals(command[0].replace(COMMAND_INIT_STRING, ""))) {
 					log.fine("Found matching subcommand!");
@@ -97,7 +100,7 @@ public class Permission implements ICommand {
 				}
 			}
 		} else {
-
+			iChat.getBasicChatPanel().println(Bundles.MESSAGE.getResource().getString("perm.default"));
 		}
 	}
 

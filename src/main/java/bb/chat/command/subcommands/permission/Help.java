@@ -27,11 +27,9 @@ public class Help extends SubPermission {
 			executor.sendPacket(missingPermsPacket(iChat));
 			return;
 		}
-		for(SubPermission subPermission : sp) {
-			//only print help for command that the user can use
-			if(subPermission.checkPerm(executor, iChat)) {
-				//TODO print help info
-			}
-		}
+		//only print help for command that the user can use
+		sp.stream().filter(subPermission -> subPermission.checkPerm(executor, iChat)).forEach(subPermission -> {
+			//TODO print help info
+		});
 	}
 }
