@@ -14,6 +14,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.logging.Logger;
 
+import static bb.chat.base.Constants.LOG_NAME;
+
 /**
  * @author BB20101997
  */
@@ -25,7 +27,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 	static {
 		log = Logger.getLogger(BasicChatPanel.class.getName());
 		//noinspection DuplicateStringLiteralInspection
-		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
+		log.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
 	}
 
 	/**
@@ -59,9 +61,12 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 
 	private final IChat iChat;
 
+	private volatile boolean stayBottom = true;
+
 	/**
 	 * The constructor to set up the JPanel
 	 */
+	@SuppressWarnings("unused")
 	public BasicChatPanel(IChat ic) {
 		super();
 		iChat = ic;
@@ -94,13 +99,13 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 	 */
 	//sets if the Standard actionListener should be used
 	@SuppressWarnings("SameParameterValue")
-	void setUseStandardActionListener(boolean useStandardActionListener) {
-		this.useStandardActionListener = useStandardActionListener;
+	void setUseStandardActionListener(boolean use) {
+		this.useStandardActionListener = use;
 	}
 
 	@SuppressWarnings("SameParameterValue")
-	public void setUseStandardKeyListener(boolean useStandardKeyListener) {
-		this.useStandardKeyListener = useStandardKeyListener;
+	public void setUseStandardKeyListener(boolean use) {
+		this.useStandardKeyListener = use;
 	}
 
 	/**
@@ -114,19 +119,31 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 
 	@Override
 	//the standard actionListener
-	public void actionPerformed(ActionEvent arg0) {
+	public void actionPerformed(ActionEvent e) {
 
 		if(useStandardActionListener) {
 			String lastSend = ChatSendBar.getText();
 			if(lastSend != null && !lastSend.isEmpty()) {
-				iChat.Message(lastSend);
+				iChat.message(lastSend);
 			}
 			ChatSendBar.setText("");
 			setSize(getSize());
-			chatLogScroll.getVerticalScrollBar().setValue(ChatLog.getRows());
 			invalidate();
 		}
+	}
 
+	private void autoBottom(){
+		if(stayBottom) {
+			chatLogScroll.getVerticalScrollBar().setValue(chatLogScroll.getVerticalScrollBar().getMaximum());
+		}
+	}
+
+	public void setStayBottom(boolean stayBottom) {
+		this.stayBottom = stayBottom;
+	}
+
+	public boolean isStayBottom(){
+		return stayBottom;
 	}
 
 	/**
@@ -134,7 +151,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 	 */
 	//wipes the logs displayed
 	@Override
-	public void WipeLog() {
+	public void wipeLog() {
 		ChatLog.setText("");
 	}
 
@@ -145,11 +162,13 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 	@Override
 	public void print(String s) {
 		ChatLog.append(s);
+		autoBottom();
 	}
 	//adds a string to the log followed by a new line
 	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	public void println(String s) {
 		log.finest("Println:"+s);
+		//noinspection StringConcatenation
 		print(s+System.lineSeparator());
 	}
 
