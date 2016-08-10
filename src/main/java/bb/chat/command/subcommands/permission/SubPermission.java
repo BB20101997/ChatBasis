@@ -3,7 +3,6 @@ package bb.chat.command.subcommands.permission;
 import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.IChatActor;
 import bb.chat.interfaces.ICommand;
-import bb.chat.network.packet.chatting.ChatPacket;
 import bb.chat.network.packet.command.PermissionPacket;
 import bb.chat.security.BasicUser;
 import bb.net.enums.Side;
@@ -17,6 +16,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static bb.chat.base.Constants.LOG_NAME;
+
 /**
  * Created by BB20101997 on 15.12.2014.
  */
@@ -28,7 +29,7 @@ public abstract class SubPermission implements ICommand {
 	static {
 		log = Logger.getLogger(SubPermission.class.getName());
 		//noinspection DuplicateStringLiteralInspection
-		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
+		log.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
 	}
 
 
@@ -36,11 +37,13 @@ public abstract class SubPermission implements ICommand {
 	protected final List<String> perms = new ArrayList<>();
 
 	public SubPermission(String name) {
+		//noinspection StringConcatenation
 		this.name = "permission-" + name;
 		log.fine("Creating SubPermissionCommand:"+this.name);
 	}
 
-	public SubPermission(String name,String...args){
+	@SuppressWarnings("OverloadedVarargsMethod")
+	public SubPermission(String name, String...args){
 		this(name);
 		perms.addAll(Arrays.asList(args));
 	}
@@ -83,11 +86,6 @@ public abstract class SubPermission implements ICommand {
 	protected boolean checkPerm(BasicUser bu,IChat iChat){
 		return iChat.getPermissionRegistry().hasPermission(bu,perms);
 	}
-
-	protected ChatPacket missingPermsPacket(IChat iChat){
-		return new ChatPacket("You don't have sufficent Permissions!",iChat.getLOCALActor().getActorName());
-	}
-
 
 	public abstract void executePermissionCommand(IChat iChat, IIOHandler executor, String cmd);
 

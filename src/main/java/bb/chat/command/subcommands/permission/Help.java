@@ -2,6 +2,7 @@ package bb.chat.command.subcommands.permission;
 
 import bb.chat.command.Permission;
 import bb.chat.interfaces.IChat;
+import bb.chat.network.packet.chatting.MessagePacket;
 import bb.net.interfaces.IIOHandler;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class Help extends SubPermission {
 		List<SubPermission> sp = perm.subCommandList;
 		//stop if user can't use help
 		if(!checkPerm(executor, iChat)) {
-			executor.sendPacket(missingPermsPacket(iChat));
+			executor.sendPacket(new MessagePacket("permission.missing"));
 			return;
 		}
 		//only print help for command that the user can use

@@ -1,11 +1,14 @@
 package bb.chat.command.subcommands.permission;
 
 import bb.chat.interfaces.IChat;
+import bb.chat.network.packet.chatting.MessagePacket;
 import bb.net.interfaces.IIOHandler;
 import bb.util.file.log.BBLogHandler;
 import bb.util.file.log.Constants;
 
 import java.util.logging.Logger;
+
+import static bb.chat.base.Constants.LOG_NAME;
 
 /**
  * Created by BB20101997 on 15.12.2014.
@@ -19,7 +22,7 @@ public class Delete extends SubPermission {
 	static {
 		log = Logger.getLogger(Delete.class.getName());
 		//noinspection DuplicateStringLiteralInspection
-		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
+		log.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
 	}
 
 	private static final String PERMISSION = "permission.delete";
@@ -37,7 +40,7 @@ public class Delete extends SubPermission {
 			iChat.getPermissionRegistry().removePermission(cmd.split(" ")[1]);
 		} else {
 			log.fine("Missing Permissions!");
-			executor.sendPacket(missingPermsPacket(iChat));
+			executor.sendPacket(new MessagePacket("permission.missing"));
 		}
 
 	}
