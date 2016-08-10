@@ -1,8 +1,10 @@
 package bb.chat.interfaces;
 
+import bb.chat.base.Constants;
 import bb.net.enums.Side;
 
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
@@ -10,14 +12,32 @@ import java.util.stream.Stream;
  */
 public interface ICommandRegistry {
 
-	void addCommand(Class<? extends ICommand> com);
+	@SuppressWarnings("ConstantNamingConvention")
+	Logger log = Constants.getLogger(ICommandRegistry.class);
+
+	@Deprecated
+	default void addCommand(Class<? extends ICommand> com){
+		try {
+			addCommand(com.getConstructor().newInstance());
+		} catch(Exception e) {
+			e.printStackTrace();
+			//noinspection StringConcatenationMissingWhitespace
+			log.warning("Error while adding Command." + System.lineSeparator() + "Command may not be available.");
+		}
+	}
+
+	void addCommand(ICommand command);
 
 	/**
-	 * @param text the text entered
+	 * @param text the name or alias of the command to return
 	 *
-	 * @return the command instance matching name or alias to the text
+	 * @return the command instance matching name or alias to the text or null if not found
 	 */
 	ICommand getCommand(String text);
+
+	default boolean isCommandAvailable(String name){
+		return getCommand(name)!=null;
+	}
 
 	//evaluated in put and run ggf. command
 	@SuppressWarnings("BooleanMethodNameMustStartWithQuestion")
@@ -49,7 +69,7 @@ public interface ICommandRegistry {
 	 * if no auto-complete is available just return s
 	 */
 
-	@SuppressWarnings("HardcodedFileSeparator")
+	@SuppressWarnings({"HardcodedFileSeparator", "MethodWithMultipleReturnPoints"})
 	default String complete(final String s,final int caret,final int tabs){
 		if(s.isEmpty()){
 			return s;
@@ -67,6 +87,7 @@ public interface ICommandRegistry {
 				Stream<String> stream = getAllCommands().stream().map(ICommand::getName).filter(e -> e.startsWith(preCaret));
 				String[] strings = stream.toArray(String[]::new);
 				if(strings.length>0) {
+					//noinspection StringConcatenation
 					return "/" + strings[(tabs - 1) % strings.length];
 				}
 			}
