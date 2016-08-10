@@ -10,7 +10,7 @@ import java.text.MessageFormat;
 /**
  * @author BB20101997
  */
-@SuppressWarnings("ClassNamingConvention")
+@SuppressWarnings({"ClassNamingConvention", "unused"})
 public class Connect implements ICommand {
 
 	@Override
@@ -22,7 +22,7 @@ public class Connect implements ICommand {
 	public void runCommand(String commandLine, IChat iChat) {
 		if(iChat.getIConnectionManager().getSide() == Side.CLIENT) {
 			String[] strA = commandLine.split(" ");
-			iChat.getBasicChatPanel().WipeLog();
+			iChat.getBasicChatPanel().wipeLog();
 			if(strA.length >= 3) {
 				iChat.getIConnectionManager().connect(strA[1], Integer.valueOf(strA[2]));
 			} else if(strA.length >= 2) {

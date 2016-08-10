@@ -20,7 +20,7 @@ public class QuerryPacket extends APacket {
 	private String response = "";
 
 	public QuerryPacket() {
-		this(QuerryType.NOTDEFINED,"",false);
+		this(QuerryType.NOT_DEFINED,"",false);
 	}
 
 	@SuppressWarnings("SameParameterValue")

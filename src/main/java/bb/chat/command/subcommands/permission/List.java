@@ -21,6 +21,7 @@ public class List extends SubPermission {
 			String[] perms = iChat.getPermissionRegistry().getPermissionsRegistered();
 			iChat.getBasicChatPanel().println("The following Permissions are registered:");
 			for(String s:perms){
+				//noinspection StringConcatenation
 				iChat.getBasicChatPanel().println(" - "+s);
 			}
 			iChat.getBasicChatPanel().println("End of Permission List!");

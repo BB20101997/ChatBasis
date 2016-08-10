@@ -18,8 +18,8 @@ public class LoginPacket extends APacket {
 		userName = name;
 	}
 
-	public void setPassword(String Passwd) {
-		userPasswd = Passwd;
+	public void setPassword(String passwd) {
+		userPasswd = passwd;
 	}
 
 	public String getUsername() {

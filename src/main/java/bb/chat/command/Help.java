@@ -10,15 +10,10 @@ import java.text.MessageFormat;
 /**
  * @author BB20101997
  */
-@SuppressWarnings("ClassNamingConvention")
+@SuppressWarnings({"ClassNamingConvention", "unused"})
 public class Help implements ICommand {
 
 	//TODO:FIX runCommand
-
-	@Override
-	public String[] getAlias() {
-		return new String[0];
-	}
 
 	@Override
 	public String getName() {

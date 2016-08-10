@@ -9,12 +9,8 @@ import bb.net.packets.connecting.DisconnectPacket;
 /**
  * @author BB20101997
  */
+@SuppressWarnings("unused")
 public class Disconnect implements ICommand {
-
-	@Override
-	public String[] getAlias() {
-		return new String[0];
-	}
 
 	@Override
 	public String getName() {
@@ -27,7 +23,7 @@ public class Disconnect implements ICommand {
 		if(iChat.getIConnectionManager().getSide() == Side.CLIENT) {
 			iChat.getIConnectionManager().sendPackage(new DisconnectPacket(), iChat.getIConnectionManager().SERVER());
 			iChat.getIConnectionManager().disconnect(iChat.getLOCALActor().getIIOHandler());
-			iChat.getBasicChatPanel().WipeLog();
+			iChat.getBasicChatPanel().wipeLog();
 			iChat.getBasicChatPanel().println(Bundles.COMMAND.getResource().getString("disconnect.success"));
 		}
 	}

@@ -10,6 +10,8 @@ import bb.util.file.log.Constants;
 
 import java.util.logging.Logger;
 
+import static bb.chat.base.Constants.LOG_NAME;
+
 /**
  * Created by BB20101997 on 27.03.2015.
  */
@@ -22,7 +24,7 @@ public class ChatActor implements IChatActor {
 	static {
 		log = Logger.getLogger(ChatActor.class.getName());
 		//noinspection DuplicateStringLiteralInspection
-		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
+		log.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
 	}
 
 	private final IIOHandler iioHandler;
@@ -62,25 +64,27 @@ public class ChatActor implements IChatActor {
 
 	//checks if the Actors new name is valid and if sets it, returns true if successful
 	@Override
-	public boolean setActorName(final String s,final boolean notify) {
-		log.fine("Setting Actor's name previous "+getActorName()+" new name "+s+".");
+	public boolean setActorName(final String name, final boolean notify) {
+		//check if user already exists outside of database
+		if(iChat.isActorPresent(name)) {
+			return false;
+		}
+
 		synchronized(iChat.getUserDatabase()) {
-			if(iChat.getUserDatabase() == null || !iChat.getUserDatabase().doesUserExist(s)) {
+			if(iChat.getUserDatabase() == null || !iChat.getUserDatabase().doesUserExist(name)) {
 
-				//check if user already exists outside of database
-				if(iChat.isActorPresent(s)){
-					return false;
-				}
+				log.fine("Setting Actor's name previous " + getActorName() + " new name " + name + ".");
 
-				final String oldName = name;
+
+				final String oldName = this.name;
 
 				if(user == null) {
-					name = s;
+					this.name = name;
 				} else {
-					user.setUserName(s);
+					user.setUserName(name);
 				}
 
-				RenamePacket rn = new RenamePacket(oldName,s);
+				RenamePacket rn = new RenamePacket(oldName, name);
 
 				if(notify) {
 					iChat.getIConnectionManager().sendPackage(rn, iChat.getIConnectionManager().ALL());

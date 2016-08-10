@@ -1,22 +1,17 @@
 package bb.chat.command;
 
+import bb.chat.enums.Bundles;
 import bb.chat.enums.QuerryType;
 import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
 import bb.chat.network.packet.command.QuerryPacket;
 import bb.net.enums.Side;
 
-import java.util.ResourceBundle;
-
 /**
  * Created by BB20101997 on 25.01.2015.
  */
 @SuppressWarnings("ClassNamingConvention")
 public class List implements ICommand {
-	@Override
-	public String[] getAlias() {
-		return new String[0];
-	}
 
 	@Override
 	public String getName() {
@@ -37,7 +32,7 @@ public class List implements ICommand {
 
 	@Override
 	public String[] helpCommand() {
-		return new String[]{ResourceBundle.getBundle("bb.chat.lang.Command").getString("helptext.list")};
+		return new String[]{Bundles.COMMAND.getResource().getString("helptext.list")};
 	}
 
 	@Override

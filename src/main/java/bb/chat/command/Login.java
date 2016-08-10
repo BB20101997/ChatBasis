@@ -11,11 +11,6 @@ import bb.net.enums.Side;
 @SuppressWarnings("ClassNamingConvention")
 public class Login implements ICommand {
 
-	@Override
-	public String[] getAlias() {
-		return new String[0];
-	}
-
 	public String getName() {
 		return "login";
 	}

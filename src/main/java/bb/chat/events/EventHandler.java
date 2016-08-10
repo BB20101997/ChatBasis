@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static bb.chat.base.Constants.LOG_NAME;
+
 /**
  * Created by BB20101997 on 30.01.2015.
  */
@@ -24,7 +26,7 @@ public class EventHandler {
 	static {
 		log = Logger.getLogger(EventHandler.class.getName());
 		//noinspection DuplicateStringLiteralInspection
-		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
+		log.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
 	}
 
 

@@ -3,7 +3,7 @@ package bb.chat.interfaces;
 public interface IBasicChatPanel {
 
 	//wipe the log
-	void WipeLog();
+	void wipeLog();
 
 	//add the string to log
 	void print(String s);

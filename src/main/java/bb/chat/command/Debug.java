@@ -6,7 +6,7 @@ import bb.chat.interfaces.ICommand;
 /**
  * Created by BB20101997 on 19. Mai. 2016.
  */
-@SuppressWarnings("ClassNamingConvention")
+@SuppressWarnings({"ClassNamingConvention", "unused"})
 public class Debug implements ICommand {
 	@Override
 	public String getName() {

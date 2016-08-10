@@ -73,21 +73,23 @@ public class BasicUserDatabase implements ISaveAble {
 
 	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	@Override
-	public synchronized void writeToFileWriter(FileWriter fw) {
-		fw.add(nextFree,NEXT_KEY);
-		fw.add(bul.size(), BUL_SIZE_KEY);
+	public synchronized void writeToFileWriter(FileWriter fileWriter) {
+		fileWriter.add(nextFree,NEXT_KEY);
+		fileWriter.add(bul.size(), BUL_SIZE_KEY);
 		for(int i = 0; i < bul.size(); i++) {
-			fw.add(bul.get(i), USER_KEY + i);
+			//noinspection StringConcatenation
+			fileWriter.add(bul.get(i), USER_KEY + i);
 		}
 	}
 
 	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	@Override
-	public synchronized void loadFromFileWriter(FileWriter fw) {
-		nextFree = (int) fw.get(NEXT_KEY);
-		int size = (int) fw.get(BUL_SIZE_KEY);
+	public synchronized void loadFromFileWriter(FileWriter fileWriter) {
+		nextFree = (int) fileWriter.get(NEXT_KEY);
+		int size = (int) fileWriter.get(BUL_SIZE_KEY);
 		for(int i = 0; i < size; i++) {
-			FileWriter fw2 = (FileWriter) fw.get(USER_KEY + i);
+			//noinspection StringConcatenation
+			FileWriter fw2 = (FileWriter) fileWriter.get(USER_KEY + i);
 			BasicUser bu = new BasicUser();
 			bu.loadFromFileWriter(fw2);
 			bul.add(bu);

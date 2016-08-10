@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import static bb.chat.base.Constants.LOG_NAME;
+
 /**
  * Created by BB20101997 on 28.11.2014.
  */
@@ -31,10 +33,11 @@ public class Permission implements ICommand {
 	static {
 		log = Logger.getLogger(Permission.class.getName());
 		//noinspection DuplicateStringLiteralInspection
-		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
+		log.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
 	}
 
 
+	@SuppressWarnings("OverlyCoupledMethod")
 	public Permission() {
 		subCommandList.add(new Help(this));
 		subCommandList.add(new Create());

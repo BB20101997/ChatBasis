@@ -6,6 +6,8 @@ import bb.net.packets.DataOut;
 
 import java.io.IOException;
 
+import static bb.chat.base.Constants.EMPTY_STRING_ARRAY;
+
 /**
  * Created by BB20101997 on 08. Aug. 2016.
  */
@@ -13,12 +15,13 @@ public class MessagePacket extends APacket {
 
 
 	public String stringKey;
-	public String[] stringArgs = new String[0];
+	public String[] stringArgs = EMPTY_STRING_ARRAY;
 
 	@SuppressWarnings("unused")
 	public MessagePacket(){}
 
-	public MessagePacket(String key,String ... args){
+	@SuppressWarnings("OverloadedVarargsMethod")
+	public MessagePacket(String key, String ... args){
 		stringKey = key;
 		stringArgs = args;
 	}
