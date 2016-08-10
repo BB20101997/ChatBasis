@@ -134,45 +134,45 @@ public class BasicUser implements ISaveAble {
 
 	@SuppressWarnings({"StringConcatenationMissingWhitespace", "StringConcatenation"})
 	@Override
-	public synchronized void writeToFileWriter(FileWriter fw) {
-		fw.add(name, NAME_KEY);
-		fw.add(id, ID_KEY);
-		fw.add(passwd, PASSWORD_KEY);
-		fw.add(groups.size(), GROUP_SIZE_KEY);
-		fw.add(perm.size(), PERMISSION_SIZE_KEY);
-		fw.add(denied.size(), DENIED_SIZE_KEY);
+	public synchronized void writeToFileWriter(FileWriter fileWriter) {
+		fileWriter.add(name, NAME_KEY);
+		fileWriter.add(id, ID_KEY);
+		fileWriter.add(passwd, PASSWORD_KEY);
+		fileWriter.add(groups.size(), GROUP_SIZE_KEY);
+		fileWriter.add(perm.size(), PERMISSION_SIZE_KEY);
+		fileWriter.add(denied.size(), DENIED_SIZE_KEY);
 		for(int i = 0; i < groups.size(); i++) {
-			fw.add(groups.get(i), GROUP_KEY + i);
+			fileWriter.add(groups.get(i), GROUP_KEY + i);
 		}
 		for(int i = 0; i < perm.size(); i++) {
-			fw.add(perm.get(i), PERMISSION_KEY + i);
+			fileWriter.add(perm.get(i), PERMISSION_KEY + i);
 		}
 		for(int i = 0; i < denied.size(); i++) {
-			fw.add(denied.get(i), DENIED_KEY + i);
+			fileWriter.add(denied.get(i), DENIED_KEY + i);
 		}
 	}
 
 	@SuppressWarnings({"StringConcatenationMissingWhitespace", "StringConcatenation"})
 	@Override
-	public synchronized void loadFromFileWriter(FileWriter fw) {
+	public synchronized void loadFromFileWriter(FileWriter fileWriter) {
 		groups.clear();
 		perm.clear();
 		denied.clear();
 
-		name = (String) fw.get(NAME_KEY);
-		id = (int) fw.get(ID_KEY);
-		passwd = (String) fw.get(PASSWORD_KEY);
-		int gs = (int) fw.get(GROUP_SIZE_KEY);
-		int ds = (int) fw.get(DENIED_SIZE_KEY);
-		int ps = (int) fw.get(PERMISSION_SIZE_KEY);
+		name = (String) fileWriter.get(NAME_KEY);
+		id = (int) fileWriter.get(ID_KEY);
+		passwd = (String) fileWriter.get(PASSWORD_KEY);
+		int gs = (int) fileWriter.get(GROUP_SIZE_KEY);
+		int ds = (int) fileWriter.get(DENIED_SIZE_KEY);
+		int ps = (int) fileWriter.get(PERMISSION_SIZE_KEY);
 		for(int i = 0; i < gs; i++) {
-			groups.add((String) fw.get(GROUP_KEY + i));
+			groups.add((String) fileWriter.get(GROUP_KEY + i));
 		}
 		for(int i = 0; i < ps; i++) {
-			perm.add((String) fw.get(PERMISSION_KEY + i));
+			perm.add((String) fileWriter.get(PERMISSION_KEY + i));
 		}
 		for(int i = 0; i < ds; i++) {
-			denied.add((String) fw.get(DENIED_KEY + i));
+			denied.add((String) fileWriter.get(DENIED_KEY + i));
 		}
 	}
 }

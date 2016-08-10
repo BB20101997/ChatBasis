@@ -22,6 +22,10 @@ public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionR
 
 	UD getUserDatabase();
 
+	boolean isDebugMode();
+
+	void setDebugMode(boolean debug);
+
 	IBasicChatPanel getBasicChatPanel();
 
 	ICommandRegistry getCommandRegistry();
@@ -38,7 +42,7 @@ public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionR
 	void shutdown();
 
 	// messages entered by the user should land here
-	void Message(String s);
+	void message(String s);
 
 	int getMaxUsers();
 
@@ -64,7 +68,7 @@ public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionR
 
 	void removeActiveUser(String name);
 
-	IChatActor getActorByName(String oldName);
+	IChatActor getActorByName(String name);
 
 	IChatActor getActorByIIOHandler(IIOHandler iioHandler);
 

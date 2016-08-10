@@ -1,5 +1,6 @@
 package bb.chat.chat;
 
+import bb.chat.command.*;
 import bb.chat.enums.Bundles;
 import bb.chat.interfaces.IBasicChatPanel;
 import bb.chat.interfaces.IChat;
@@ -28,6 +29,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static bb.chat.base.Constants.LOG_NAME;
+
 /**
  * Created by BB20101997 on 30.01.2015.
  */
@@ -36,13 +39,15 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 
 	private static final File CONFIGFILE = new File("config.fw").getAbsoluteFile();
 
-	@SuppressWarnings("ConstantNamingConvention")
-	private static final Logger log;
+	private final static String BPR_KEY = "permReg";
+	private final static String BUD_KEY = "bur";
+
+	private final static Logger LOGGER;
 
 	static {
-		log = Logger.getLogger(BasicChat.class.getName());
+		LOGGER = Logger.getLogger(BasicChat.class.getName());
 		//noinspection DuplicateStringLiteralInspection
-		log.addHandler(new BBLogHandler(Constants.getLogFile("ChatBasis")));
+		LOGGER.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
 	}
 
 	private IConnectionManager       imh;
@@ -50,7 +55,8 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	private ICommandRegistry         commandRegistry;
 	private BasicUserDatabase        basicUserDatabase;
 	private IBasicChatPanel basicChatPanel = null;
-	private boolean debugMode;
+	private   boolean    debugMode;
+	@SuppressWarnings("unused")
 	protected IChatActor LOCAL;
 	private   IChatActor ALL;
 	private   IChatActor SERVER;
@@ -63,12 +69,13 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	private int onlineUserNr = 0, maxOnlineUser = 0;
 	private final List<String> activeUsers = new ArrayList<>();
 
+	@SuppressWarnings("unused")
 	protected BasicChat(IConnectionManager imessagehandler, BasicPermissionRegistrie bpr, BasicUserDatabase bud, ICommandRegistry icr) {
-		this(imessagehandler,bpr,bud,icr,false);
+		this(imessagehandler, bpr, bud, icr, false);
 	}
 
-	@SuppressWarnings("SameParameterValue")
-	protected BasicChat(IConnectionManager icm, BasicPermissionRegistrie bpr, BasicUserDatabase bud, ICommandRegistry icr, boolean debug){
+	@SuppressWarnings({"SameParameterValue", "unused"})
+	protected BasicChat(IConnectionManager icm, BasicPermissionRegistrie bpr, BasicUserDatabase bud, ICommandRegistry icr, boolean debug) {
 		Runtime.getRuntime().addShutdownHook(new Thread(this::save));
 		this.imh = icm;
 		imh.addConnectionEventHandler(new ConnectionEventHandler());
@@ -76,11 +83,12 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		basicUserDatabase = bud;
 		commandRegistry = icr;
 		load();
-		log.exiting(this.getClass().toString(), this.getClass().getConstructors()[0].toString());
+		LOGGER.exiting(this.getClass().toString(), this.getClass().getConstructors()[0].toString());
 		debugMode = debug;
 	}
 
 	@SuppressWarnings("PublicMethodWithoutLogging")
+	@Override
 	public IChatActor getALLActor() {
 		if(ALL == null) {
 			ALL = new ChatActor(getIConnectionManager().ALL(), this, true) {
@@ -94,6 +102,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	}
 
 	@SuppressWarnings("PublicMethodWithoutLogging")
+	@Override
 	public IChatActor getSERVERActor() {
 		if(SERVER == null) {
 			SERVER = new ChatActor(getIConnectionManager().SERVER(), this, true) {
@@ -131,6 +140,16 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		return basicUserDatabase;
 	}
 
+	@Override
+	public boolean isDebugMode() {
+		return debugMode;
+	}
+
+	@Override
+	public void setDebugMode(boolean debug) {
+		debugMode = debug;
+	}
+
 	//returns the BasicChatPanel may be null
 	@Override
 	public IBasicChatPanel getBasicChatPanel() {
@@ -149,13 +168,10 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		return commandRegistry;
 	}
 
-
-	private final static String BPR_KEY = "permReg";
-	private final static String BUD_KEY = "bur";
 	//saves everything to file
 	@Override
 	public void save() {
-		log.info("Saving to File!");
+		LOGGER.info("Saving to File!");
 		if(!CONFIGFILE.exists()) {
 			try {
 				if(!CONFIGFILE.createNewFile()) {
@@ -173,7 +189,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 			fileWriter.writeToFile(CONFIGFILE);
 		} catch(IOException e) {
 			e.printStackTrace();
-			log.warning("Error while saving!");
+			LOGGER.warning("Error while saving!");
 			//noinspection HardcodedFileSeparator
 			imh.sendPackage(new MessagePacket("save.fail.write"), imh.SERVER());
 		}
@@ -183,7 +199,7 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	//loads from file
 	@Override
 	public void load() {
-		log.fine("Loading from File");
+		LOGGER.fine("Loading from File");
 		if(CONFIGFILE.exists()) {
 			FileWriter fileWriter = new FileWriter();
 			try {
@@ -195,13 +211,13 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 					basicUserDatabase.loadFromFileWriter((FileWriter) fileWriter.get(BUD_KEY));
 				}
 			} catch(IOException e) {
-				log.warning("Failed to load Save! Renaming old, creating new!");
+				LOGGER.warning("Failed to load Save! Renaming old, creating new!");
 				//noinspection ResultOfMethodCallIgnored,StringConcatenationMissingWhitespace
 				CONFIGFILE.renameTo(new File(CONFIGFILE, "-load-error" + new Date().toString()));
 			}
 		}
 
-		if(!CONFIGFILE.exists()){
+		if(!CONFIGFILE.exists()) {
 			if(!CONFIGFILE.getParentFile().exists()) {
 				//noinspection ResultOfMethodCallIgnored
 				CONFIGFILE.getParentFile().mkdirs();
@@ -226,16 +242,17 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 	//shutdown the program cleanly
 	@Override
 	public void shutdown() {
-		log.info("Shutdown initiated");
+		LOGGER.info("Shutdown initiated");
 		imh.disconnect(imh.ALL());
 		workingThread.stop();
+		basicChatPanel.stop();
 	}
 
 	//adds a line to the working threads to process list
 	//if necessary starting it
 	@Override
-	public final void Message(String s) {
-		log.fine("Adding Message to queue");
+	public final void message(String s) {
+		LOGGER.fine("Adding Message to queue");
 		workingThread.start();
 		workingThread.addLine(s);
 	}
@@ -373,9 +390,32 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 		return null;
 	}
 
+	@SuppressWarnings("unused")
+	public void addDefaultCommandsClient(){
+		addDefaultCommandsBothSides();
+	}
+
+	@SuppressWarnings("unused")
+	public void addDefaultCommandsServer(){
+		addDefaultCommandsBothSides();
+		getCommandRegistry().addCommand(new Disconnect());
+	}
+
+	private void addDefaultCommandsBothSides(){
+		getCommandRegistry().addCommand(new Permission());
+		getCommandRegistry().addCommand(new Debug());
+		getCommandRegistry().addCommand(new bb.chat.command.List());
+		getCommandRegistry().addCommand(new Help());
+		getCommandRegistry().addCommand(new Stop());
+		getCommandRegistry().addCommand(new Save());
+		getCommandRegistry().addCommand(new Register());
+		getCommandRegistry().addCommand(new Rename());
+		getCommandRegistry().addCommand(new Whisper());
+	}
+
 	//class to handle ConnectEvent & DisconnectEvent
 	//must be public to be accessible by the event handler
-	@SuppressWarnings("WeakerAccess")
+	@SuppressWarnings({"WeakerAccess", "unused"})
 	public class ConnectionEventHandler extends EventHandler<IConnectionEvent> {
 
 		public int i = 1;
@@ -387,31 +427,32 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 					super.HandleEvent(event);
 				} catch(Exception e) {
 					//noinspection StringConcatenationMissingWhitespace
-					log.severe("WTF went wrong here?" + System.lineSeparator() + "This should not even be possible!");
+					LOGGER.severe("WTF went wrong here?" + System.lineSeparator() + "This should not even be possible!");
 					throw e;
 				}
 			}
 		}
 
-		@SuppressWarnings("unused")
+		@SuppressWarnings({"unused", "MethodNamesDifferingOnlyByCase"})
 		public void handleEvent(ConnectEvent ce) {
-			log.info("Received ConnectEvent");
+			LOGGER.info("Received ConnectEvent");
 			ChatActor ca = new ChatActor(ce.getIIOHandler(), BasicChat.this);
+			//noinspection StringConcatenation
 			ca.setActorName("User#" + i++, true);
-			getBasicChatPanel().println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("rename.join"),getLOCALActor().getActorName(),ca.getActorName()));
+			getBasicChatPanel().println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("rename.join"), getLOCALActor().getActorName(), ca.getActorName()));
 			actorList.add(ca);
 
 		}
 
 		@SuppressWarnings("unused")
 		public void handleEvent(DisconnectEvent de) {
-			log.info("Received DisconnectEvent");
+			LOGGER.info("Received DisconnectEvent");
 			IChatActor chatActor = getActorByIIOHandler(de.getIIOHandler());
 			//noinspection DuplicateStringLiteralInspection
-			MessagePacket mp = new MessagePacket("logout.disconnect",chatActor.getActorName());
+			MessagePacket mp = new MessagePacket("logout.disconnect", chatActor.getActorName());
 			getIConnectionManager().sendPackage(mp, getIConnectionManager().ALL());
 			//noinspection DuplicateStringLiteralInspection
-			getBasicChatPanel().println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("logout.disconnect"),chatActor.getActorName()));
+			getBasicChatPanel().println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("logout.disconnect"), chatActor.getActorName()));
 			actorList.remove(chatActor);
 		}
 
