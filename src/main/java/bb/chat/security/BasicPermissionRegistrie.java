@@ -7,17 +7,31 @@ import bb.chat.interfaces.ICommand;
 import bb.net.interfaces.IIOHandler;
 import bb.util.file.database.FileWriter;
 import bb.util.file.database.ISaveAble;
+import bb.util.file.log.BBLogHandler;
+import bb.util.file.log.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
+import static bb.chat.base.Constants.LOG_NAME;
 
 /**
  * Created by BB20101997 on 07.09.2014.
  */
+@SuppressWarnings("unused")
 public class BasicPermissionRegistrie implements ISaveAble {
 //TODO clean up - editing groups can be done by retrieving group and editing the group
 	private final List<String> registeredPermissions = new ArrayList<>();
 	private final List<Group>  registeredGroups      = new ArrayList<>();
+
+	@SuppressWarnings("ConstantNamingConvention")
+	private static final Logger log;
+
+	static {
+		log = Logger.getLogger(BasicPermissionRegistrie.class.getName());
+		log.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
+	}
 
 	public String[] getPermissionsRegistered(){
 		return registeredPermissions.toArray(new String[registeredPermissions.size()]);
@@ -192,7 +206,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 	}
 
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "MethodWithMultipleReturnPoints"})
 	//check if permission is present and not denied
 	boolean hasPermission(List<String> presentPermissions, List<String> deniedPermission, String permission) {
 
@@ -211,7 +225,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		return false;
 	}
 
-	@SuppressWarnings("BooleanMethodNameMustStartWithQuestion")
+	@SuppressWarnings({"BooleanMethodNameMustStartWithQuestion", "OverlyComplexMethod"})
 	//is checked included in present
 	private boolean includesPermission(String present, String checked) {
 		//null will never match
@@ -228,68 +242,68 @@ public class BasicPermissionRegistrie implements ISaveAble {
 			return false;
 		}
 
-		String[] PermissionArray = present.split(".");
+		String[] permissionArray = present.split(".");
 		String[] permArray = checked.split(".");
 
 		//if present is shorter than checked and presents last sub-permission is not a wild card it does not match
-		if((PermissionArray.length<permArray.length)&&!PermissionArray[present.length()-1].equals("*")){
+		if((permissionArray.length<permArray.length)&&!permissionArray[present.length()-1].equals("*")){
 			return false;
 		}
 
-		//present is more specific tah checked therefore no match
-		if(PermissionArray.length>permArray.length){
+		//present is more specific than checked therefore no match
+		if(permissionArray.length>permArray.length){
 			return false;
 		}
 
-		for(int i = 0; i < PermissionArray.length && i < permArray.length; i++) {
+		for(int i = 0; i < permissionArray.length && i < permArray.length; i++) {
 			//wildcard on present always matches skipp compare
-			if(PermissionArray[i].equals("*")) {
+			if(permissionArray[i].equals("*")) {
 				continue;
 			}
 
 			//no match -> no match
-			if(!PermissionArray[i].equals(permArray[i])) {
+			if(!permissionArray[i].equals(permArray[i])) {
 				return false;
 			}
 
 		}
-		//you made it till here even thou are you not an exact match congratulations you match as well
+		//you made it till here even thou you are not an exact match congratulations you match as well
 		return true;
 	}
 
 	@SuppressWarnings("StringConcatenationMissingWhitespace")
-	public synchronized void writeToFileWriter(FileWriter fw) {
-		fw.add(registeredPermissions.size(), "RPS");
+	public synchronized void writeToFileWriter(FileWriter fileWriter) {
+		fileWriter.add(registeredPermissions.size(), "RPS");
 		for(int i = 0; i < registeredPermissions.size(); i++) {
 			//noinspection StringConcatenation
-			fw.add(registeredPermissions.get(i), "PR" + i);
+			fileWriter.add(registeredPermissions.get(i), "PR" + i);
 		}
-		fw.add(registeredGroups.size(), "RGS");
+		fileWriter.add(registeredGroups.size(), "RGS");
 		for(int i = 0; i < registeredGroups.size(); i++) {
 			//noinspection StringConcatenation
-			fw.add(registeredGroups.get(i), "RG" + i);
+			fileWriter.add(registeredGroups.get(i), "RG" + i);
 		}
 	}
 
 	@SuppressWarnings("StringConcatenationMissingWhitespace")
-	public synchronized void loadFromFileWriter(FileWriter fw) {
-		if(fw == null) {
+	public synchronized void loadFromFileWriter(FileWriter fileWriter) {
+		if(fileWriter == null) {
 			return;
 		}
 		registeredPermissions.clear();
 		registeredGroups.clear();
 
-		int rps = (int) fw.get("RPS");
-		int rgs = (int) fw.get("RGS");
+		int rps = (int) fileWriter.get("RPS");
+		int rgs = (int) fileWriter.get("RGS");
 
 		for(int i = 0; i < rps; i++) {
 			//noinspection StringConcatenation
-			registeredPermissions.add((String) fw.get("PR" + i));
+			registeredPermissions.add((String) fileWriter.get("PR" + i));
 		}
 		for(int i = 0; i < rgs; i++) {
 			Group g = new Group();
 			//noinspection StringConcatenation
-			g.loadFromFileWriter((FileWriter) fw.get("RG" + i));
+			g.loadFromFileWriter((FileWriter) fileWriter.get("RG" + i));
 			registeredGroups.add(g);
 		}
 
@@ -320,47 +334,47 @@ public class BasicPermissionRegistrie implements ISaveAble {
 
 		@SuppressWarnings("StringConcatenationMissingWhitespace")
 		@Override
-		public synchronized void writeToFileWriter(FileWriter fw) {
-			fw.add(name, "NAME");
-			fw.add(groupPerm.size(), "GPS");
+		public synchronized void writeToFileWriter(FileWriter fileWriter) {
+			fileWriter.add(name, "NAME");
+			fileWriter.add(groupPerm.size(), "GPS");
 			for(int i = 0; i < groupPerm.size(); i++) {
 				//noinspection StringConcatenation
-				fw.add(groupPerm.get(i), "GP" + i);
+				fileWriter.add(groupPerm.get(i), "GP" + i);
 			}
-			fw.add(groupDeniedPerm.size(), "GDPS");
+			fileWriter.add(groupDeniedPerm.size(), "GDPS");
 			for(int i = 0; i < groupDeniedPerm.size(); i++) {
 				//noinspection StringConcatenation
-				fw.add(groupDeniedPerm.get(i), "GDP" + i);
+				fileWriter.add(groupDeniedPerm.get(i), "GDP" + i);
 			}
-			fw.add(groups.size(), "GS");
+			fileWriter.add(groups.size(), "GS");
 			for(int i = 0; i < groups.size(); i++) {
 				//noinspection StringConcatenation
-				fw.add(groups.get(i), "G" + i);
+				fileWriter.add(groups.get(i), "G" + i);
 			}
 		}
 
 		@SuppressWarnings("StringConcatenationMissingWhitespace")
 		@Override
-		public synchronized void loadFromFileWriter(FileWriter fw) {
+		public synchronized void loadFromFileWriter(FileWriter fileWriter) {
 			groupPerm.clear();
 			groupDeniedPerm.clear();
 			groups.clear();
 
-			name = (String) fw.get("NAME");
-			int gps = (int) fw.get("GPS");
-			int gdps = (int) fw.get("GDPS");
-			int gs = (int) fw.get("GS");
+			name = (String) fileWriter.get("NAME");
+			int gps = (int) fileWriter.get("GPS");
+			int gdps = (int) fileWriter.get("GDPS");
+			int gs = (int) fileWriter.get("GS");
 			for(int i = 0; i < gps; i++) {
 				//noinspection StringConcatenation
-				groupPerm.add((String) fw.get("GP" + i));
+				groupPerm.add((String) fileWriter.get("GP" + i));
 			}
 			for(int i = 0; i < gdps; i++) {
 				//noinspection StringConcatenation
-				groupDeniedPerm.add((String) fw.get("GDP" + i));
+				groupDeniedPerm.add((String) fileWriter.get("GDP" + i));
 			}
 			for(int i = 0; i < gs; i++) {
 				//noinspection StringConcatenation
-				groups.add((String) fw.get("G" + i));
+				groups.add((String) fileWriter.get("G" + i));
 			}
 		}
 	}
