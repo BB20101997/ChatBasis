@@ -3,24 +3,31 @@ package bb.chat.network.packet.command;
 import bb.net.interfaces.APacket;
 import bb.net.packets.DataIn;
 import bb.net.packets.DataOut;
+import bb.util.file.log.BBLogHandler;
+import bb.util.file.log.Constants;
 
 import java.io.IOException;
+import java.util.logging.Logger;
+
+import static bb.chat.basis.BasisConstants.LOG_NAME;
 
 /**
  * Created by BB20101997 on 28.11.2014.
  */
 public class PermissionPacket extends APacket {
-	//TODO remove partial commands
+
+	@SuppressWarnings("ConstantNamingConvention")
+	private static final Logger log;
+
+	static {
+		log = Logger.getLogger(PermissionPacket.class.getName());
+		log.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
+	}
+	
 	private String completeCommand;
 
+	@SuppressWarnings("unused")
 	public PermissionPacket() {}
-
-	@Deprecated
-	public PermissionPacket(final String commandType,final String restOfCommand) {
-		this(commandType+" "+restOfCommand);
-		//noinspection StringConcatenation,StringConcatenation
-		completeCommand = commandType + " " + restOfCommand;
-	}
 
 	public PermissionPacket(String command){
 		completeCommand = command;

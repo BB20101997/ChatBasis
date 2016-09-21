@@ -4,8 +4,13 @@ import bb.chat.enums.Bundles;
 import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
 import bb.net.enums.Side;
+import bb.util.file.log.BBLogHandler;
+import bb.util.file.log.Constants;
 
 import java.text.MessageFormat;
+import java.util.logging.Logger;
+
+import static bb.chat.basis.BasisConstants.LOG_NAME;
 
 /**
  * @author BB20101997
@@ -13,9 +18,17 @@ import java.text.MessageFormat;
 @SuppressWarnings({"ClassNamingConvention", "unused"})
 public class Connect implements ICommand {
 
+	@SuppressWarnings("ConstantNamingConvention")
+	private static final Logger log;
+
+	static {
+		log = Logger.getLogger(Connect.class.getName());
+		log.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
+	}
+
 	@Override
 	public String getName() {
-		return "connect";
+		return Bundles.COMMAND.getString("name.connect");
 	}
 
 	@Override

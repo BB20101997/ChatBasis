@@ -9,13 +9,13 @@ import java.io.IOException;
 /**
  * Created by BB20101997 on 24.11.2014.
  */
+@SuppressWarnings("ClassWithoutLogger")
 public class SavePacket extends APacket {
 
 	@Override
 	public void writeToData(DataOut dataOut) throws IOException {
 
 	}
-
 	@Override
 	public void readFromData(DataIn dataIn) throws IOException {
 

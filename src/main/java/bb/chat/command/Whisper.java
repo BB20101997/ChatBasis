@@ -4,28 +4,41 @@ import bb.chat.enums.Bundles;
 import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
 import bb.chat.network.packet.command.WhisperPacket;
+import bb.util.file.log.BBLogHandler;
+import bb.util.file.log.Constants;
 
 import java.text.MessageFormat;
+import java.util.logging.Logger;
+
+import static bb.chat.basis.BasisConstants.LOG_NAME;
 
 /**
  * @author BB20101997
  */
 
-@SuppressWarnings("ClassNamingConvention")
 public class Whisper implements ICommand {
+
+	@SuppressWarnings("ConstantNamingConvention")
+	private static final Logger logger;
+
+	static {
+		logger = Logger.getLogger(Whisper.class.getName());
+		logger.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
+	}
 
 	@Override
 	public String[] getAlias() {
-		return new String[]{"w"};
+		return new String[]{Bundles.COMMAND.getString("alias.1.whisper")};
 	}
 
 	@Override
 	public String getName() {
-		return "whisper";
+		return Bundles.COMMAND.getString("name.whisper");
 	}
 
 	@Override
 	public void runCommand(String commandLine, IChat iChat) {
+		logger.fine("Pssst just whisper!");
 		String[] com = commandLine.split(" ", 3);
 		if(com.length <= 2) {
 			return;
@@ -36,7 +49,6 @@ public class Whisper implements ICommand {
 
 	@Override
 	public String[] helpCommand() {
-		//noinspection StringConcatenationMissingWhitespace
 		return new String[]{MessageFormat.format(Bundles.COMMAND.getResource().getString("helptext.whisper"), COMMAND_INIT_STRING)};
 	}
 

@@ -10,10 +10,21 @@ import bb.net.interfaces.IIOHandler;
  */
 public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionRegistrie> {
 
+	/**
+	 * Returns the IChatActor that represents this side of the connection
+	 * On the Server side this shall not use getSERVERActor to prevent infinite recursion
+	 * */
 	IChatActor getLOCALActor();
 
+	/**
+	 * Returns the IChatActor that represents the Server side, if executed on the Server should return getLOCALActor();
+	 * */
 	IChatActor getSERVERActor();
 
+	/**
+	 * Returns a IChatActor that works as a broadcast to all connections
+	 * TODO: should it also broadcast to sender? check implementations!
+	 * */
 	IChatActor getALLActor();
 
 	IConnectionManager getIConnectionManager();
@@ -28,14 +39,14 @@ public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionR
 
 	IBasicChatPanel getBasicChatPanel();
 
-	ICommandRegistry getCommandRegistry();
-
 	void setBasicChatPanel(IBasicChatPanel bcp);
 
-	//save to files
+	ICommandRegistry getCommandRegistry();
+
+	//save config etc.to files
 	void save();
 
-	//load form files
+	//load config etc. form files
 	void load();
 
 	//shutdown cleanly
@@ -50,6 +61,12 @@ public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionR
 
 	int getOnlineUsers();
 
+	/**
+	 * Deprecated because the amount of online users
+	 * should always match the length of getActiveUserList()
+	 * therefor it should never be set independently
+	 * */
+	@Deprecated
 	void setOnlineUsers(int i);
 
 	String getServerMessage();
@@ -60,6 +77,7 @@ public interface IChat<UD extends BasicUserDatabase, PR extends BasicPermissionR
 
 	void setServerName(String s);
 
+	//TODO either change name or return type to match
 	String[] getActiveUserList();
 
 	void setActiveUsers(String[] sArgs);

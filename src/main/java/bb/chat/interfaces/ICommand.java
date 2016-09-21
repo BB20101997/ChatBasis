@@ -2,7 +2,7 @@ package bb.chat.interfaces;
 
 import bb.chat.enums.Bundles;
 
-import static bb.chat.base.Constants.EMPTY_STRING_ARRAY;
+import static bb.chat.basis.BasisConstants.EMPTY_STRING_ARRAY;
 
 /**
  * @author BB20101997
@@ -10,9 +10,7 @@ import static bb.chat.base.Constants.EMPTY_STRING_ARRAY;
 public interface ICommand {
 
 	@SuppressWarnings("HardcodedFileSeparator")
-	char COMMAND_INIT_CHAR = '/';
-	@SuppressWarnings("HardcodedFileSeparator")
-	String COMMAND_INIT_STRING = "/";
+	String COMMAND_INIT_STRING = Bundles.COMMAND.getString("init_string");
 
 	default String[] getAlias(){
 		return EMPTY_STRING_ARRAY;
@@ -31,7 +29,13 @@ public interface ICommand {
 		return new String[]{Bundles.COMMAND.getResource().getString("helptext.default")};
 	}
 
-
+	/**
+	 * @param s the text that shall be completed
+	 * @param caret the caret position in s
+	 * @param tabs the amount of times the auto-complete key has been pressed >=0
+	 *
+	 * @return the string that replaces s
+	 * */
 	@SuppressWarnings("StringConcatenation")
 	default String complete(String s, int caret, int tabs){
 		//noinspection HardcodedFileSeparator

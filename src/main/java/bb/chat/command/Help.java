@@ -4,8 +4,13 @@ import bb.chat.enums.Bundles;
 import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
 import bb.chat.network.packet.chatting.ChatPacket;
+import bb.util.file.log.BBLogHandler;
+import bb.util.file.log.Constants;
 
 import java.text.MessageFormat;
+import java.util.logging.Logger;
+
+import static bb.chat.basis.BasisConstants.LOG_NAME;
 
 /**
  * @author BB20101997
@@ -13,7 +18,14 @@ import java.text.MessageFormat;
 @SuppressWarnings({"ClassNamingConvention", "unused"})
 public class Help implements ICommand {
 
-	//TODO:FIX runCommand
+	@SuppressWarnings("ConstantNamingConvention")
+	private static final Logger log;
+
+	static {
+		log = Logger.getLogger(Help.class.getName());
+		log.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
+	}
+
 
 	@Override
 	public String getName() {
@@ -24,6 +36,7 @@ public class Help implements ICommand {
 	@Override
 	public void runCommand(String commandLine, IChat iChat) {
 
+		//TODO:FIX runCommand
 		//TODO: add a possibility to get server side commands on the client, also maybe needs changes to the command registry to allow execution of server side commands
 
 		java.util.List<String> helps = iChat.getCommandRegistry().getHelpForAllCommands();

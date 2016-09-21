@@ -22,13 +22,20 @@ public interface IChatActor {
 		return setActorName(name,true);
 	}
 
+	/**
+	 *@param name The Name the Actor shall get
+	 *@param notify if sb shall be notified about the name change
+	 * if the Server send the name change to the client the client shouldn't notify the Server,
+	 * while a name change on the Server should notify the Client
+	 *
+	 * */
 	@SuppressWarnings("BooleanMethodNameMustStartWithQuestion")
 	boolean setActorName(String name,boolean notify);
 
 	@SuppressWarnings("unused")
 	boolean isLoggedIn();
 
-	void setUser(BasicUser u);
+	void setUser(BasicUser user);
 
 	BasicUser getUser();
 

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-import static bb.chat.base.Constants.LOG_NAME;
+import static bb.chat.basis.BasisConstants.LOG_NAME;
 
 /**
  * Created by BB20101997 on 28.11.2014.

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static bb.chat.base.Constants.LOG_NAME;
+import static bb.chat.basis.BasisConstants.LOG_NAME;
 
 /**
  * Created by @author BB20101997 on 30.01.2015.
@@ -34,12 +34,13 @@ public class BasicCommandRegistry implements ICommandRegistry {
 	}
 
 	public final void addCommand(ICommand command){
+		log.fine(MessageFormat.format(Bundles.LOG_TEXT.getResource().getString("log.command.add.one"),command.getName()));
 		commandList.add(command);
 	}
 
 	@Override
 	public final ICommand getCommand(String text) {
-		log.finer("Receiving Command named " + text);
+		log.finer(MessageFormat.format(Bundles.LOG_TEXT.getResource().getString("log.command.get.one"),text));
 		//name is prioritised over alias
 		//check for name first
 		for(ICommand command : commandList) {
@@ -60,11 +61,11 @@ public class BasicCommandRegistry implements ICommandRegistry {
 
 	@Override
 	public boolean runCommand(String commandLine, Side side, IChat ich) {
-		log.fine("Running " + commandLine + " on the " + side + ".");
 		String[] strA = commandLine.split(" ");
 		strA[0] = strA[0].replace(ICommand.COMMAND_INIT_STRING, "");
 		ICommand command = getCommand(strA[0]);
 
+		log.fine(MessageFormat.format(Bundles.LOG_TEXT.getString("log.command.execute"), strA[0], side.toString()));
 
 		if(command != null) {
 			if(command.isDebugModeOnly() && !ich.isDebugMode()) {
@@ -79,7 +80,7 @@ public class BasicCommandRegistry implements ICommandRegistry {
 				return true;
 			}
 		} else {
-			log.fine(strA[0] + " is not a valid command!");
+			log.fine(MessageFormat.format(Bundles.LOG_TEXT.getString("log.command.invalid"),strA[0]));
 			ich.getBasicChatPanel().println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("invalid.command"), ich.getLOCALActor().getActorName()));
 			return false;
 		}
@@ -87,19 +88,20 @@ public class BasicCommandRegistry implements ICommandRegistry {
 
 	@Override
 	public final List<String> getHelpForAllCommands() {
-
+		log.fine(Bundles.LOG_TEXT.getString("log.command.help.all"));
 		return commandList.stream().map(this::getHelpFromCommand).collect(Collectors.toList());
 
 	}
 
 	@Override
 	public List<ICommand> getAllCommands() {
+		log.fine(Bundles.LOG_TEXT.getResource().getString("log.command.get.all"));
 		return new ArrayList<>(commandList);
 	}
 
 	@Override
 	public final String getHelpFromCommand(ICommand a) {
-
+		log.fine(MessageFormat.format(Bundles.LOG_TEXT.getString("log.command.help.one"),a.getName()));
 		String[] h = a.helpCommand();
 		StringBuilder sb = new StringBuilder();
 		sb.append(a.getName()).append(":").append(System.lineSeparator());

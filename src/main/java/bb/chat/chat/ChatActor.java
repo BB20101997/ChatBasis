@@ -1,5 +1,7 @@
 package bb.chat.chat;
 
+import bb.chat.basis.BasisConstants;
+import bb.chat.enums.Bundles;
 import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.IChatActor;
 import bb.chat.network.packet.command.RenamePacket;
@@ -8,9 +10,10 @@ import bb.net.interfaces.IIOHandler;
 import bb.util.file.log.BBLogHandler;
 import bb.util.file.log.Constants;
 
+import java.text.MessageFormat;
 import java.util.logging.Logger;
 
-import static bb.chat.base.Constants.LOG_NAME;
+import static bb.chat.basis.BasisConstants.LOG_NAME;
 
 /**
  * Created by BB20101997 on 27.03.2015.
@@ -30,7 +33,7 @@ public class ChatActor implements IChatActor {
 	private final IIOHandler iioHandler;
 	final         IChat      iChat;
 	private       BasicUser  user;
-	private String name = "Client";
+	private String name = BasisConstants.CLIENT;
 	private final boolean isDummy;
 
 	public ChatActor(IIOHandler io, IChat ic) {
@@ -73,7 +76,7 @@ public class ChatActor implements IChatActor {
 		synchronized(iChat.getUserDatabase()) {
 			if(iChat.getUserDatabase() == null || !iChat.getUserDatabase().doesUserExist(name)) {
 
-				log.fine("Setting Actor's name previous " + getActorName() + " new name " + name + ".");
+				log.fine(MessageFormat.format(Bundles.LOG_TEXT.getString("log.rename.actor"), getActorName(), name));
 
 
 				final String oldName = this.name;
@@ -111,8 +114,8 @@ public class ChatActor implements IChatActor {
 
 	//set the user object associated
 	@Override
-	public void setUser(BasicUser u) {
-		user = u;
+	public void setUser(BasicUser user) {
+		this.user = user;
 	}
 
 }

@@ -14,14 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static bb.chat.base.Constants.LOG_NAME;
+import static bb.chat.basis.BasisConstants.LOG_NAME;
 
 /**
  * Created by BB20101997 on 07.09.2014.
  */
 @SuppressWarnings("unused")
 public class BasicPermissionRegistrie implements ISaveAble {
-//TODO clean up - editing groups can be done by retrieving group and editing the group
+	//TODO clean up - editing groups can be done by retrieving group and editing the group
 	private final List<String> registeredPermissions = new ArrayList<>();
 	private final List<Group>  registeredGroups      = new ArrayList<>();
 
@@ -33,7 +33,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		log.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
 	}
 
-	public String[] getPermissionsRegistered(){
+	public String[] getPermissionsRegistered() {
 		return registeredPermissions.toArray(new String[registeredPermissions.size()]);
 	}
 
@@ -87,10 +87,10 @@ public class BasicPermissionRegistrie implements ISaveAble {
 
 	public void addGroupPermission(String nameGroup, String perm) {
 		Group g;
-			if((g = getGroup(nameGroup)) != null) {
-				if(!g.groupPerm.contains(perm)) {
-					g.groupPerm.add(perm);
-				}
+		if((g = getGroup(nameGroup)) != null) {
+			if(!g.groupPerm.contains(perm)) {
+				g.groupPerm.add(perm);
+			}
 		}
 	}
 
@@ -207,7 +207,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 
 
 	@SuppressWarnings({"unchecked", "MethodWithMultipleReturnPoints"})
-	//check if permission is present and not denied
+		//check if permission is present and not denied
 	boolean hasPermission(List<String> presentPermissions, List<String> deniedPermission, String permission) {
 
 		for(String p : deniedPermission) {
@@ -238,7 +238,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 			return true;
 		}
 		//if it does't contain a wild card an didn't already match it does not fit
-		if(!present.contains("*")){
+		if(!present.contains("*")) {
 			return false;
 		}
 
@@ -246,12 +246,12 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		String[] permArray = checked.split(".");
 
 		//if present is shorter than checked and presents last sub-permission is not a wild card it does not match
-		if((permissionArray.length<permArray.length)&&!permissionArray[present.length()-1].equals("*")){
+		if((permissionArray.length < permArray.length) && !permissionArray[present.length() - 1].equals("*")) {
 			return false;
 		}
 
 		//present is more specific than checked therefore no match
-		if(permissionArray.length>permArray.length){
+		if(permissionArray.length > permArray.length) {
 			return false;
 		}
 
@@ -271,17 +271,19 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		return true;
 	}
 
+	public static final String PERM_SIZE_KEY = "RPS", PERM_INDEX_KEY = "PR", GROUP_SIZE_KEY = "RGS", GROUP_INDEX_KEY = "RG";
+
 	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	public synchronized void writeToFileWriter(FileWriter fileWriter) {
-		fileWriter.add(registeredPermissions.size(), "RPS");
+		fileWriter.add(registeredPermissions.size(), PERM_SIZE_KEY);
 		for(int i = 0; i < registeredPermissions.size(); i++) {
 			//noinspection StringConcatenation
-			fileWriter.add(registeredPermissions.get(i), "PR" + i);
+			fileWriter.add(registeredPermissions.get(i), PERM_INDEX_KEY + i);
 		}
-		fileWriter.add(registeredGroups.size(), "RGS");
+		fileWriter.add(registeredGroups.size(), GROUP_SIZE_KEY);
 		for(int i = 0; i < registeredGroups.size(); i++) {
 			//noinspection StringConcatenation
-			fileWriter.add(registeredGroups.get(i), "RG" + i);
+			fileWriter.add(registeredGroups.get(i), GROUP_INDEX_KEY + i);
 		}
 	}
 
@@ -293,29 +295,29 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		registeredPermissions.clear();
 		registeredGroups.clear();
 
-		int rps = (int) fileWriter.get("RPS");
-		int rgs = (int) fileWriter.get("RGS");
+		int rps = (int) fileWriter.get(PERM_SIZE_KEY);
+		int rgs = (int) fileWriter.get(GROUP_SIZE_KEY);
 
 		for(int i = 0; i < rps; i++) {
 			//noinspection StringConcatenation
-			registeredPermissions.add((String) fileWriter.get("PR" + i));
+			registeredPermissions.add((String) fileWriter.get(PERM_INDEX_KEY + i));
 		}
 		for(int i = 0; i < rgs; i++) {
 			Group g = new Group();
 			//noinspection StringConcatenation
-			g.loadFromFileWriter((FileWriter) fileWriter.get("RG" + i));
+			g.loadFromFileWriter((FileWriter) fileWriter.get(GROUP_INDEX_KEY + i));
 			registeredGroups.add(g);
 		}
 
 	}
 
-	public void executePermissionCommand(IChat iChat,IIOHandler uRC,String cmd){
-		//noinspection DuplicateStringLiteralInspection
+	public void executePermissionCommand(IChat iChat, IIOHandler uRC, String cmd) {
+		//noinspection DuplicateStringLiteralInspection,HardCodedStringLiteral
 		ICommand command = iChat.getCommandRegistry().getCommand("permission");
 		if(command instanceof Permission) {
 			for(SubPermission sp : ((Permission) command).subCommandList) {
-				if(sp.getName().equals(cmd.split(" ",2)[0].replace(ICommand.COMMAND_INIT_STRING,""))) {
-					sp.executePermissionCommand(iChat,uRC,cmd);
+				if(sp.getName().equals(cmd.split(" ", 2)[0].replace(ICommand.COMMAND_INIT_STRING, ""))) {
+					sp.executePermissionCommand(iChat, uRC, cmd);
 					return;
 				}
 			}
@@ -327,29 +329,34 @@ public class BasicPermissionRegistrie implements ISaveAble {
 	@SuppressWarnings("ClassNamingConvention")
 	private static class Group implements ISaveAble {
 
-		public final List<String> groupPerm = new ArrayList<>();
+		public final List<String> groupPerm       = new ArrayList<>();
 		public final List<String> groupDeniedPerm = new ArrayList<>();
-		public final List<String> groups = new ArrayList<>();
-		public       String       name;
+		public final List<String> groups          = new ArrayList<>();
+		public String name;
+
+		public static final String NAME_KEY = "NAME", PERM_SIZE_KEY = "GPS", DENIED_SIZE_KEY = "GDPS", SUP_GROUP_SIZE_KEY = "GS",
+				PERM_INDEX_KEY              = "GP", DENIED_INDEX_KEY = "GDP", SUP_GROUP_INDEX_KEY = "G";
 
 		@SuppressWarnings("StringConcatenationMissingWhitespace")
 		@Override
 		public synchronized void writeToFileWriter(FileWriter fileWriter) {
-			fileWriter.add(name, "NAME");
-			fileWriter.add(groupPerm.size(), "GPS");
+			fileWriter.add(name, NAME_KEY);
+
+			fileWriter.add(groupPerm.size(), PERM_SIZE_KEY);
+			fileWriter.add(groupDeniedPerm.size(), DENIED_SIZE_KEY);
+			fileWriter.add(groups.size(), SUP_GROUP_SIZE_KEY);
+
 			for(int i = 0; i < groupPerm.size(); i++) {
 				//noinspection StringConcatenation
-				fileWriter.add(groupPerm.get(i), "GP" + i);
+				fileWriter.add(groupPerm.get(i), PERM_INDEX_KEY + i);
 			}
-			fileWriter.add(groupDeniedPerm.size(), "GDPS");
 			for(int i = 0; i < groupDeniedPerm.size(); i++) {
 				//noinspection StringConcatenation
-				fileWriter.add(groupDeniedPerm.get(i), "GDP" + i);
+				fileWriter.add(groupDeniedPerm.get(i), DENIED_INDEX_KEY + i);
 			}
-			fileWriter.add(groups.size(), "GS");
 			for(int i = 0; i < groups.size(); i++) {
 				//noinspection StringConcatenation
-				fileWriter.add(groups.get(i), "G" + i);
+				fileWriter.add(groups.get(i), SUP_GROUP_INDEX_KEY + i);
 			}
 		}
 
@@ -360,21 +367,22 @@ public class BasicPermissionRegistrie implements ISaveAble {
 			groupDeniedPerm.clear();
 			groups.clear();
 
-			name = (String) fileWriter.get("NAME");
-			int gps = (int) fileWriter.get("GPS");
-			int gdps = (int) fileWriter.get("GDPS");
-			int gs = (int) fileWriter.get("GS");
+			name = (String) fileWriter.get(NAME_KEY);
+
+			int gps = (int) fileWriter.get(PERM_SIZE_KEY);
+			int gdps = (int) fileWriter.get(DENIED_SIZE_KEY);
+			int gs = (int) fileWriter.get(SUP_GROUP_SIZE_KEY);
 			for(int i = 0; i < gps; i++) {
 				//noinspection StringConcatenation
-				groupPerm.add((String) fileWriter.get("GP" + i));
+				groupPerm.add((String) fileWriter.get(PERM_INDEX_KEY + i));
 			}
 			for(int i = 0; i < gdps; i++) {
 				//noinspection StringConcatenation
-				groupDeniedPerm.add((String) fileWriter.get("GDP" + i));
+				groupDeniedPerm.add((String) fileWriter.get(DENIED_INDEX_KEY + i));
 			}
 			for(int i = 0; i < gs; i++) {
 				//noinspection StringConcatenation
-				groups.add((String) fileWriter.get("G" + i));
+				groups.add((String) fileWriter.get(SUP_GROUP_INDEX_KEY + i));
 			}
 		}
 	}

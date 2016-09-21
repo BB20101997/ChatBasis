@@ -25,7 +25,7 @@ public class Help extends SubPermission {
 		List<SubPermission> sp = perm.subCommandList;
 		//stop if user can't use help
 		if(!checkPerm(executor, iChat)) {
-			executor.sendPacket(new MessagePacket("permission.missing"));
+			executor.sendPacket(new MessagePacket("perm.missing"));
 			return;
 		}
 		//only print help for command that the user can use

@@ -1,6 +1,6 @@
 package bb.chat.interfaces;
 
-import bb.chat.base.Constants;
+import bb.chat.basis.BasisConstants;
 import bb.net.enums.Side;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 public interface ICommandRegistry {
 
 	@SuppressWarnings("ConstantNamingConvention")
-	Logger log = Constants.getLogger(ICommandRegistry.class);
+	Logger log = BasisConstants.getLogger(ICommandRegistry.class);
 
 	@Deprecated
 	default void addCommand(Class<? extends ICommand> com){

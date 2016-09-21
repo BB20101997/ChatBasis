@@ -5,6 +5,12 @@ import bb.chat.interfaces.IChat;
 import bb.chat.interfaces.ICommand;
 import bb.net.enums.Side;
 import bb.net.packets.connecting.DisconnectPacket;
+import bb.util.file.log.BBLogHandler;
+import bb.util.file.log.Constants;
+
+import java.util.logging.Logger;
+
+import static bb.chat.basis.BasisConstants.LOG_NAME;
 
 /**
  * @author BB20101997
@@ -12,10 +18,18 @@ import bb.net.packets.connecting.DisconnectPacket;
 @SuppressWarnings("unused")
 public class Disconnect implements ICommand {
 
+	@SuppressWarnings("ConstantNamingConvention")
+	private static final Logger log;
+
+	static {
+		log = Logger.getLogger(Disconnect.class.getName());
+		log.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
+	}
+
 	@Override
 	public String getName() {
 
-		return "disconnect";
+		return Bundles.COMMAND.getString("name.disconnect");
 	}
 
 	@Override

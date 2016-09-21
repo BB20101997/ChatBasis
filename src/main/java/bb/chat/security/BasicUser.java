@@ -1,16 +1,28 @@
 package bb.chat.security;
 
+import bb.chat.basis.BasisConstants;
 import bb.util.file.database.FileWriter;
 import bb.util.file.database.ISaveAble;
+import bb.util.file.log.BBLogHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+
 
 /**
  * Created by BB20101997 on 06.12.2014.
  */
 //assume permission check already passed when arriving here
 public class BasicUser implements ISaveAble {
+
+	@SuppressWarnings("ConstantNamingConvention")
+	private static final Logger log;
+
+	static {
+		log = Logger.getLogger(BasicUser.class.getName());
+		log.addHandler(new BBLogHandler(bb.util.file.log.Constants.getLogFile(BasisConstants.LOG_NAME)));
+	}
 
 	private String name;
 	private int    id;

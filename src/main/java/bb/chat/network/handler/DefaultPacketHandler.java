@@ -1,5 +1,6 @@
 package bb.chat.network.handler;
 
+import bb.chat.basis.BasisConstants;
 import bb.chat.enums.Bundles;
 import bb.chat.enums.QuerryType;
 import bb.chat.interfaces.IBasicChatPanel;
@@ -28,7 +29,7 @@ import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import static bb.chat.base.Constants.LOG_NAME;
+import static bb.chat.basis.BasisConstants.LOG_NAME;
 
 /**
  * Created by BB20101997 on 05.09.2014.
@@ -70,23 +71,23 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 
 	@SuppressWarnings({"unused", "MethodNamesDifferingOnlyByCase", "MethodWithMoreThanThreeNegations"})
 	public void handlePacket(ChatPacket cp, IIOHandler sender) {
-		log.finer("Handling ChatPacket on side " + ICM.getSide() + " with the Message:" + cp.Message);
+		log.finer(MessageFormat.format(Bundles.LOG_TEXT.getString("log.packet.chat.handle"), ICM.getSide(), cp.Message));
 		if(ICM.getSide() == Side.SERVER) {
 			if(!(sender == ICM.ALL() || sender == ICM.SERVER())) {
 				IChatActor ca = ICHAT.getActorByIIOHandler(sender);
 				if(ca != null) {
 					if(!Objects.equals(cp.Sender, ca.getActorName())) {
-						log.warning("Sender not as expected received:" + cp.Sender + " Expected:" + ca.getActorName());
+						log.warning(MessageFormat.format(Bundles.LOG_TEXT.getString("log.packet.chat.missmatch"),cp.Sender,ca.getActorName()));
 						sender.sendPacket(new RenamePacket(cp.Sender, ca.getActorName()));
 					}
 					cp.Sender = ca.getActorName();
 
 					if(sender != ICM.LOCAL()) {
-						log.fine("Sending CP to ALL");
+						log.fine(Bundles.LOG_TEXT.getString("log.packet.chat.relay"));
 						ICM.sendPackage(cp, ICM.ALL());
 					}
 				} else {
-					log.severe("ChatPacket will be dropped and connection to sender terminated!" + System.lineSeparator() + "Sender is not in the list of connected clients or an exceptional case!");
+					log.severe(Bundles.LOG_TEXT.getString("log.packet.chat.drop"));
 					sender.stop();
 				}
 			}
@@ -96,26 +97,31 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 
 	@SuppressWarnings("UnusedParameters")
 	public void handlePacket(MessagePacket mp, IIOHandler sender) {
-		ICHAT.getBasicChatPanel().println(MessageFormat.format(Bundles.MESSAGE.getResource().getString(mp.stringKey), (Object[]) mp.stringArgs));
+		if(Bundles.MESSAGE.getResource().containsKey(mp.stringKey)) {
+			ICHAT.getBasicChatPanel().println(MessageFormat.format(Bundles.MESSAGE.getString(mp.stringKey), (Object[]) mp.stringArgs));
+		}
+		else{
+			//TODO
+		}
 	}
 
 	@SuppressWarnings("unused")
 	public void handlePacket(RenamePacket rp, IIOHandler sender) {
 		//noinspection LocalVariableNamingConvention
 		final IBasicChatPanel BCP = ICHAT.getBasicChatPanel();
-		log.finer("Handling RenamePacket");
+		log.finer(Bundles.LOG_TEXT.getString("log.packet.rename.handle"));
 		if(ICM.getSide() == Side.CLIENT) {
 			if(ICHAT.getLOCALActor().getActorName().equals(rp.oldName)) {
-				log.finer("RenamePacket renames Me");
+				log.finer(Bundles.LOG_TEXT.getString("log.packet.rename.me"));
 				ICHAT.getLOCALActor().setActorName(rp.newName, false);
-				BCP.println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("rename.success"), "SERVER", rp.newName));
+				BCP.println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("rename.success"), BasisConstants.SERVER_UP, rp.newName));
 			} else {
-				if("Client".equals(rp.oldName)) {
-					log.finer("RenamePacket is a join.");
-					BCP.println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("rename.join"), "SERVER", rp.newName));
+				if(BasisConstants.CLIENT.equals(rp.oldName)) {
+					log.finer(Bundles.LOG_TEXT.getString("log.packet.rename.join"));
+					BCP.println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("rename.join"), BasisConstants.SERVER_UP, rp.newName));
 				} else {
-					log.finer("RenamePacket is Renaming " + rp.oldName + " to " + rp.newName + ".");
-					BCP.println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("rename.announce"), "SERVER", rp.oldName, rp.newName));
+					log.finer(MessageFormat.format(Bundles.LOG_TEXT.getString("log.packet.rename.a_to_b"),rp.oldName,rp.newName));
+					BCP.println(MessageFormat.format(Bundles.MESSAGE.getResource().getString("rename.announce"), BasisConstants.SERVER_UP, rp.oldName, rp.newName));
 				}
 			}
 		} else {
@@ -167,7 +173,7 @@ public final class DefaultPacketHandler extends BasicPacketHandler {
 				ca.setUser(u);
 				String nameNew = ca.getActorName();
 				ICM.sendPackage(new RenamePacket(nameOld, nameNew), sender);
-				ICM.sendPackage(new MessagePacket("join.success", lp.getUsername()), sender);
+				ICM.sendPackage(new MessagePacket("login.success", lp.getUsername()), sender);
 				handlePacket(new MessagePacket("rename.join", ICHAT.getLOCALActor().getActorName(), ca.getActorName()), ICM.ALL());
 			} else {
 				ICM.sendPackage(new MessagePacket("login.fail"), sender);

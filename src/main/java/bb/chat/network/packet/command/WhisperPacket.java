@@ -3,13 +3,26 @@ package bb.chat.network.packet.command;
 import bb.net.interfaces.APacket;
 import bb.net.packets.DataIn;
 import bb.net.packets.DataOut;
+import bb.util.file.log.BBLogHandler;
+import bb.util.file.log.Constants;
 
 import java.io.IOException;
+import java.util.logging.Logger;
+
+import static bb.chat.basis.BasisConstants.LOG_NAME;
 
 /**
  * Created by BB20101997 on 01.09.2014.
  */
 public class WhisperPacket extends APacket {
+
+	@SuppressWarnings("ConstantNamingConvention")
+	private static final Logger log;
+
+	static {
+		log = Logger.getLogger(WhisperPacket.class.getName());
+		log.addHandler(new BBLogHandler(Constants.getLogFile(LOG_NAME)));
+	}
 
 	public String getMessage() {
 		return message;
@@ -32,6 +45,7 @@ public class WhisperPacket extends APacket {
 	}
 
 	public WhisperPacket(String sender, String message, String empfaenger) {
+		log.fine("Sending a Message from "+sender+" to "+empfaenger+"!");
 		this.message = message;
 		this.sender = sender;
 		receiver = empfaenger;

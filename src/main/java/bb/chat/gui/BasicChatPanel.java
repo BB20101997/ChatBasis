@@ -12,9 +12,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.text.MessageFormat;
 import java.util.logging.Logger;
 
-import static bb.chat.base.Constants.LOG_NAME;
+import static bb.chat.basis.BasisConstants.LOG_NAME;
 
 /**
  * @author BB20101997
@@ -91,7 +92,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 	}
 
 	private void setButtonLabel(){
-		Send.setText(Bundles.BUTTON_LABEL.getResource().getString("send"));
+		Send.setText(Bundles.BUTTON_LABEL.getResource().getString("button.send"));
 	}
 
 	/**
@@ -120,7 +121,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 	@Override
 	//the standard actionListener
 	public void actionPerformed(ActionEvent e) {
-
+	log.fine(MessageFormat.format(Bundles.LOG_TEXT.getResource().getString("log.chat.action"),e));
 		if(useStandardActionListener) {
 			String lastSend = ChatSendBar.getText();
 			if(lastSend != null && !lastSend.isEmpty()) {
@@ -152,6 +153,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 	//wipes the logs displayed
 	@Override
 	public void wipeLog() {
+		log.fine(Bundles.LOG_TEXT.getResource().getString("log.chat.wipe"));
 		ChatLog.setText("");
 	}
 
@@ -161,26 +163,30 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 	//adds a string to the log displayed
 	@Override
 	public void print(String s) {
+		log.fine(MessageFormat.format(Bundles.LOG_TEXT.getResource().getString("log.chat.append"),s));
 		ChatLog.append(s);
 		autoBottom();
 	}
 	//adds a string to the log followed by a new line
 	@SuppressWarnings("StringConcatenationMissingWhitespace")
 	public void println(String s) {
-		log.finest("Println:"+s);
+		log.fine(MessageFormat.format(Bundles.LOG_TEXT.getResource().getString("log.chat.new_line"),s));
 		//noinspection StringConcatenation
 		print(s+System.lineSeparator());
 	}
 
 	@Override
 	public void stop() {
-		println("Stopping...");
+		//noinspection DuplicateStringLiteralInspection
+		log.fine(Bundles.LOG_TEXT.getResource().getString("log.shutdown.init"));
+		println(Bundles.MESSAGE.getResource().getString("shutdown.init"));
 	}
 
 	private int tabCount = 0;
 
 	@Override
 	public void keyTyped(KeyEvent e) {
+		log.fine(MessageFormat.format(Bundles.LOG_TEXT.getString("log.key.typed"),e));
 		if(useStandardKeyListener){
 			if(e.getKeyChar()=='\t'){
 				//increase tab count by one
@@ -204,6 +210,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		log.fine(MessageFormat.format(Bundles.LOG_TEXT.getString("log.key.pressed"), e));
 		if(useStandardKeyListener) {
 			//if the right arrow key is pressed
 			if(e.getKeyCode()==KeyEvent.VK_RIGHT){
@@ -225,6 +232,7 @@ public class BasicChatPanel extends JPanel implements ActionListener, KeyListene
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		log.fine(MessageFormat.format(Bundles.LOG_TEXT.getString("log.key.released"), e));
 		//if(useStandardKeyListener) {
 		// atm not used
 		//}
