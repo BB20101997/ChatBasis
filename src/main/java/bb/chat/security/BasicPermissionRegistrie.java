@@ -237,6 +237,7 @@ public class BasicPermissionRegistrie implements ISaveAble {
 		if(present.equals(checked)) {
 			return true;
 		}
+
 		//if it does't contain a wild card an didn't already match it does not fit
 		if(!present.contains("*")) {
 			return false;

@@ -12,7 +12,8 @@ public class List extends SubPermission {
 	private static final String PERMISSION = "permission.list";
 
 	public List(){
-		super("list", PERMISSION);
+		super(new String[]{PERMISSION});
+		subname = "list";
 	}
 
 	@Override
