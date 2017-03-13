@@ -9,13 +9,12 @@ apply plugin: 'maven'
 sourceCompatibility = 1.8
 
 repositories {
-    mavenLocal()
     mavenCentral()
 
 }
 
 dependencies {
-    compile group: 'io.github.bb20101997', name:'bblib', version: '0.0.5+'
+    compile project('BBLib')
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
