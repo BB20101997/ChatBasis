@@ -1,7 +1,6 @@
 package bb.chat.chat;
 
 import bb.chat.basis.BasisConstants;
-import bb.chat.command.*;
 import bb.chat.enums.Bundles;
 import bb.chat.interfaces.IBasicChatPanel;
 import bb.chat.interfaces.IChat;
@@ -25,7 +24,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.List;
 import java.util.logging.Logger;
 
 import static bb.chat.basis.BasisConstants.LOG_NAME;
@@ -388,31 +386,6 @@ public class BasicChat implements IChat<BasicUserDatabase, BasicPermissionRegist
 			}
 		}
 		return null;
-	}
-
-	@SuppressWarnings("unused")
-	public void addDefaultCommandsClient(){
-		logger.fine(MessageFormat.format(Bundles.LOG_TEXT.getResource().getString("log.command.add.defaults"), BasisConstants.CLIENT));
-		addDefaultCommandsBothSides();
-	}
-
-	@SuppressWarnings("unused")
-	public void addDefaultCommandsServer(){
-		logger.fine(MessageFormat.format(Bundles.LOG_TEXT.getResource().getString("log.command.add.defaults"),BasisConstants.SERVER));
-		addDefaultCommandsBothSides();
-		getCommandRegistry().addCommand(new Disconnect());
-	}
-
-	private void addDefaultCommandsBothSides(){
-		getCommandRegistry().addCommand(new Permission());
-		getCommandRegistry().addCommand(new Debug());
-		getCommandRegistry().addCommand(new bb.chat.command.List());
-		getCommandRegistry().addCommand(new Help());
-		getCommandRegistry().addCommand(new Stop());
-		getCommandRegistry().addCommand(new Save());
-		getCommandRegistry().addCommand(new Register());
-		getCommandRegistry().addCommand(new Rename());
-		getCommandRegistry().addCommand(new Whisper());
 	}
 
 	//class to handle ConnectEvent & DisconnectEvent

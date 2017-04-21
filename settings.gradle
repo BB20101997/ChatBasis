@@ -1,2 +1,2 @@
-rootProject.name = "ChatBasis"
-include 'BBLib'
+rootProject.name = "chatbasis"
+include 'bblib'

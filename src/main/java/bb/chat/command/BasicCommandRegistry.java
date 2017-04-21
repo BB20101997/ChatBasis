@@ -10,7 +10,9 @@ import bb.util.file.log.Constants;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -48,6 +50,13 @@ public class BasicCommandRegistry implements ICommandRegistry {
 				return command;
 			}
 		}
+		
+		//As service loaded Commands are secondary
+		List<ICommand> commands = CommandService.getInstance().getAllCommands();
+		Optional<ICommand> optCom = commands.stream().filter(com->com.getName().equals(text)).findFirst();
+		if(optCom.isPresent()){
+			return optCom.get();
+		}
 		//check for alias afterwards
 		for(ICommand command : commandList) {
 			for(String alias : command.getAlias()) {
@@ -56,7 +65,8 @@ public class BasicCommandRegistry implements ICommandRegistry {
 				}
 			}
 		}
-		return null;
+		
+		return commands.stream().filter(com -> Arrays.stream(com.getAlias()).anyMatch(s -> s.equals(text))).findFirst().orElse(null);
 	}
 
 	@Override
@@ -96,7 +106,9 @@ public class BasicCommandRegistry implements ICommandRegistry {
 	@Override
 	public List<ICommand> getAllCommands() {
 		log.fine(Bundles.LOG_TEXT.getResource().getString("log.command.get.all"));
-		return new ArrayList<>(commandList);
+		List<ICommand> list = new ArrayList<>(commandList);
+		list.addAll(CommandService.getInstance().getAllCommands());
+		return list;
 	}
 
 	@Override

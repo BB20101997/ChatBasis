@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    compile project('BBLib')
+    compile project(':chatbasis:bblib')
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
