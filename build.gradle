@@ -5,17 +5,23 @@ apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'maven'
 
-//noinspection GroovyUnusedAssignment
 sourceCompatibility = 1.8
 
-repositories {
-    mavenCentral()
-
-}
+repositories {mavenCentral()}
 
 dependencies {
     compile project('bblib')
     testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+
+task compJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'ChatBasis',
+                'Implementation-Version': version
+    }
+    archiveName = project.name + ".jar"
+    with jar
 }
 
 task srcJar(type: Jar){

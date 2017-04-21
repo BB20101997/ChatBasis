@@ -2,20 +2,19 @@ language: java
 jdk:
 - oraclejdk8
 install:
-- gradle wrapper
 - gradle assemble
 script:
 - gradle check
 - gradle jar
 before_deploy:
- - gradle compJar
- - gradle srcJar
+  - gradle compJar
+  - gradle srcJar
 deploy:
   provider: releases
   api_key:
     secure: KupEGvMaflZqRR+ATnQnz3v4U78HAuCjyDoDY3w1UXfbbuSy2ctKLrdRaMn82EopT4B8NhuToZVLSqiP9/Q04AHmstftisbU1OZ3TMomiunNqf2PISRtz7AVCHv7uvOO6BL5UHfuUfmtFR7xDzyRxDYxMzYK8R9PVQ9Lvy3jwD/SZi4jpWsVymF2Qcv8Fu+UCqGBIuwtxZ/XsAycGhPVl/jjno3tKTXXpK9EyIRDY7qTnH1o15hltrWEZWw1LUJTxETE9mXSWILPo9TzprsVkDhbcCyaqzRKmcKD/7gywnJAgIjFqt4XVZGVWuBgLfgO5U/tVDlQKd3m3y5g9lKuuJjAxa66i7fEBTPrP16K8tluSaijZVFOkPgp0/5XP/euB6m1FY0BKGAB9bhmjqVY3bEXBhiQ59i4Ul76QYNnf9MZgGTXrt0ZumGKh6MeBxLMmP9wdZ1QKyyBLGyYb/FwGYrhMZgFhb9uI0Vo5H/URauQO4UQyT+OMBGu3NJkY+gA2kWFg224+KdqOJQkmjApBdok0n86Bqarh/LyJviLM8iL+OChVntrqC48UuzzmO7NhQ6O0iTmqTC4Cv4cd1ruw2Q/+ROqTgHWC9CueoHAjd5ITUCQMA6a+5wwKLLNb+MZdFipPAzqvNSJOJVvZiDlKztYhuX4Sd4218N9VkT1jcY=
   file:
-   -  "build/libs/*.jar"
+    - "build/libs/*.jar"
   on:
     tags: true
     repo: BB20101997/ChatBasis
