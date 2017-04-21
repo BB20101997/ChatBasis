@@ -32,11 +32,13 @@ public class CommandService {
     }
     
     private CommandService() {
-        log.info("Loading ICommand Services");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Loading ICommand Services").append('\n');
         loader = ServiceLoader.load(ICommand.class);
         for(ICommand command:getAllCommands()){
-            log.info("Loaded Command:"+command.getClass());
+            stringBuilder.append("Loaded Command:").append(command.getClass()).append('\n');
         }
+        log.info(stringBuilder.toString());
     }
     
     public java.util.List<ICommand> getAllCommands(){
