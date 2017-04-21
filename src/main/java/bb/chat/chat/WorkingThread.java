@@ -8,7 +8,8 @@ import bb.chat.network.packet.chatting.ChatPacket;
 import bb.net.enums.Side;
 import bb.net.interfaces.IIOHandler;
 
-import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 /**
@@ -68,7 +69,7 @@ public class WorkingThread {
 	private class WorkingRunnable implements Runnable {
 
 		//the list of strings to process
-		private final LinkedList<String> toProcess = new LinkedList<>();
+    private final Queue<String> toProcess = new ConcurrentLinkedQueue<>();
 
 		private boolean keepGoing = true;
 		private Side side;
@@ -95,8 +96,8 @@ public class WorkingThread {
 			do {
 				if(!toProcess.isEmpty()) {
 
-					synchronized(toProcess) {
-						s = toProcess.pollFirst();
+					synchronized(this) {
+						s = toProcess.poll();
 					}
 
 					if(s.startsWith(init)) {
