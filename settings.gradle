@@ -1,2 +1,3 @@
 rootProject.name = 'chatbasis'
+findProject('BBLib')?.name='bblib'
 include ':bblib'
