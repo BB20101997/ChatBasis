@@ -2,13 +2,14 @@ language: java
 jdk:
 - oraclejdk8
 install:
-- ./gradlew assemble
+- gradle wrapper
+- gradle assemble
 script:
-- ./gradlew check
-- ./gradlew jar
+- gradle check
+- gradle jar
 before_deploy:
- - ./gradlew compJar
- - ./gradlew srcJar
+ - gradle compJar
+ - gradle srcJar
 deploy:
   provider: releases
   api_key:
