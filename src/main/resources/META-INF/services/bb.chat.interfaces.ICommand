@@ -1,0 +1,10 @@
+bb.chat.command.Permission
+bb.chat.command.Debug
+bb.chat.command.List
+bb.chat.command.Help
+bb.chat.command.Stop
+bb.chat.command.Save
+bb.chat.command.Register
+bb.chat.command.Rename
+bb.chat.command.Whisper
+bb.chat.command.Disconnect
