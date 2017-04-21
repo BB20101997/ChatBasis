@@ -14,17 +14,8 @@ repositories {
 }
 
 dependencies {
-    compile project(':chatbasis:bblib')
+    compile project('bblib')
     testCompile group: 'junit', name: 'junit', version: '4.11'
-}
-
-task compJar(type: Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'ChatBasis',
-                'Implementation-Version': version
-    }
-    archiveName = project.name + ".jar"
-    with jar
 }
 
 task srcJar(type: Jar){
@@ -32,11 +23,11 @@ task srcJar(type: Jar){
         attributes 'Implementation-Title': 'ChatBasis',
                 'Implementation-Version': version
     }
-    archiveName = project.name + "-src.jar"
+    archiveName = project.name.toLowerCase() + "-src.jar"
     from sourceSets.main.allSource
 }
 
-def lib = file('build/libs/' + name + "-" + version + ".jar")
+def lib = file('build/libs/' + project.name.toLowerCase() + "-" + version + ".jar")
 
 artifacts {
     archives lib
